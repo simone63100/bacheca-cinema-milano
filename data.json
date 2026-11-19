@@ -1,0 +1,1107 @@
+{
+ "updated": "2026-11-18",
+ "week": "da mer 18 a mer 25 novembre",
+ "films": [
+  {
+   "id": "fjord",
+   "title": "Fjord",
+   "original_title": "Fjord",
+   "director": "Cristian Mungiu",
+   "year": 2026,
+   "near": true,
+   "match": "watchlist",
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/fjord.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-19",
+     "time": "13:30",
+     "when": "gio 19 · 13:30 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    },
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-19",
+     "time": "20:45",
+     "when": "gio 19 · 20:45 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-20",
+     "time": "18:00",
+     "when": "ven 20 · 18:00",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-20",
+     "time": "20:30",
+     "when": "ven 20 · 20:30 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    },
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-21",
+     "time": "18:00",
+     "when": "sab 21 · 18:00 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-21",
+     "time": "21:00",
+     "when": "sab 21 · 21:00",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-22",
+     "time": "20:00",
+     "when": "dom 22 · 20:00",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-22",
+     "time": "20:15",
+     "when": "dom 22 · 20:15 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-23",
+     "time": "21:00",
+     "when": "lun 23 · 21:00 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-24",
+     "time": "15:15",
+     "when": "mar 24 · 15:15 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-24",
+     "time": "18:00",
+     "when": "mar 24 · 18:00 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-25",
+     "time": "21:00",
+     "when": "mer 25 · 21:00 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    }
+   ]
+  },
+  {
+   "id": "2001-odissea-nello-spazio",
+   "title": "2001: Odissea nello spazio",
+   "original_title": "2001: A Space Odyssey",
+   "director": "Stanley Kubrick",
+   "year": 1968,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": true,
+   "vo": true,
+   "poster": "posters/2001-odissea-nello-spazio.jpg",
+   "screenings": [
+    {
+     "cinema": "Cinemino (NOISE)",
+     "date": "2026-11-18",
+     "time": "21:00",
+     "when": "mer 18 · 21:00 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/24664/"
+    },
+    {
+     "cinema": "Anteo CityLife",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/23208/"
+    },
+    {
+     "cinema": "Anteo Palazzo del Cinema",
+     "date": "2026-11-18",
+     "time": "21:40",
+     "when": "mer 18 · 21:40 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/5431/"
+    },
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-22",
+     "time": "17:15",
+     "when": "dom 22 · 17:15 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    },
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-23",
+     "time": "11:00",
+     "when": "lun 23 · 11:00 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "gli-spietati",
+   "title": "Gli spietati",
+   "original_title": "Unforgiven",
+   "director": "Clint Eastwood",
+   "year": 1992,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": true,
+   "vo": true,
+   "poster": "posters/gli-spietati.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-23",
+     "time": "19:00",
+     "when": "lun 23 · 19:00 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "minnie-e-moskowitz",
+   "title": "Minnie e Moskowitz",
+   "original_title": "Minnie and Moskowitz",
+   "director": "John Cassavetes",
+   "year": 1971,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": true,
+   "vo": true,
+   "poster": "posters/minnie-e-moskowitz.jpg",
+   "screenings": [
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-20",
+     "time": "16:00",
+     "when": "ven 20 · 16:00 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    }
+   ]
+  },
+  {
+   "id": "gruppo-di-famiglia-in-un-interno",
+   "title": "Gruppo di famiglia in un interno",
+   "original_title": "Gruppo di famiglia in un interno",
+   "director": "Luchino Visconti",
+   "year": 1974,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": true,
+   "vo": false,
+   "poster": "posters/gruppo-di-famiglia-in-un-interno.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-19",
+     "time": "11:00",
+     "when": "gio 19 · 11:00",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "l-innocente",
+   "title": "L'innocente",
+   "original_title": "L'innocente",
+   "director": "Luchino Visconti",
+   "year": 1976,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": true,
+   "vo": false,
+   "poster": "posters/l-innocente.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-20",
+     "time": "14:15",
+     "when": "ven 20 · 14:15",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "la-caduta-degli-dei",
+   "title": "La caduta degli dei",
+   "original_title": "La caduta degli dei",
+   "director": "Luchino Visconti",
+   "year": 1969,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": true,
+   "vo": false,
+   "poster": "posters/la-caduta-degli-dei.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-22",
+     "time": "11:00",
+     "when": "dom 22 · 11:00",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "mimi-metallurgico-ferito-nell-onore",
+   "title": "Mimì metallurgico ferito nell'onore",
+   "original_title": "Mimì metallurgico ferito nell'onore",
+   "director": "Lina Wertmüller",
+   "year": 1972,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": true,
+   "vo": false,
+   "poster": "posters/mimi-metallurgico-ferito-nell-onore.jpg",
+   "screenings": [
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-25",
+     "time": "21:00",
+     "when": "mer 25 · 21:00",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    }
+   ]
+  },
+  {
+   "id": "col-cuore-in-gola",
+   "title": "Col cuore in gola",
+   "original_title": "Col cuore in gola",
+   "director": "Tinto Brass",
+   "year": 1967,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": true,
+   "vo": false,
+   "poster": "posters/col-cuore-in-gola.jpg",
+   "screenings": [
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-21",
+     "time": "20:45",
+     "when": "sab 21 · 20:45 (con Ewa Aulin, VM18)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    }
+   ]
+  },
+  {
+   "id": "panni-sporchi",
+   "title": "Panni sporchi",
+   "original_title": "Panni sporchi",
+   "director": "Giuseppe Bertolucci",
+   "year": 1980,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": true,
+   "vo": false,
+   "poster": "posters/panni-sporchi.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-25",
+     "time": "18:00",
+     "when": "mer 25 · 18:00",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "look-back",
+   "title": "Look Back",
+   "original_title": "Rukku Bakku",
+   "director": "Hirokazu Kore'eda",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/look-back.jpg",
+   "screenings": [
+    {
+     "cinema": "Anteo Palazzo del Cinema",
+     "date": "2026-11-18",
+     "time": "19:40",
+     "when": "mer 18 · 19:40 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/5431/"
+    },
+    {
+     "cinema": "Beltrade",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/6528/"
+    },
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-19",
+     "time": "18:30",
+     "when": "gio 19 · 18:30 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    },
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-20",
+     "time": "18:15",
+     "when": "ven 20 · 18:15 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    },
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-22",
+     "time": "15:15",
+     "when": "dom 22 · 15:15 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    }
+   ]
+  },
+  {
+   "id": "l-essere-amato",
+   "title": "L'essere amato",
+   "original_title": "El ser querido",
+   "director": "Rodrigo Sorogoyen",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/l-essere-amato.jpg",
+   "screenings": [
+    {
+     "cinema": "Anteo Palazzo del Cinema",
+     "date": "2026-11-18",
+     "time": "21:40",
+     "when": "mer 18 · 21:40 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/5431/"
+    },
+    {
+     "cinema": "Ariosto",
+     "date": "2026-11-18",
+     "time": "21:40",
+     "when": "mer 18 · 21:40",
+     "url": "https://www.mymovies.it/cinema/milano/5430/"
+    },
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-21",
+     "time": "15:30",
+     "when": "sab 21 · 15:30 (v.o.)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    }
+   ]
+  },
+  {
+   "id": "wild-horse-nine",
+   "title": "Wild Horse Nine",
+   "original_title": "Wild Horse Nine",
+   "director": "Martin McDonagh",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/wild-horse-nine.jpg",
+   "screenings": [
+    {
+     "cinema": "Anteo Palazzo del Cinema",
+     "date": "2026-11-18",
+     "time": "20:00",
+     "when": "mer 18 · 20:00 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/5431/"
+    },
+    {
+     "cinema": "Colosseo",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/5445/"
+    },
+    {
+     "cinema": "Arcobaleno",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30",
+     "url": "https://www.mymovies.it/cinema/milano/6573/"
+    },
+    {
+     "cinema": "Anteo Palazzo del Cinema",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/5431/"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-20",
+     "time": "21:00",
+     "when": "ven 20 · 21:00 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-21",
+     "time": "18:30",
+     "when": "sab 21 · 18:30 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-22",
+     "time": "15:00",
+     "when": "dom 22 · 15:00 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-23",
+     "time": "18:30",
+     "when": "lun 23 · 18:30 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-24",
+     "time": "21:00",
+     "when": "mar 24 · 21:00 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-25",
+     "time": "18:30",
+     "when": "mer 25 · 18:30 (v.o.)",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    }
+   ]
+  },
+  {
+   "id": "wax-gold",
+   "title": "Wax & Gold",
+   "original_title": "Wax & Gold",
+   "director": "Ruth Beckermann",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/wax-gold.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-18",
+     "time": "21:15",
+     "when": "mer 18 · 21:15 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "mustang",
+   "title": "Mustang",
+   "original_title": "Mustang",
+   "director": "Kasia Smutniak",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/mustang.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-23",
+     "time": "17:00",
+     "when": "lun 23 · 17:00 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "ubergang",
+   "title": "Übergang",
+   "original_title": "Übergang",
+   "director": "Peter Badel, Chris Wright",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/ubergang.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-19",
+     "time": "21:00",
+     "when": "gio 19 · 21:00 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "london",
+   "title": "London",
+   "original_title": "London",
+   "director": "Sebastian Brameshuber",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/london.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-21",
+     "time": "21:30",
+     "when": "sab 21 · 21:30 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "odio",
+   "title": "Òdio",
+   "original_title": "Òdio",
+   "director": "Daniela Nicolò, Enrico Casagrande",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": null,
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-21",
+     "time": "17:00",
+     "when": "sab 21 · 17:00 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "elegy-for-the-forgotten-on-an-endless-war-todo-es-carcel",
+   "title": "Elegy for the Forgotten, on an Endless War + Todo es cárcel",
+   "original_title": "Elegy for the Forgotten, on an Endless War / Todo es cárcel",
+   "director": "Bani Khoshnoudi, Eloy Inciso",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/elegy-for-the-forgotten-on-an-endless-war-todo-es-carcel.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-20",
+     "time": "21:30",
+     "when": "ven 20 · 21:30 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "merci-d-etre-venu-lo-spirito-del-vento",
+   "title": "Merci d'être venu + Lo spirito del vento",
+   "original_title": "Merci d'être venu",
+   "director": "AA.VV.",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/merci-d-etre-venu-lo-spirito-del-vento.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-20",
+     "time": "19:15",
+     "when": "ven 20 · 19:15 (v.o.)",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "la-compagnia-to-be-a-b-ee-mut-nightglasses",
+   "title": "La compagnia – To Be a B(ee) + Mut + Nightglasses",
+   "original_title": "La compagnia",
+   "director": "AA.VV.",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": null,
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-19",
+     "time": "19:00",
+     "when": "gio 19 · 19:00",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "la-stanza-degli-altri",
+   "title": "La stanza degli altri",
+   "original_title": "La stanza degli altri",
+   "director": "Enrico Maisto",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/la-stanza-degli-altri.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-21",
+     "time": "19:15",
+     "when": "sab 21 · 19:15",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "dentro",
+   "title": "Dentro",
+   "original_title": "Dentro",
+   "director": "Elsa Amiel",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": null,
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-22",
+     "time": "17:00",
+     "when": "dom 22 · 17:00",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "selfie-lato-b",
+   "title": "Selfie – Lato B",
+   "original_title": "Selfie – Lato B",
+   "director": "Agostino Ferrente",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/selfie-lato-b.jpg",
+   "screenings": [
+    {
+     "cinema": "Cineteca Arlecchino",
+     "date": "2026-11-22",
+     "time": "19:00",
+     "when": "dom 22 · 19:00",
+     "url": "https://www.cinetecamilano.it/luogo/cineteca-milano-arlecchino/"
+    }
+   ]
+  },
+  {
+   "id": "lorenzo-l-incredibile-avventura-di-jovanotti",
+   "title": "Lorenzo – L'incredibile avventura di Jovanotti",
+   "original_title": "Lorenzo",
+   "director": "Dario Zonta, Carlo Zoratti",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/lorenzo-l-incredibile-avventura-di-jovanotti.jpg",
+   "screenings": [
+    {
+     "cinema": "Cinema Godard",
+     "date": "2026-11-25",
+     "time": "19:00",
+     "when": "mer 25 · 19:00 (anteprima)",
+     "url": "https://www.fondazioneprada.org/cinema-godard/"
+    }
+   ]
+  },
+  {
+   "id": "la-vita-segreta-dei-giocattoli",
+   "title": "La vita segreta dei giocattoli",
+   "original_title": "La vita segreta dei giocattoli",
+   "director": "Alexandra D'Onofrio, Sara Zavarise",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/la-vita-segreta-dei-giocattoli.jpg",
+   "screenings": [
+    {
+     "cinema": "Beltrade",
+     "date": "2026-11-18",
+     "time": "19:40",
+     "when": "mer 18 · 19:40",
+     "url": "https://www.mymovies.it/cinema/milano/6528/"
+    }
+   ]
+  },
+  {
+   "id": "scrooge-e-gli-spiriti-del-natale",
+   "title": "Scrooge e gli Spiriti del Natale",
+   "original_title": "Scrooge e gli Spiriti del Natale",
+   "director": "Ti West",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/scrooge-e-gli-spiriti-del-natale.jpg",
+   "screenings": [
+    {
+     "cinema": "Colosseo",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/5445/"
+    }
+   ]
+  },
+  {
+   "id": "il-rumore-delle-cose-nuove",
+   "title": "Il rumore delle cose nuove",
+   "original_title": "Il rumore delle cose nuove",
+   "director": "Paolo Genovese",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/il-rumore-delle-cose-nuove.jpg",
+   "screenings": [
+    {
+     "cinema": "Colosseo",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30",
+     "url": "https://www.mymovies.it/cinema/milano/5445/"
+    },
+    {
+     "cinema": "Arcobaleno",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30",
+     "url": "https://www.mymovies.it/cinema/milano/6573/"
+    }
+   ]
+  },
+  {
+   "id": "dio-ride",
+   "title": "Dio Ride",
+   "original_title": "Dio Ride",
+   "director": "Giovanni Veronesi",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/dio-ride.jpg",
+   "screenings": [
+    {
+     "cinema": "Colosseo",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30",
+     "url": "https://www.mymovies.it/cinema/milano/5445/"
+    }
+   ]
+  },
+  {
+   "id": "se-domani-non-torno",
+   "title": "Se domani non torno",
+   "original_title": "Se domani non torno",
+   "director": "Paola Randi",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/se-domani-non-torno.jpg",
+   "screenings": [
+    {
+     "cinema": "Colosseo",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30",
+     "url": "https://www.mymovies.it/cinema/milano/5445/"
+    }
+   ]
+  },
+  {
+   "id": "l-estranea",
+   "title": "L'estranea",
+   "original_title": "L'estranea",
+   "director": "Paolo Strippoli",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/l-estranea.jpg",
+   "screenings": [
+    {
+     "cinema": "Colosseo",
+     "date": "2026-11-18",
+     "time": "21:30",
+     "when": "mer 18 · 21:30",
+     "url": "https://www.mymovies.it/cinema/milano/5445/"
+    }
+   ]
+  },
+  {
+   "id": "primetime",
+   "title": "Primetime",
+   "original_title": "Primetime",
+   "director": "Lance Oppenheim",
+   "year": 2026,
+   "near": false,
+   "match": "watchlist",
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/primetime.jpg",
+   "screenings": [
+    {
+     "cinema": "Anteo Palazzo del Cinema",
+     "date": "2026-11-18",
+     "time": "21:45",
+     "when": "mer 18 · 21:45",
+     "url": "https://www.mymovies.it/cinema/milano/5431/"
+    }
+   ]
+  },
+  {
+   "id": "la-gradiva",
+   "title": "La Gradiva",
+   "original_title": "Gradiva",
+   "director": "Marine Atlan",
+   "year": 2026,
+   "near": false,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": true,
+   "poster": "posters/la-gradiva.jpg",
+   "screenings": [
+    {
+     "cinema": "Centrale",
+     "date": "2026-11-18",
+     "time": "20:30",
+     "when": "mer 18 · 20:30 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/5448/"
+    },
+    {
+     "cinema": "Anteo Palazzo del Cinema",
+     "date": "2026-11-18",
+     "time": "21:40",
+     "when": "mer 18 · 21:40 (v.o.)",
+     "url": "https://www.mymovies.it/cinema/milano/5431/"
+    }
+   ]
+  },
+  {
+   "id": "fatherland",
+   "title": "Fatherland",
+   "original_title": "Fatherland",
+   "director": "Paweł Pawlikowski",
+   "year": 2026,
+   "near": false,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/fatherland.jpg",
+   "screenings": [
+    {
+     "cinema": "Anteo Palazzo del Cinema",
+     "date": "2026-11-18",
+     "time": "19:45",
+     "when": "mer 18 · 19:45",
+     "url": "https://www.mymovies.it/cinema/milano/5431/"
+    }
+   ]
+  },
+  {
+   "id": "ritratto-di-un-certo-oriente",
+   "title": "Ritratto di un certo Oriente",
+   "original_title": "Retrato de um Certo Oriente",
+   "director": "Marcelo Gomes",
+   "year": 2024,
+   "near": false,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/ritratto-di-un-certo-oriente.jpg",
+   "screenings": [
+    {
+     "cinema": "Anteo Palazzo del Cinema",
+     "date": "2026-11-18",
+     "time": "21:15",
+     "when": "mer 18 · 21:15",
+     "url": "https://www.mymovies.it/cinema/milano/5431/"
+    }
+   ]
+  },
+  {
+   "id": "il-caso-137",
+   "title": "Il caso 137",
+   "original_title": "Dossier 137",
+   "director": "Dominik Moll",
+   "year": 2025,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/il-caso-137.jpg",
+   "screenings": [
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-19",
+     "time": "16:00",
+     "when": "gio 19 · 16:00",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-19",
+     "time": "18:30",
+     "when": "gio 19 · 18:30",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-19",
+     "time": "21:00",
+     "when": "gio 19 · 21:00",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    }
+   ]
+  },
+  {
+   "id": "il-fuoco-che-ti-porti-dentro",
+   "title": "Il fuoco che ti porti dentro",
+   "original_title": "Il fuoco che ti porti dentro",
+   "director": "",
+   "year": 2026,
+   "near": true,
+   "match": null,
+   "stars": null,
+   "restored": false,
+   "vo": false,
+   "poster": "posters/il-fuoco-che-ti-porti-dentro.jpg",
+   "screenings": [
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-20",
+     "time": "16:00",
+     "when": "ven 20 · 16:00",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-21",
+     "time": "15:00",
+     "when": "sab 21 · 15:00",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-21",
+     "time": "16:45",
+     "when": "sab 21 · 16:45",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-22",
+     "time": "17:15",
+     "when": "dom 22 · 17:15",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-23",
+     "time": "15:00",
+     "when": "lun 23 · 15:00",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-23",
+     "time": "16:45",
+     "when": "lun 23 · 16:45",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-25",
+     "time": "15:00",
+     "when": "mer 25 · 15:00",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    },
+    {
+     "cinema": "Palestrina",
+     "date": "2026-11-25",
+     "time": "16:45",
+     "when": "mer 25 · 16:45",
+     "url": "https://www.progettolumiere.it/palestrina/home.php"
+    }
+   ]
+  }
+ ]
+}

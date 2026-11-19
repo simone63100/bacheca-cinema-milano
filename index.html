@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In sala a Milano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0d;--fg:#f3f3f3;--mut:#9a9aa2;--acc:#ffcc33;--wl:#ff4d6d;--card:#17171b}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:radial-gradient(ellipse at 50% 0%,#24242b 0%,#0b0b0d 60%) fixed;color:var(--fg);font-family:Inter,system-ui,sans-serif;min-height:100%}
+body{padding:18px 0 60px;overflow-x:hidden}
+header{padding:0 20px 6px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+h1{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.sub{color:var(--mut);font-size:13px;margin-top:2px}
+.chips{display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto;scrollbar-width:none}
+.chip{flex:none;border:1px solid #333;background:#16161a;color:var(--fg);padding:7px 13px;border-radius:999px;font:500 13px Inter,sans-serif;cursor:pointer}
+.chips.when{padding-top:8px}.chip.sm{padding:5px 11px;font-size:12px}.cal{display:inline-block;margin-left:8px;font-size:12px;color:var(--acc);text-decoration:none;border:1px solid #444;border-radius:4px;padding:1px 6px}.links{margin-top:10px;display:flex;gap:14px;justify-content:center;font-size:13px}.links a{color:var(--mut)}
+.chip.on{background:var(--fg);color:#000;border-color:var(--fg)}
+section{margin-top:14px}
+section h2{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);padding:0 20px;font-weight:600}
+.flow{position:relative;height:var(--h);perspective:1100px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;overflow:hidden}
+.flow.big{--w:min(62vw,300px);--h:calc(var(--w)*1.5*1.42 + 20px)}
+.flow.small{--w:min(40vw,180px);--h:calc(var(--w)*1.5*1.42 + 20px)}
+.cov{position:absolute;left:50%;top:14px;width:var(--w);aspect-ratio:2/3;margin-left:calc(var(--w)/-2);transition:transform .45s cubic-bezier(.2,.7,.2,1),opacity .45s,filter .45s;-webkit-box-reflect:below 4px linear-gradient(transparent 62%,rgba(255,255,255,.22))}
+.cov .img{width:100%;height:100%;border-radius:6px;overflow:hidden;background:var(--card);box-shadow:0 18px 40px rgba(0,0,0,.6)}
+.cov img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.ph{width:100%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;background:linear-gradient(160deg,#2b2b33,#111)}
+.ph b{font-size:clamp(15px,4.2vw,22px);line-height:1.1}
+.ph span{color:var(--mut);font-size:12px;margin-top:6px}
+.badge{position:absolute;top:8px;left:8px;background:var(--wl);color:#fff;font:700 10px Inter,sans-serif;letter-spacing:.06em;padding:4px 7px;border-radius:4px;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.badge.fav{background:var(--acc);color:#000}
+.badge.seen{background:#3a86ff}
+.info{text-align:center;padding:0 22px;min-height:120px}
+.info .t{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.info .o{color:var(--mut);font-size:13px;margin-top:2px}
+.tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:#222;color:#ddd}
+.tag.wl{background:var(--wl);color:#fff}.tag.fav{background:var(--acc);color:#000}.tag.seen{background:#3a86ff;color:#fff}.tag.rs{background:#6b4eff;color:#fff}
+.scr{font-size:14px;line-height:1.6}
+.scr a{color:var(--fg)}
+.scr .c{font-weight:600}
+.nav{display:flex;justify-content:center;gap:14px;margin:6px 0 4px}
+.nav button{background:#1c1c21;border:1px solid #333;color:var(--fg);width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer}
+.empty{color:var(--mut);text-align:center;padding:40px 20px;font-size:14px}
+.count{color:var(--mut);font-size:12px;text-align:center;margin-top:4px}
+
+/* ---------- toggle ---------- */
+.vt{position:fixed;top:12px;right:12px;z-index:50;background:rgba(20,20,24,.85);border:1px solid #333;color:#fff;font:600 12px Inter,sans-serif;padding:7px 12px;border-radius:999px;cursor:pointer;backdrop-filter:blur(8px)}
+body.zune .vt{background:#111;border-color:#444;border-radius:0;font-family:"Open Sans",sans-serif;font-weight:400;text-transform:lowercase}
+body.zune #classic{display:none}
+#zune{display:none}
+body.zune{background:#000;padding:0}
+body.zune #zune{display:block}
+/* ---------- zune ---------- */
+#zune{font-family:"Open Sans","Segoe UI",sans-serif;color:#fff;height:100vh;height:100dvh;position:relative;overflow:hidden;background:#000}
+.zbg{position:absolute;top:-6px;left:0;white-space:nowrap;font-weight:300;font-size:clamp(90px,28vw,190px);letter-spacing:-.04em;color:#fff;opacity:.95;line-height:1;transition:transform .05s linear;pointer-events:none;text-transform:lowercase}
+.zpano{position:absolute;inset:0;top:clamp(90px,26vw,170px);display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.zpano::-webkit-scrollbar{display:none}
+.zpage{flex:none;width:88vw;max-width:520px;scroll-snap-align:start;padding:0 0 30px 22px;overflow-y:auto;height:100%}
+.zpage h2{font-weight:300;font-size:40px;letter-spacing:-.02em;text-transform:lowercase;margin:4px 0 14px;color:#fff}
+.zpage h2 span{color:var(--z,#ec008c)}
+.zitem{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;cursor:pointer}
+.zitem .p{width:78px;flex:none;aspect-ratio:2/3;background:#222;overflow:hidden}
+.zitem .p img{width:100%;height:100%;object-fit:cover;display:block}
+.zitem .p .ph2{width:100%;height:100%;display:flex;align-items:flex-end;padding:6px;font-size:11px;color:#aaa;background:#1a1a1a}
+.zitem .tx{min-width:0}
+.zitem .t1{font-size:21px;font-weight:300;line-height:1.1;text-transform:lowercase}
+.zitem .t2{font-size:13px;color:#8a8a8a;margin-top:3px;text-transform:lowercase}
+.zitem .t3{font-size:13px;color:var(--z,#ec008c);margin-top:4px;text-transform:lowercase}
+.zgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding-right:22px}
+.zgrid .g{aspect-ratio:2/3;background:#1a1a1a;overflow:hidden;cursor:pointer;position:relative}
+.zgrid .g img{width:100%;height:100%;object-fit:cover;display:block}
+.zgrid .g .ph2{padding:6px;font-size:11px;color:#aaa;height:100%;display:flex;align-items:flex-end}
+.zgrid .g i{position:absolute;left:0;top:0;width:6px;height:100%;background:var(--z,#ec008c)}
+.zcin{font-size:26px;font-weight:300;text-transform:lowercase;margin:18px 0 8px;color:#fff}
+.zempty{color:#666;font-size:18px;font-weight:300}
+.zdet{position:absolute;inset:0;background:#000;z-index:40;overflow-y:auto;display:none;padding:0 0 40px}
+.zdet.on{display:block;animation:zin .25s ease}
+@keyframes zin{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+.zdet .back{font-size:15px;color:#8a8a8a;padding:18px 22px 6px;cursor:pointer;text-transform:lowercase}
+.zdet .hero{display:flex;gap:18px;padding:6px 22px 0}
+.zdet .hero img{width:46%;max-width:260px;aspect-ratio:2/3;object-fit:cover;display:block}
+.zdet .hero .ph2{width:46%;aspect-ratio:2/3;background:#1a1a1a}
+.zdet .meta{flex:1;min-width:0}
+.zdet .meta .k{font-size:12px;color:#8a8a8a;text-transform:lowercase;margin-top:12px}
+.zdet .meta .v{font-size:16px;font-weight:300}
+.zdet h1{font-weight:300;font-size:clamp(34px,10vw,64px);line-height:1;letter-spacing:-.03em;text-transform:lowercase;padding:18px 22px 4px}
+.zdet .badges{padding:4px 22px;color:var(--z,#ec008c);font-size:14px;text-transform:lowercase}
+.zdet .sh{padding:8px 22px}
+.zdet .sh .r{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e1e1e;padding:11px 0;font-size:17px;font-weight:300}
+.zdet .sh .r b{font-weight:400}
+.zdet .sh a{color:var(--z,#ec008c);text-decoration:none;font-size:13px;text-transform:lowercase}
+.zdet .zl{padding:14px 22px;display:flex;gap:22px}
+.zdet .zl a{color:#fff;font-size:18px;font-weight:300;text-decoration:none;text-transform:lowercase}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<button class="vt" id="vt">stile zune</button>
+<div id="zune"><div class="zbg" id="zbg">in sala a milano</div><div class="zpano" id="zpano"></div><div class="zdet" id="zdet"></div></div>
+<div id="classic">
+<header>
+  <div><h1>In sala a Milano</h1><div class="sub" id="sub"></div></div>
+</header>
+<div class="chips" id="chips"></div><div class="chips when" id="when"></div>
+<section id="sNear"><h2>I tuoi cinema</h2><div class="flow big" id="fNear"></div><div class="nav"><button data-f="fNear" data-d="-1">‹</button><button data-f="fNear" data-d="1">›</button></div><div class="count" id="cNear"></div><div class="info" id="iNear"></div></section>
+<section id="sFar"><h2>Più lontani</h2><div class="flow small" id="fFar"></div><div class="nav"><button data-f="fFar" data-d="-1">‹</button><button data-f="fFar" data-d="1">›</button></div><div class="count" id="cFar"></div><div class="info" id="iFar"></div></section>
+</div>
+<script>
+const WHENS=[["sempre","Tutta la settimana"],["stasera","Stasera"],["domani","Domani"],["weekend","Weekend"]];let when="sempre";
+const FILTERS=[["tutti","Tutti"],["lista","La mia lista"],["classici","Classici restaurati"],["vo","Lingua originale"]];
+let DATA={films:[]},filter="tutti";const state={fNear:0,fFar:0};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function rank(f){return f.match==="preferito"?0:f.match==="watchlist"?1:f.match==="visto"?2:f.restored?3:4}
+function pass(f){if(filter==="lista")return!!f.match;if(filter==="classici")return!!f.restored;if(filter==="vo")return!!f.vo;return true}
+function badge(f){if(f.match==="preferito")return'<div class="badge fav">★ Preferito</div>';if(f.match==="watchlist")return'<div class="badge">Watchlist</div>';if(f.match==="visto")return'<div class="badge seen">Visto '+(f.stars?f.stars+"★":"")+'</div>';return""}
+function cover(f){const inner=f.poster?'<img src="'+esc(f.poster)+'" alt="">':'<div class="ph"><b>'+esc(f.title)+'</b><span>'+esc(f.director||"")+' · '+esc(f.year||"")+'</span></div>';return'<div class="img">'+inner+'</div>'+badge(f)}
+function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function inWhen(x){if(when==="sempre"||!x.date)return true;const n=new Date(),t=ymd(n),tm=new Date(n);tm.setDate(n.getDate()+1);
+ if(when==="stasera")return x.date===t;if(when==="domani")return x.date===ymd(tm);
+ if(when==="weekend"){const d=new Date(x.date+"T12:00:00"),w=d.getDay(),diff=(d-n)/864e5;return diff<7&&(w===5&&(x.time||"23:59")>="17:00"||w===6||w===0)}return true}
+function upcoming(f){const now=new Date();return (f.screenings||[]).filter(x=>{if(!x.date)return true;const t=new Date(x.date+"T"+(x.time||"23:59")+":00");return t>=now}).filter(inWhen)}
+function calUrl(f,s){if(!s.date||!s.time)return null;const st=s.date.replace(/-/g,"")+"T"+s.time.replace(":","")+"00";const e=new Date(s.date+"T"+s.time+":00");e.setMinutes(e.getMinutes()+(f.runtime||120));
+ const en=ymd(e).replace(/-/g,"")+"T"+String(e.getHours()).padStart(2,"0")+String(e.getMinutes()).padStart(2,"0")+"00";
+ return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent("🎬 "+f.title)+"&dates="+st+"/"+en+"&ctz=Europe/Rome&location="+encodeURIComponent(s.cinema+", Milano")+"&details="+encodeURIComponent((f.original_title||"")+" — "+(f.director||""))}
+function list(id){return DATA.films.map(f=>Object.assign({},f,{screenings:upcoming(f)})).filter(f=>f.screenings.length).filter(f=>(id==="fNear")===!!f.near).filter(pass).sort((a,b)=>rank(a)-rank(b))}
+function render(id){
+  const el=document.getElementById(id),items=list(id),sec=el.parentElement,info=document.getElementById(id==="fNear"?"iNear":"iFar"),cnt=document.getElementById(id==="fNear"?"cNear":"cFar");
+  if(!items.length){el.innerHTML='<div class="empty">Niente qui per questo filtro.</div>';info.innerHTML="";cnt.textContent="";sec.querySelector(".nav").style.display="none";return}
+  sec.querySelector(".nav").style.display="";
+  state[id]=Math.max(0,Math.min(state[id],items.length-1));
+  el.innerHTML=items.map((f,i)=>'<div class="cov" data-i="'+i+'">'+cover(f)+'</div>').join("");
+  el.querySelectorAll(".cov").forEach(c=>c.onclick=()=>{state[id]=+c.dataset.i;layout(id)});
+  layout(id);
+}
+function layout(id){
+  const el=document.getElementById(id),items=list(id),cur=state[id],w=el.querySelector(".cov")?.offsetWidth||200;
+  el.querySelectorAll(".cov").forEach((c,i)=>{const d=i-cur,a=Math.abs(d);
+    const x=d===0?0:Math.sign(d)*(w*.62+(a-1)*w*.28),rot=d===0?0:-Math.sign(d)*62,z=d===0?60:-a*40;
+    c.style.transform=`translateX(${x}px) translateZ(${z}px) rotateY(${rot}deg)`;c.style.zIndex=100-a;c.style.opacity=a>5?0:1;c.style.filter=d===0?"none":"brightness(.55)"});
+  const f=items[cur],info=document.getElementById(id==="fNear"?"iNear":"iFar");
+  document.getElementById(id==="fNear"?"cNear":"cFar").textContent=(cur+1)+" / "+items.length;
+  const tags=[];if(f.match==="preferito")tags.push('<span class="tag fav">Tra i preferiti</span>');if(f.match==="watchlist")tags.push('<span class="tag wl">In watchlist</span>');if(f.match==="visto")tags.push('<span class="tag seen">Visto · '+(f.stars||"")+'★</span>');if(f.restored)tags.push('<span class="tag rs">Restaurato / classico</span>');if(f.vo)tags.push('<span class="tag">V.O. sott.</span>');
+  info.innerHTML='<div class="t">'+esc(f.title)+'</div><div class="o">'+(f.original_title&&f.original_title!==f.title?esc(f.original_title)+" · ":"")+esc(f.director||"")+" · "+esc(f.year||"")+'</div><div class="tags">'+tags.join("")+'</div><div class="scr">'+(f.screenings||[]).map(s=>{const c=calUrl(f,s);return'<div><span class="c">'+(s.url?'<a href="'+esc(s.url)+'">'+esc(s.cinema)+'</a>':esc(s.cinema))+'</span> — '+esc(s.when)+(c?'<a class="cal" href="'+esc(c)+'">+ calendario</a>':'')+'</div>'}).join("")+'</div><div class="links"><a href="https://www.youtube.com/results?search_query='+encodeURIComponent((f.original_title||f.title)+" "+(f.year||"")+" trailer")+'">▶ Trailer</a><a href="'+esc(f.letterboxd||("https://letterboxd.com/search/films/"+encodeURIComponent(f.original_title||f.title)+"/"))+'">Letterboxd</a></div>';
+}
+function move(id,d){const n=list(id).length;state[id]=Math.max(0,Math.min(n-1,state[id]+d));layout(id)}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>move(b.dataset.f,+b.dataset.d));
+["fNear","fFar"].forEach(id=>{const el=document.getElementById(id);let sx=null,moved=0;
+  el.addEventListener("pointerdown",e=>{sx=e.clientX;moved=0});
+  el.addEventListener("pointermove",e=>{if(sx===null)return;const dx=e.clientX-sx;if(Math.abs(dx)>45){move(id,dx<0?1:-1);sx=e.clientX;moved=1}});
+  ["pointerup","pointercancel","pointerleave"].forEach(t=>el.addEventListener(t,()=>sx=null));
+  el.addEventListener("wheel",e=>{if(Math.abs(e.deltaX)>Math.abs(e.deltaY)&&Math.abs(e.deltaX)>20){e.preventDefault();move(id,e.deltaX>0?1:-1)}},{passive:false});
+});
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight")move("fNear",1);if(e.key==="ArrowLeft")move("fNear",-1)});
+document.getElementById("chips").innerHTML=FILTERS.map(([k,l])=>'<button class="chip'+(k===filter?" on":"")+'" data-k="'+k+'">'+l+'</button>').join("");
+document.querySelectorAll("#chips .chip").forEach(c=>c.onclick=()=>{filter=c.dataset.k;document.querySelectorAll("#chips .chip").forEach(x=>x.classList.toggle("on",x===c));state.fNear=state.fFar=0;render("fNear");render("fFar")});
+document.getElementById("when").innerHTML=WHENS.map(([k,l])=>'<button class="chip sm'+(k===when?" on":"")+'" data-w="'+k+'">'+l+'</button>').join("");
+document.querySelectorAll("#when .chip").forEach(c=>c.onclick=()=>{when=c.dataset.w;document.querySelectorAll("#when .chip").forEach(x=>x.classList.toggle("on",x===c));state.fNear=state.fFar=0;render("fNear");render("fFar")});
+window.addEventListener("resize",()=>{layout("fNear");if(list("fFar").length)layout("fFar")});
+
+/* ---------- ZUNE ---------- */
+const ZACC="#ec008c";
+function zfilms(){return DATA.films.map(f=>Object.assign({},f,{screenings:upcomingAll(f)})).filter(f=>f.screenings.length)}
+function upcomingAll(f){const now=new Date();return (f.screenings||[]).filter(x=>{if(!x.date)return true;return new Date(x.date+"T"+(x.time||"23:59")+":00")>=now})}
+function zpost(f,cls){return f.poster?'<img loading="lazy" src="'+esc(f.poster)+'" alt="">':'<div class="'+cls+'">'+esc(f.title)+'</div>'}
+function znext(f){const s=f.screenings[0];return s?(s.cinema+" · "+s.when).toLowerCase():""}
+function ztag(f){return f.match==="preferito"?"★ preferito":f.match==="watchlist"?"in watchlist":f.match==="visto"?"visto "+(f.stars||"")+"★":f.restored?"classico":""}
+function zitem(f){return '<div class="zitem" data-id="'+esc(f.id)+'"><div class="p">'+zpost(f,"ph2")+'</div><div class="tx"><div class="t1">'+esc(f.title)+'</div><div class="t2">'+esc((f.director||"")+(f.year?" · "+f.year:""))+'</div><div class="t3">'+esc([ztag(f),znext(f)].filter(Boolean).join(" — "))+'</div></div></div>'}
+function zgrid(list){return '<div class="zgrid">'+list.map(f=>'<div class="g" data-id="'+esc(f.id)+'">'+zpost(f,"ph2")+(f.match?'<i></i>':'')+'</div>').join("")+'</div>'}
+function zrender(){
+  const all=zfilms().sort((a,b)=>rank(a)-rank(b)),near=all.filter(f=>f.near),today=ymd(new Date());
+  const mine=all.filter(f=>f.match);
+  const tonight=near.filter(f=>f.screenings.some(s=>s.date===today)).map(f=>Object.assign({},f,{screenings:f.screenings.filter(s=>s.date===today)}));
+  const classics=all.filter(f=>f.restored);
+  const byCin={};near.forEach(f=>f.screenings.forEach(s=>{(byCin[s.cinema]=byCin[s.cinema]||new Set()).add(f.id)}));
+  const idx=Object.fromEntries(all.map(f=>[f.id,f]));
+  const pages=[
+    ['per <span>te</span>', mine.length?mine.map(zitem).join(""):'<div class="zempty">niente dalla tua lista questa settimana.</div>'],
+    ['stasera', tonight.length?tonight.map(zitem).join(""):'<div class="zempty">niente stasera nei tuoi cinema.</div>'],
+    ['in sala', zgrid(near)],
+    ['cinema', Object.keys(byCin).sort().map(c=>'<div class="zcin">'+esc(c.toLowerCase())+'</div>'+[...byCin[c]].map(id=>zitem(Object.assign({},idx[id],{screenings:idx[id].screenings.filter(s=>s.cinema===c)}))).join("")).join("")],
+    ['classici', classics.length?classics.map(zitem).join(""):'<div class="zempty">nessun classico.</div>'],
+    ['più lontani', zgrid(all.filter(f=>!f.near))]
+  ];
+  const pano=document.getElementById("zpano");
+  pano.innerHTML=pages.map(([h,b])=>'<section class="zpage"><h2>'+h+'</h2>'+b+'</section>').join("");
+  pano.querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>zdetail(idx[el.dataset.id]));
+  const bg=document.getElementById("zbg");
+  pano.onscroll=()=>{bg.style.transform="translateX("+(-pano.scrollLeft*0.35)+"px)"};
+}
+function zdetail(f){
+  const d=document.getElementById("zdet");
+  const meta=[["regia",f.director],["anno",f.year],["titolo originale",f.original_title&&f.original_title!==f.title?f.original_title:""],["lingua",f.vo?"versione originale":""]].filter(x=>x[1]);
+  d.innerHTML='<div class="back" id="zback">‹ indietro</div><h1>'+esc(f.title)+'</h1><div class="badges">'+esc([ztag(f),f.vo?"v.o.":""].filter(Boolean).join(" · "))+'</div>'+
+   '<div class="hero">'+(f.poster?'<img src="'+esc(f.poster)+'" alt="">':'<div class="ph2"></div>')+'<div class="meta">'+meta.map(([k,v])=>'<div class="k">'+k+'</div><div class="v">'+esc(v)+'</div>').join("")+'</div></div>'+
+   '<div class="sh">'+f.screenings.map(s=>{const c=calUrl(f,s);return '<div class="r"><span><b>'+esc(s.cinema.toLowerCase())+'</b><br>'+esc(s.when)+'</span>'+(c?'<a href="'+esc(c)+'">+ calendario</a>':'')+'</div>'}).join("")+'</div>'+
+   '<div class="zl"><a href="https://www.youtube.com/results?search_query='+encodeURIComponent((f.original_title||f.title)+" "+(f.year||"")+" trailer")+'">trailer</a><a href="'+esc(f.letterboxd||("https://letterboxd.com/search/films/"+encodeURIComponent(f.original_title||f.title)+"/"))+'">letterboxd</a></div>';
+  d.classList.add("on");d.scrollTop=0;
+  document.getElementById("zback").onclick=()=>d.classList.remove("on");
+}
+function setView(v){document.body.classList.toggle("zune",v==="zune");document.getElementById("vt").textContent=v==="zune"?"cover flow":"stile zune";try{localStorage.setItem("view",v)}catch(e){}
+  if(v==="zune")zrender();else{render("fNear");render("fFar")}}
+document.getElementById("vt").onclick=()=>setView(document.body.classList.contains("zune")?"flow":"zune");
+fetch("data.json").then(r=>r.json()).then(d=>{DATA=d;document.getElementById("sub").textContent=(d.week||"")+" · aggiornato "+(d.updated||"");render("fNear");render("fFar");let v="flow";try{v=localStorage.getItem("view")||"flow"}catch(e){}if(v==="zune")setView("zune")}).catch(()=>{document.getElementById("sub").textContent="Dati non disponibili"});
+</script>
+</body>
+</html>
