@@ -52,7 +52,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .loc button { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; letter-spacing: inherit; font: inherit; text-transform: inherit; }
 .tabs { display: flex; justify-content: center; gap: 22px; margin-top: 16px; }
 .tabs button { padding: 6px 0 5px; border-bottom: 1.5px solid transparent; }
-.tabs button[aria-selected="true"] { border-bottom-color: var(--red); color: var(--red-ink); }
+.tabs button[aria-pressed="true"] { border-bottom-color: var(--red); color: var(--red-ink); }
 
 .banner {
   margin: 14px auto 0; max-width: 360px; padding: 7px 12px; border: 1px solid var(--navy);
@@ -60,7 +60,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 /* Cover Flow */
-.flow { position: relative; height: 330px; perspective: 900px; margin-top: 10px; touch-action: pan-y; user-select: none; }
+.flow { position: relative; height: 330px; perspective: 900px; margin: 10px -30px 0; overflow-x: clip; overflow-y: visible; touch-action: pan-y; user-select: none; }
 .cov {
   position: absolute; left: 50%; top: 14px; width: 180px; aspect-ratio: 2 / 3; margin-left: -90px;
   transition: transform 0.5s var(--ease), filter 0.5s var(--ease), opacity 0.5s var(--ease);

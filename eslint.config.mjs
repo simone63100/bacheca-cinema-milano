@@ -25,6 +25,7 @@ const eslintConfig = [
       "playwright-report/**",
       "test-results/**",
       "cloudflare-env.d.ts",
+      ".neon-build/**",
     ],
   },
 ];

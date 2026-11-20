@@ -33,7 +33,7 @@ function Poster({ f, eager }: { f: BoardFilm; eager?: boolean }) {
 export function BoardView({ board }: { board: Board }) {
   const { place, setPlace, locate, asking, denied } = usePlace();
   const [tab, setTab] = useState<Tab>("perte");
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(2);
   const [editing, setEditing] = useState(false);
   const [now, setNow] = useState(() => new Date(board.generatedAt));
   useEffect(() => setNow(new Date()), []);
@@ -42,11 +42,13 @@ export function BoardView({ board }: { board: Board }) {
   const near = useMemo(() => new Set<string>(halls.map((c) => c.id)), [halls]);
   const cinemaName = (id: string) => board.cinemas.find((c) => c.id === id)?.name ?? id;
 
-  const list = useMemo(
-    () => (tab === "perte" ? rankForYou(board.films, near, now) : tonight(board.films, near, now)).slice(0, 24),
-    [tab, board.films, near, now],
-  );
-  useEffect(() => setIdx(0), [tab, place.lat, place.lng, place.radiusKm]);
+  const list = useMemo(() => {
+    const ranked = (tab === "perte" ? rankForYou(board.films, near, now) : tonight(board.films, near, now)).slice(0, 24);
+    // symmetric composition (refs/bijoux.html): best film in the middle, runners-up on both sides
+    return ranked.length >= 3 ? [ranked[2], ranked[1], ranked[0], ...ranked.slice(3)] : ranked;
+  }, [tab, board.films, near, now]);
+  const startIdx = list.length >= 3 ? 2 : 0;
+  useEffect(() => setIdx(startIdx), [startIdx, tab, place.lat, place.lng, place.radiusKm]);
   const cur = list[Math.min(idx, Math.max(0, list.length - 1))];
 
   const move = (d: number) => setIdx((i) => Math.max(0, Math.min(list.length - 1, i + d)));
@@ -127,11 +129,11 @@ export function BoardView({ board }: { board: Board }) {
             {denied && <p className="lab">posizione non disponibile: scegli un quartiere</p>}
           </form>
         )}
-        <div className="tabs lab" role="tablist" aria-label="Selezione">
-          <button type="button" role="tab" aria-selected={tab === "perte"} onClick={() => setTab("perte")}>
+        <div className="tabs lab" role="group" aria-label="Selezione">
+          <button type="button" aria-pressed={tab === "perte"} onClick={() => setTab("perte")}>
             Per te
           </button>
-          <button type="button" role="tab" aria-selected={tab === "stasera"} onClick={() => setTab("stasera")}>
+          <button type="button" aria-pressed={tab === "stasera"} onClick={() => setTab("stasera")}>
             Stasera
           </button>
           <a className="lab" href="#per-sala" style={{ padding: "6px 0 5px", textDecoration: "none" }}>

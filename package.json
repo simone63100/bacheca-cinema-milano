@@ -15,9 +15,11 @@
     "preview": "opennextjs-cloudflare build && node scripts/patch-opennext-win.mjs && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && node scripts/patch-opennext-win.mjs && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
-    "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts"
+    "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts",
+    "screens": "tsx scripts/screens.mts && python scripts/compose.py"
   },
   "dependencies": {
+    "@neon/auth": "^0.8.2",
     "@neondatabase/serverless": "^1.2.1",
     "@opennextjs/cloudflare": "^1.20.17",
     "cheerio": "^1.2.0",
