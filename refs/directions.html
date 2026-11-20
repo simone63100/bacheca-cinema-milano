@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tre direzioni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Archivo+Narrow:wght@500;600&family=Big+Shoulders+Display:wght@600;800&family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#d9d6d0;font-family:system-ui,sans-serif;padding:32px 24px 60px;color:#1a1a1a}
+h1.page{font:600 15px system-ui;letter-spacing:.02em;margin-bottom:24px}
+.dir{margin-bottom:56px}
+.dir>h2{font:600 22px system-ui;margin-bottom:4px}
+.dir>p{font:400 14px/1.5 system-ui;max-width:760px;color:#444;margin-bottom:18px}
+.row{display:flex;gap:28px;flex-wrap:wrap}
+.phone{width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 60px rgba(0,0,0,.25),0 0 0 10px #111}
+.cap{font:500 12px system-ui;color:#555;margin-top:14px;text-align:center}
+.scr{height:100%;display:flex;flex-direction:column;position:relative}
+.flow{position:relative;height:330px;perspective:900px;margin-top:6px}
+.cov{position:absolute;left:50%;top:10px;width:190px;aspect-ratio:2/3;margin-left:-95px}
+.cov img{width:100%;height:100%;object-fit:cover;display:block}
+.c0{transform:translateZ(40px);z-index:5}
+.c1{transform:translateX(150px) rotateY(-58deg) translateZ(-40px);z-index:4}
+.c2{transform:translateX(205px) rotateY(-58deg) translateZ(-90px);z-index:3}
+.cm1{transform:translateX(-150px) rotateY(58deg) translateZ(-40px);z-index:4}
+.cm2{transform:translateX(-205px) rotateY(58deg) translateZ(-90px);z-index:3}
+.cov:not(.c0) img{filter:brightness(.5)}
+.sheet{position:absolute;inset:0;display:flex;flex-direction:column}
+.bd{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(28px) brightness(.45);transform:scale(1.2)}
+
+/* ---------- A · SALA BUIA ---------- */
+.a{background:#140f0d;color:#efe6dc;font-family:"Hanken Grotesk",sans-serif}
+.a .top{padding:58px 24px 0;display:flex;justify-content:space-between;align-items:baseline}
+.a .logo{font:italic 400 30px "Instrument Serif",serif;letter-spacing:-.01em}
+.a .loc{font-size:13px;color:#a8988a}
+.a .loc b{color:#efe6dc;font-weight:500}
+.a .tabs{display:flex;gap:22px;padding:18px 24px 0;font-size:15px;color:#8f8073}
+.a .tabs .on{color:#efe6dc;border-bottom:1px solid #c0352b;padding-bottom:6px}
+.a .cov img{border-radius:2px;box-shadow:0 24px 50px rgba(0,0,0,.7)}
+.a .floor{position:absolute;left:0;right:0;top:300px;height:30px;background:linear-gradient(#140f0d00,#140f0d)}
+.a .info{text-align:center;padding:0 28px}
+.a .info .t{font:400 40px/1 "Instrument Serif",serif}
+.a .info .m{font-size:14px;color:#a8988a;margin-top:8px}
+.a .info .tag{display:inline-block;margin-top:14px;font-size:12px;color:#e8a49e;border-bottom:1px solid #c0352b}
+.a .next{margin:22px 24px 0;border-top:1px solid #2c2320;padding-top:14px;display:flex;justify-content:space-between;font-size:15px}
+.a .next span{color:#a8988a}
+.a .tap{text-align:center;font-size:12px;color:#6f6157;margin-top:16px}
+.a .sh{position:relative;z-index:1;padding:58px 24px 24px;height:100%;overflow:hidden}
+.a .sh .back{font-size:14px;color:#a8988a}
+.a .sh .hd{display:flex;gap:16px;margin-top:22px}
+.a .sh .hd img{width:110px;aspect-ratio:2/3;object-fit:cover;border-radius:2px}
+.a .sh h3{font:400 44px/1 "Instrument Serif",serif}
+.a .sh .m{font-size:14px;color:#c9b9ab;margin-top:8px;line-height:1.5}
+.a .sh .tag{font-size:12px;color:#e8a49e;margin-top:10px}
+.a .grp{margin-top:26px}
+.a .grp .cn{display:flex;justify-content:space-between;font:italic 400 24px "Instrument Serif",serif;border-bottom:1px solid #3a2e29;padding-bottom:6px}
+.a .grp .cn span{font:400 13px "Hanken Grotesk";color:#a8988a;font-style:normal;align-self:end}
+.a .sl{display:flex;justify-content:space-between;padding:11px 0;font-size:15px;border-bottom:1px solid #241c19;font-variant-numeric:tabular-nums}
+.a .sl i{font-style:normal;color:#e8a49e;font-size:12px;margin-left:6px}
+.a .sl a{color:#a8988a;font-size:13px;text-decoration:none}
+.a .acts{display:flex;gap:10px;margin-top:22px}
+.a .acts a{flex:1;text-align:center;padding:13px 0;font-size:14px;border:1px solid #4a3b34;color:#efe6dc;text-decoration:none}
+.a .acts a.p{background:#b3261e;border-color:#b3261e}
+
+/* ---------- B · ARCHIVIO ---------- */
+.b{background:#ecebe6;color:#151515;font-family:"Newsreader",serif}
+.b .top{padding:56px 22px 12px;border-bottom:1px solid #151515;display:flex;justify-content:space-between;align-items:end}
+.b .logo{font:500 26px/1 "Newsreader",serif;letter-spacing:-.01em}
+.b .lab{font:600 11px "Archivo Narrow",sans-serif;text-transform:uppercase;letter-spacing:.08em}
+.b .loc{font:600 11px "Archivo Narrow";text-transform:uppercase;letter-spacing:.08em;color:#2643c4}
+.b .tabs{display:flex;border-bottom:1px solid #151515}
+.b .tabs div{flex:1;text-align:center;padding:10px 0;font:600 12px "Archivo Narrow";text-transform:uppercase;letter-spacing:.08em;border-right:1px solid #151515}
+.b .tabs div:last-child{border-right:0}
+.b .tabs .on{background:#151515;color:#ecebe6}
+.b .cov img{outline:1px solid #151515;outline-offset:4px;background:#ecebe6}
+.b .cov:not(.c0) img{filter:grayscale(1) contrast(.9) brightness(.85)}
+.b .info{padding:6px 22px 0}
+.b .info .t{font:400 36px/1.02 "Newsreader",serif;letter-spacing:-.015em}
+.b .info .m{font:italic 400 16px "Newsreader";color:#4a4a46;margin-top:6px}
+.b .stamps{display:flex;gap:6px;margin-top:12px}
+.b .stamp{font:600 11px "Archivo Narrow";text-transform:uppercase;letter-spacing:.06em;border:1px solid #2643c4;color:#2643c4;padding:3px 6px}
+.b .stamp.f{background:#2643c4;color:#ecebe6}
+.b .next{margin:18px 22px 0;border-top:1px solid #151515;padding-top:10px;font-size:16px;display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;font-variant-numeric:tabular-nums}
+.b .next .k{font:600 11px "Archivo Narrow";text-transform:uppercase;letter-spacing:.08em;align-self:center}
+.b .sh{padding:56px 22px 22px;height:100%;overflow:hidden}
+.b .sh .back{font:600 11px "Archivo Narrow";text-transform:uppercase;letter-spacing:.08em}
+.b .sh .card{margin-top:16px;border:1px solid #151515;display:grid;grid-template-columns:120px 1fr}
+.b .sh .card img{width:120px;aspect-ratio:2/3;object-fit:cover;border-right:1px solid #151515;display:block}
+.b .sh .card .r{padding:12px}
+.b .sh h3{font:400 30px/1.02 "Newsreader",serif}
+.b .sh .m{font:italic 15px/1.45 "Newsreader";color:#4a4a46;margin-top:6px}
+.b .tbl{margin-top:20px;border-top:1px solid #151515}
+.b .tbl .cn{display:flex;justify-content:space-between;padding:10px 0 4px;font:600 12px "Archivo Narrow";text-transform:uppercase;letter-spacing:.08em}
+.b .tbl .cn span{color:#2643c4}
+.b .tbl .sl{display:grid;grid-template-columns:90px 60px 1fr;padding:8px 0;border-bottom:1px dotted #8a8984;font-size:16px;font-variant-numeric:tabular-nums}
+.b .tbl .sl i{font:600 11px "Archivo Narrow";text-transform:uppercase;color:#2643c4;font-style:normal;align-self:center}
+.b .acts{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:20px;border:1px solid #151515}
+.b .acts a{text-align:center;padding:12px 0;font:600 12px "Archivo Narrow";text-transform:uppercase;letter-spacing:.08em;color:#151515;text-decoration:none;border-right:1px solid #151515}
+.b .acts a:last-child{border-right:0}
+.b .acts a.p{background:#2643c4;color:#ecebe6}
+
+/* ---------- C · INSEGNA ---------- */
+.c{background:#0b0a09;color:#f3efe6;font-family:"Work Sans",sans-serif}
+.c .top{padding:56px 22px 0}
+.c .logo{font:800 34px/0.9 "Big Shoulders Display",sans-serif;text-transform:uppercase;letter-spacing:.01em;color:#ffb000;text-shadow:0 0 18px rgba(255,176,0,.45)}
+.c .loc{font-size:13px;color:#9b958a;margin-top:8px}
+.c .loc b{color:#f3efe6;font-weight:500}
+.c .days{display:flex;gap:6px;padding:16px 22px 0}
+.c .days div{border:1px solid #2d2a25;padding:7px 10px;font:600 15px "Big Shoulders Display";text-transform:uppercase;letter-spacing:.04em;color:#9b958a}
+.c .days .on{border-color:#ffb000;color:#ffb000}
+.c .cov img{border-radius:0}
+.c .c0 img{box-shadow:0 0 0 1px #ffb00055,0 0 40px rgba(255,176,0,.18)}
+.c .info{padding:0 22px;text-align:center}
+.c .info .t{font:800 42px/0.95 "Big Shoulders Display";text-transform:uppercase}
+.c .info .m{font-size:14px;color:#9b958a;margin-top:8px}
+.c .board{margin:18px 22px 0;background:#141310;border:1px solid #2d2a25;padding:10px 12px}
+.c .board .sl{display:flex;justify-content:space-between;font:600 19px "Big Shoulders Display";text-transform:uppercase;letter-spacing:.04em;padding:3px 0;font-variant-numeric:tabular-nums}
+.c .board .sl b{color:#ffb000;font-weight:600}
+.c .sh{position:relative;z-index:1;padding:56px 22px 22px;height:100%;overflow:hidden}
+.c .sh .back{font-size:14px;color:#9b958a}
+.c .sh h3{font:800 54px/0.9 "Big Shoulders Display";text-transform:uppercase;margin-top:20px}
+.c .sh .m{font-size:14px;color:#c8c2b6;margin-top:10px}
+.c .sh .pills{display:flex;gap:6px;margin-top:12px}
+.c .sh .pills span{font:600 13px "Big Shoulders Display";text-transform:uppercase;letter-spacing:.06em;color:#0b0a09;background:#ffb000;padding:3px 7px}
+.c .sh .board{margin:22px 0 0}
+.c .sh .board .cn{font:800 22px "Big Shoulders Display";text-transform:uppercase;color:#ffb000;margin-top:6px;display:flex;justify-content:space-between}
+.c .sh .board .cn span{font:400 13px "Work Sans";color:#9b958a;text-transform:none;align-self:end}
+.c .acts{display:flex;gap:8px;margin-top:18px}
+.c .acts a{flex:1;text-align:center;padding:13px 0;font:600 17px "Big Shoulders Display";text-transform:uppercase;letter-spacing:.05em;border:1px solid #3a362f;color:#f3efe6;text-decoration:none}
+.c .acts a.p{background:#ffb000;color:#0b0a09;border-color:#ffb000}
+</style>
+</head>
+<body>
+<h1 class="page">Bacheca cinema Milano: tre direzioni (home con Cover Flow e scheda film)</h1>
+
+<!-- A -->
+<section class="dir">
+<h2>A · Sala buia</h2>
+<p>Il momento prima che parta il film: nero caldo (non nero puro), un solo rosso sipario per l'azione principale, titoli in serif corsivo come un titolo di testa. Gli orari stanno in righe semplici, con l'indicazione v.o. in rosso tenue. È la più "atmosfera".</p>
+<div class="row">
+ <div><div class="phone a"><div class="scr">
+  <div class="top"><div class="logo">In sala</div><div class="loc">entro <b>5 km</b> · Porta Venezia</div></div>
+  <div class="tabs"><div class="on">Per te</div><div>Stasera</div><div>Per sala</div></div>
+  <div class="flow">
+   <div class="cov cm2"><img src="../posters/mustang.jpg" alt=""></div>
+   <div class="cov cm1"><img src="../posters/2001-odissea-nello-spazio.jpg" alt=""></div>
+   <div class="cov c0"><img src="../posters/fjord.jpg" alt=""></div>
+   <div class="cov c1"><img src="../posters/la-caduta-degli-dei.jpg" alt=""></div>
+   <div class="cov c2"><img src="../posters/gli-spietati.jpg" alt=""></div>
+   <div class="floor"></div>
+  </div>
+  <div class="info"><div class="t">Fjord</div><div class="m">Cristian Mungiu · 2026 · v.o.</div><div class="tag">nella tua watchlist · ultime 3 sere</div></div>
+  <div class="next"><span>prossimo</span>Godard · gio 20:45</div>
+  <div class="tap">tocca la copertina per gli orari</div>
+ </div></div><div class="cap">home</div></div>
+ <div><div class="phone a"><div class="sheet"><div class="bd" style="background-image:url(../posters/fjord.jpg)"></div>
+  <div class="sh">
+   <div class="back">‹ indietro</div>
+   <div class="hd"><img src="../posters/fjord.jpg" alt=""><div><h3>Fjord</h3><div class="m">Cristian Mungiu<br>2026 · 145 min</div><div class="tag">watchlist · v.o. sottotitolata</div></div></div>
+   <div class="grp"><div class="cn">Cinema Godard <span>1,2 km</span></div>
+    <div class="sl"><span>gio 19 · 20:45<i>v.o.</i></span><a href="#">+ calendario</a></div>
+    <div class="sl"><span>ven 20 · 20:30<i>v.o.</i></span><a href="#">+ calendario</a></div></div>
+   <div class="grp"><div class="cn">Palestrina <span>2,8 km</span></div>
+    <div class="sl"><span>ven 20 · 18:00</span><a href="#">+ calendario</a></div>
+    <div class="sl"><span>lun 23 · 21:00<i>v.o.</i></span><a href="#">+ calendario</a></div></div>
+   <div class="acts"><a class="p" href="#">Biglietti</a><a href="#">Trailer</a><a href="#">Letterboxd</a></div>
+  </div></div></div><div class="cap">scheda film</div></div>
+</div>
+</section>
+
+<!-- B -->
+<section class="dir">
+<h2>B · Archivio</h2>
+<p>La scheda di una cineteca: carta grigio-calda, inchiostro, filetti sottili e un blu timbro usato solo per le etichette (v.o., restauro, watchlist) e per l'azione principale. Serif da rivista per i titoli, etichette condensate. Gli orari sono una tabella vera. È la più leggibile e quella che ricorda meno un'app di streaming.</p>
+<div class="row">
+ <div><div class="phone b"><div class="scr">
+  <div class="top"><div><div class="logo">In sala a Milano</div><div class="loc" style="margin-top:6px">5 km · Porta Venezia</div></div><div class="lab">gio 19 nov</div></div>
+  <div class="tabs"><div class="on">Per te</div><div>Stasera</div><div>Per sala</div></div>
+  <div class="flow">
+   <div class="cov cm2"><img src="../posters/mustang.jpg" alt=""></div>
+   <div class="cov cm1"><img src="../posters/2001-odissea-nello-spazio.jpg" alt=""></div>
+   <div class="cov c0"><img src="../posters/fjord.jpg" alt=""></div>
+   <div class="cov c1"><img src="../posters/la-caduta-degli-dei.jpg" alt=""></div>
+   <div class="cov c2"><img src="../posters/gli-spietati.jpg" alt=""></div>
+  </div>
+  <div class="info"><div class="t">Fjord</div><div class="m">di Cristian Mungiu, 2026</div><div class="stamps"><span class="stamp f">Watchlist</span><span class="stamp">V.O.</span><span class="stamp">Ultimi giorni</span></div></div>
+  <div class="next"><span class="k">Prossimo</span><span>Cinema Godard</span><span>gio 20:45</span></div>
+ </div></div><div class="cap">home</div></div>
+ <div><div class="phone b"><div class="scr">
+  <div class="sh">
+   <div class="back">‹ Torna alla bacheca</div>
+   <div class="card"><img src="../posters/fjord.jpg" alt=""><div class="r"><h3>Fjord</h3><div class="m">Cristian Mungiu<br>Romania · 2026 · 145′</div><div class="stamps"><span class="stamp f">Watchlist</span><span class="stamp">V.O.</span></div></div></div>
+   <div class="tbl">
+    <div class="cn">Cinema Godard <span>1,2 km</span></div>
+    <div class="sl"><span>gio 19</span><span>20:45</span><i>v.o.</i></div>
+    <div class="sl"><span>ven 20</span><span>20:30</span><i>v.o.</i></div>
+    <div class="cn">Palestrina <span>2,8 km</span></div>
+    <div class="sl"><span>ven 20</span><span>18:00</span><i></i></div>
+    <div class="sl"><span>lun 23</span><span>21:00</span><i>v.o.</i></div>
+   </div>
+   <div class="acts"><a class="p" href="#">Biglietti</a><a href="#">Trailer</a><a href="#">Letterboxd</a></div>
+  </div></div></div><div class="cap">scheda film</div></div>
+</div>
+</section>
+
+<!-- C -->
+<section class="dir">
+<h2>C · Insegna</h2>
+<p>Il tabellone luminoso fuori dalla sala: lettere condensate maiuscole come un'insegna a lettere mobili, un ambra "lampadina" con un leggero alone. Gli orari compaiono come un tabellone di sala. È la più riconoscibile e quella col carattere più forte, ma anche la più rumorosa.</p>
+<div class="row">
+ <div><div class="phone c"><div class="scr">
+  <div class="top"><div class="logo">In sala<br>a Milano</div><div class="loc">entro <b>5 km</b> · Porta Venezia</div></div>
+  <div class="days"><div class="on">Per te</div><div>Stasera</div><div>Weekend</div><div>Per sala</div></div>
+  <div class="flow">
+   <div class="cov cm2"><img src="../posters/mustang.jpg" alt=""></div>
+   <div class="cov cm1"><img src="../posters/2001-odissea-nello-spazio.jpg" alt=""></div>
+   <div class="cov c0"><img src="../posters/fjord.jpg" alt=""></div>
+   <div class="cov c1"><img src="../posters/la-caduta-degli-dei.jpg" alt=""></div>
+   <div class="cov c2"><img src="../posters/gli-spietati.jpg" alt=""></div>
+  </div>
+  <div class="info"><div class="t">Fjord</div><div class="m">Cristian Mungiu · 2026 · v.o.</div></div>
+  <div class="board"><div class="sl"><span>Godard</span><b>gio 20:45</b></div><div class="sl"><span>Palestrina</span><b>ven 18:00</b></div></div>
+ </div></div><div class="cap">home</div></div>
+ <div><div class="phone c"><div class="sheet"><div class="bd" style="background-image:url(../posters/fjord.jpg)"></div>
+  <div class="sh">
+   <div class="back">‹ indietro</div>
+   <h3>Fjord</h3>
+   <div class="m">Cristian Mungiu · 2026 · 145 min</div>
+   <div class="pills"><span>Watchlist</span><span>V.O.</span></div>
+   <div class="board">
+    <div class="cn">Godard <span>1,2 km</span></div>
+    <div class="sl"><span>gio 19</span><b>20:45</b></div>
+    <div class="sl"><span>ven 20</span><b>20:30</b></div>
+    <div class="cn">Palestrina <span>2,8 km</span></div>
+    <div class="sl"><span>ven 20</span><b>18:00</b></div>
+    <div class="sl"><span>lun 23</span><b>21:00</b></div>
+   </div>
+   <div class="acts"><a class="p" href="#">Biglietti</a><a href="#">Trailer</a><a href="#">Letterboxd</a></div>
+  </div></div></div><div class="cap">scheda film</div></div>
+</div>
+</section>
+</body>
+</html>
