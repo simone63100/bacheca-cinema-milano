@@ -1,0 +1,508 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ZContent.net//ZapCalLib 1.0//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Cinema Beltrade
+X-WR-CALDESC:Programmazione Cinema Beltrade
+X-APPLE-CALENDAR-COLOR:#16A765
+COLOR:turquoise
+X-WR-TIMEZONE:Europe/Rome
+REFRESH-INTERVAL;VALUE=DURATION:P12H
+SOURCE;VALUE=URI:https://bandhi.it/bah/beltrade/wp-content/uploads/sites/2/
+ beltrade.ics
+BEGIN:VEVENT
+SUMMARY:LOOK BACK
+DTSTART;TZID=Europe/Rome:20261120T104000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35084/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/look-back/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:WILD HORSE NINE
+DTSTART;TZID=Europe/Rome:20261120T122000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35079/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/wild-horse-nine/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:FATHERLAND
+DTSTART;TZID=Europe/Rome:20261120T142000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35083/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/fatherland/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:POSSIBLE LOVE
+DTSTART;TZID=Europe/Rome:20261120T155000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35081/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/possible-love/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:FJORD
+DTSTART;TZID=Europe/Rome:20261120T185000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35077/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/fjord/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:L'ESSERE AMATO
+DTSTART;TZID=Europe/Rome:20261120T213000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35068/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/lessere-amato/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:TWIN PEAKS – STAG. 03 EP 15 e 16
+DTSTART;TZID=Europe/Rome:20261120T235000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/34681/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/twin-peaks-stag-03-ep-15-e-16
+ /
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:IL GATTO COL CAPPELLO
+DTSTART;TZID=Europe/Rome:20261121T104000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35074/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/il-gatto-col-cappello/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:IL CANTO DELLA FORESTA
+DTSTART;TZID=Europe/Rome:20261121T124000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35075/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/il-canto-della-foresta/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:L'ESSERE AMATO
+DTSTART;TZID=Europe/Rome:20261121T142000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35076/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/lessere-amato/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:FJORD
+DTSTART;TZID=Europe/Rome:20261121T165000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35078/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/fjord/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:WILD HORSE NINE
+DTSTART;TZID=Europe/Rome:20261121T193000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35080/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/wild-horse-nine/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:LOOK BACK
+DTSTART;TZID=Europe/Rome:20261121T214000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35082/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/look-back/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:ANIMAZIONE IN CORTO - IV ed.
+DTSTART;TZID=Europe/Rome:20261122T104000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/34916/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/animazione-in-corto-4/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Minotaur
+DTSTART;TZID=Europe/Rome:20261122T122000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35088/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/minotaur/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:IL CANTO DELLA FORESTA
+DTSTART;TZID=Europe/Rome:20261122T145000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35085/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/il-canto-della-foresta/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:FATHERLAND
+DTSTART;TZID=Europe/Rome:20261122T163000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35089/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/fatherland/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:L'ESSERE AMATO
+DTSTART;TZID=Europe/Rome:20261122T180000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35090/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/lessere-amato/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:FJORD
+DTSTART;TZID=Europe/Rome:20261122T203000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35086/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/fjord/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:L'ESTRANEA
+DTSTART;TZID=Europe/Rome:20261122T230000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35087/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/lestranea/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:L'ESSERE AMATO
+DTSTART;TZID=Europe/Rome:20261123T113000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35093/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/lessere-amato/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:POSSIBLE LOVE
+DTSTART;TZID=Europe/Rome:20261123T140000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35094/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/possible-love/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:FJORD
+DTSTART;TZID=Europe/Rome:20261123T170000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35095/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/fjord/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:LOOK BACK
+DTSTART;TZID=Europe/Rome:20261123T194000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35097/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/look-back/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:WILD HORSE NINE
+DTSTART;TZID=Europe/Rome:20261123T213000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35096/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/wild-horse-nine/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:FJORD
+DTSTART;TZID=Europe/Rome:20261124T113000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35100/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/fjord/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:IL CANTO DELLA FORESTA
+DTSTART;TZID=Europe/Rome:20261124T140000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35102/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/il-canto-della-foresta/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Mustang
+DTSTART;TZID=Europe/Rome:20261124T154000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35103/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/mustang-2/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:WILD HORSE NINE
+DTSTART;TZID=Europe/Rome:20261124T173000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35105/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/wild-horse-nine/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:TWIN PEAKS – STAG. 03 EP 15 e 16
+DTSTART;TZID=Europe/Rome:20261124T193000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35106/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/twin-peaks-stag-03-ep-15-e-16
+ /
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:LOOK BACK
+DTSTART;TZID=Europe/Rome:20261124T214000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35098/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/look-back/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:LOOK BACK
+DTSTART;TZID=Europe/Rome:20261125T113000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35099/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/look-back/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Mustang
+DTSTART;TZID=Europe/Rome:20261125T131000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35104/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/mustang-2/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:FJORD
+DTSTART;TZID=Europe/Rome:20261125T150000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35101/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/fjord/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:L'ESSERE AMATO
+DTSTART;TZID=Europe/Rome:20261125T174000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35108/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/lessere-amato/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:LA RETE DELLA KEFIAH
+DTSTART;TZID=Europe/Rome:20261125T201000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/?post_type=wp_theatre_event&#038;p=35050
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/la-rete-della-kefiah/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Lorenzo - L'incredibile avventura di Jovanotti
+DTSTART;TZID=Europe/Rome:20261125T220000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/?post_type=wp_theatre_event&#038;p=34993
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/lorenzo/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:KEEP CALM
+DTSTART;TZID=Europe/Rome:20261126T060000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35045/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/keep-calm-2/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:LOOK BACK
+DTSTART;TZID=Europe/Rome:20261126T104000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35112/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/look-back/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:LA RICOMPARSA DELLE LUCCIOLE
+DTSTART;TZID=Europe/Rome:20261126T202000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/?post_type=wp_theatre_event&#038;p=35042
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/la-ricomparsa-delle-lucciole/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:KEEP CALM
+DTSTART;TZID=Europe/Rome:20261127T060000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35071/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/keep-calm-2/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:TWIN PEAKS – STAG. 03 EP 17 e 18
+DTSTART;TZID=Europe/Rome:20261127T235000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/?post_type=wp_theatre_event&#038;p=34683
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/twin-peaks-stag-03-ep-17-e-18
+ /
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:KEEP CALM
+DTSTART;TZID=Europe/Rome:20261128T060000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35115/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/keep-calm-2/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:IL GATTO COL CAPPELLO
+DTSTART;TZID=Europe/Rome:20261128T104000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35114/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/il-gatto-col-cappello/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:KEEP CALM
+DTSTART;TZID=Europe/Rome:20261201T060000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35059/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/keep-calm-2/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:INDOCILI #2 - WAKING HOURS
+DTSTART;TZID=Europe/Rome:20261201T220000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/?post_type=wp_theatre_event&#038;p=35055
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/indocili2-waking-hours/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:KEEP CALM
+DTSTART;TZID=Europe/Rome:20261204T060000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35111/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/keep-calm-2/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:GLI UCCELLI DEL MONTE QAF
+DTSTART;TZID=Europe/Rome:20261204T180000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35117/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/gli-uccelli-del-monte-qaf/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:COWARD
+DTSTART;TZID=Europe/Rome:20261204T214000
+DURATION:PT1H30M0S
+UID:https://bandhi.it/bah/beltrade/wp_theatre_event/35109/
+DTSTAMP:20261120T010804
+URL:https://bandhi.it/bah/beltrade/production/coward/
+ORGANIZER:mailto:info@cinemabeltrade.net
+LOCATION:Cinema Beltrade\nVia Nino Oxilia 10\, 20127 Milano\, Italia
+END:VEVENT
+END:VCALENDAR
+<br>
