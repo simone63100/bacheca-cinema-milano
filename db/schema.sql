@@ -93,3 +93,20 @@ CREATE TABLE IF NOT EXISTS alerts (
   sent_at     timestamptz NOT NULL DEFAULT now(),
   UNIQUE (kind, since_run)
 );
+
+-- Letterboxd entries as read (public profile or CSV), resolved daily against films in cinemas
+CREATE TABLE IF NOT EXISTS lb_entries (
+  user_id  text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  kind     text NOT NULL CHECK (kind IN ('watchlist', 'seen', 'favorite')),
+  name     text NOT NULL,
+  year     integer NOT NULL DEFAULT 0,
+  slug     text,
+  stars    numeric(2,1),
+  PRIMARY KEY (user_id, kind, name, year)
+);
+
+-- Letterboxd slug → TMDB id, read from the film page once
+CREATE TABLE IF NOT EXISTS lb_slugs (
+  slug     text PRIMARY KEY,
+  tmdb_id  integer
+);
