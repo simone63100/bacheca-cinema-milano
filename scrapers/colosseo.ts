@@ -13,6 +13,8 @@ export function parse(html: string, now: Date, pageUrl: string): Screening[] {
     const raw = f.find(".datiFilm .titolo").first().text();
     if (!raw.trim()) return;
     const { title, vo, special } = cleanTitle(raw);
+    const img = f.find(".locandina img").attr("src");
+    const poster = img ? new URL(img, pageUrl).toString() : undefined;
     const director = f.find(".regia").text().replace(/Regia:/i, "").trim() || undefined;
     f.find("ul.orari li.hours").each((_, li) => {
       const dm = $(li).find(".dayName").text().match(/(\d{1,2})\/(\d{1,2})/);
@@ -33,6 +35,7 @@ export function parse(html: string, now: Date, pageUrl: string): Screening[] {
             special,
             url: pageUrl,
             director,
+            poster,
           });
         });
     });

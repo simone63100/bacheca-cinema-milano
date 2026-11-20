@@ -1,0 +1,8 @@
+DATABASE_URL="postgresql://..."
+TMDB_TOKEN="tmdb v4 read access token"
+RESEND_API_KEY="re_..."
+ADMIN_EMAIL="admin alerts"
+MAIL_FROM="Bijoux <bijoux@your-domain>"
+NEON_AUTH_BASE_URL="https://ep-xxx.neonauth....neon.tech/neondb/auth"
+NEON_AUTH_COOKIE_SECRET="32+ random chars"
+CRON_SECRET="random string shared with the Neon Function"

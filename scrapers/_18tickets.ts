@@ -25,6 +25,7 @@ export function parse18tickets(html: string, cinemaId: CinemaId): Screening[] {
     const lang = opt("Lingua");
     const { title, vo, special } = cleanTitle(rawTitle);
     const director = opt("Regia") || undefined;
+    const poster = c.find(".movie__images img").attr("src") || undefined;
     const voFromLang = /sott|originale|v\.?o\b/i.test(lang) || (!!lang && !/^italiano$/i.test(lang));
     c.find("a[data-time]").each((_, a) => {
       const ms = Number($(a).attr("data-time"));
@@ -37,6 +38,7 @@ export function parse18tickets(html: string, cinemaId: CinemaId): Screening[] {
         special,
         url: $(a).attr("href") ?? "",
         director,
+        poster,
       });
     });
   });

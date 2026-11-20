@@ -39,4 +39,6 @@ export interface Screening {
   director?: string;
   year?: number;
   originalTitle?: string;
+  /** Poster published by the cinema, used when TMDB has none. */
+  poster?: string;
 }

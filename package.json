@@ -9,12 +9,13 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "scrape": "tsx scripts/scrape.ts",
-    "eval:match": "tsx scripts/eval-match.ts",
+    "scrape": "tsx --env-file-if-exists=.env.local scripts/scrape.ts",
+    "eval:match": "tsx --env-file-if-exists=.env.local scripts/eval-match.ts",
     "e2e": "playwright test",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.1",
