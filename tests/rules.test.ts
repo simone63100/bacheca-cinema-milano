@@ -50,6 +50,13 @@ describe("regole FOMO", () => {
     expect(hits.map((h) => h.rule)).toContain("watchlist_last");
   });
 
+  it("1. watchlist: una sala che pubblica solo l'oggi non fa scattare 'ultime sere' su una prima visione", () => {
+    const u = user({ lists: [{ tmdbId: 1001, kind: "watchlist" }] });
+    const partialCinemas = [{ ...cinemas[0], todayOnly: true }, cinemas[1]];
+    const hits = evaluateUser(u, [film(1)], [scr(1, 0.3), scr(1, 0.4)], partialCinemas, NOW);
+    expect(hits.map((h) => h.rule)).not.toContain("watchlist_last");
+  });
+
   it("2. visti ≥4★: scatta solo su restauro/proiezione speciale", () => {
     const u = user({ lists: [{ tmdbId: 1001, kind: "seen", stars: 4.5 }, { tmdbId: 1002, kind: "seen", stars: 4 }] });
     const screenings = [scr(1, 5, "near", true), scr(1, 6), scr(1, 7), scr(2, 5), scr(2, 6), scr(2, 7)];

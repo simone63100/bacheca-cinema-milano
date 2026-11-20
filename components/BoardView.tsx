@@ -163,6 +163,8 @@ export function BoardView({ board }: { board: Board }) {
               }
             }}
             onPointerUp={() => setTimeout(() => (drag.current = null), 0)}
+            onPointerCancel={() => (drag.current = null)}
+            onPointerLeave={() => (drag.current = null)}
             onKeyDown={(e) => {
               if (e.key === "ArrowRight") move(1);
               if (e.key === "ArrowLeft") move(-1);

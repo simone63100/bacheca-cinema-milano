@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { CINEMAS } from "./cinemas";
 import { q } from "./db";
 import { freshness, type FreshnessState } from "./freshness";
@@ -89,7 +90,32 @@ export async function loadBoard(now = new Date()): Promise<Board> {
   };
 }
 
-export async function loadFilm(id: number, now = new Date()): Promise<BoardFilm | null> {
-  const board = await loadBoard(now);
-  return board.films.find((f) => f.id === id) ?? null;
-}
+/** One film with its upcoming screenings; React cache() dedupes metadata + page in one request. */
+export const loadFilm = cache(async (id: number): Promise<BoardFilm | null> => {
+  const now = new Date().toISOString();
+  const [films, screenings] = await Promise.all([
+    q<{ id: string; tmdb_id: number | null; title: string; original_title: string | null; director: string | null; year: number | null; runtime: number | null; poster: string | null; trailer: string | null; tags: string[] }>(
+      "SELECT id, tmdb_id, title, original_title, director, year, runtime, poster, trailer, tags FROM films WHERE id = $1",
+      [id],
+    ),
+    q<{ cinema_id: string; starts_at: string; vo: boolean; special: boolean; url: string | null }>(
+      "SELECT cinema_id, starts_at, vo, special, url FROM screenings WHERE film_id = $1 AND starts_at > $2 ORDER BY starts_at",
+      [id, now],
+    ),
+  ]);
+  const f = films[0];
+  if (!f || !screenings.length) return null;
+  return {
+    id: Number(f.id),
+    tmdbId: f.tmdb_id,
+    title: f.title,
+    originalTitle: f.original_title,
+    director: f.director,
+    year: f.year,
+    runtime: f.runtime,
+    poster: f.poster,
+    trailer: f.trailer,
+    tags: f.tags,
+    screenings: screenings.map((s) => ({ cinemaId: s.cinema_id, startsAt: new Date(s.starts_at).toISOString(), vo: s.vo, special: s.special, url: s.url })),
+  };
+});

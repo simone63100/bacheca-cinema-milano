@@ -18,6 +18,11 @@ export interface TmdbDetails extends TmdbMovie {
 const BASE = "https://api.themoviedb.org/3";
 const cache = new Map<string, Promise<unknown>>();
 
+/** Called at the start of each daily run: the function process outlives a single run. */
+export function clearTmdbCache() {
+  cache.clear();
+}
+
 function token(): string {
   const t = process.env.TMDB_TOKEN;
   if (!t) throw new Error("TMDB_TOKEN mancante");

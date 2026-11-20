@@ -9,11 +9,11 @@ export const CINEMAS: Cinema[] = [
   { id: "citylife", name: "Anteo CityLife", lat: 45.4777, lng: 9.1563, url: "https://www.spaziocinema.info/", source: "https://citylife.spaziocinema.18tickets.it/" },
   { id: "colosseo", name: "Colosseo", lat: 45.4578, lng: 9.2049, url: "https://www.ilregnodelcinema.com/colosseo/", source: "https://www.ilregnodelcinema.com/colosseo/" },
   { id: "beltrade", name: "Beltrade", lat: 45.4972, lng: 9.2229, url: "https://bandhi.it/bah/beltrade/", source: "https://bandhi.it/bah/beltrade/wp-content/uploads/sites/2/beltrade.ics" },
-  { id: "arcobaleno", name: "Arcobaleno", lat: 45.4791, lng: 9.2056, url: "https://movieplayer.it/cinema/arcobaleno-filmcenter_759/", source: "https://movieplayer.it/cinema/arcobaleno-filmcenter_759/" },
+  { id: "arcobaleno", name: "Arcobaleno", lat: 45.4791, lng: 9.2056, url: "https://movieplayer.it/cinema/arcobaleno-filmcenter_759/", source: "https://movieplayer.it/cinema/arcobaleno-filmcenter_759/", todayOnly: true },
   { id: "cinemino", name: "Cinemino", lat: 45.4532, lng: 9.2081, url: "https://www.ilcinemino.it/programmazione/", source: "https://www.ilcinemino.it/programmazione/" },
   { id: "ariosto", name: "Ariosto", lat: 45.4693, lng: 9.1702, url: "https://www.spaziocinema.info/", source: "https://ariosto.spaziocinema.18tickets.it/" },
-  { id: "centrale", name: "Centrale", lat: 45.4609, lng: 9.1847, url: "https://movieplayer.it/cinema/centrale_767/", source: "https://movieplayer.it/cinema/centrale_767/" },
-  { id: "mexico", name: "Mexico", lat: 45.4529, lng: 9.1607, url: "https://movieplayer.it/cinema/mexico_780/", source: "https://movieplayer.it/cinema/mexico_780/" },
+  { id: "centrale", name: "Centrale", lat: 45.4609, lng: 9.1847, url: "https://movieplayer.it/cinema/centrale_767/", source: "https://movieplayer.it/cinema/centrale_767/", todayOnly: true },
+  { id: "mexico", name: "Mexico", lat: 45.4529, lng: 9.1607, url: "https://movieplayer.it/cinema/mexico_780/", source: "https://movieplayer.it/cinema/mexico_780/", todayOnly: true },
 ];
 
 export const cinemaById = (id: CinemaId): Cinema => {

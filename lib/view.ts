@@ -1,6 +1,9 @@
 /** Presentation helpers shared by server and client components. */
 import type { BoardFilm, BoardScreening } from "./board";
+import { CINEMAS } from "./cinemas";
 import { distanceKm, type LatLng } from "./geo";
+
+const TODAY_ONLY = new Set<string>(CINEMAS.filter((c) => c.todayOnly).map((c) => c.id));
 
 const TZ = "Europe/Rome";
 const dayKeyFmt = new Intl.DateTimeFormat("en-CA", { timeZone: TZ });
@@ -62,6 +65,8 @@ export function eveningsLeft(rows: BoardScreening[]): number {
 
 /** Urgency ribbon: only when the last screening is ≤3 days away. */
 export function ribbon(rows: BoardScreening[], now: Date, prefix?: string): string | null {
+  // today-only sources (movieplayer) cannot tell us a run is ending
+  rows = rows.filter((r) => !TODAY_ONLY.has(r.cinemaId));
   if (!rows.length) return null;
   const last = new Date(rows[rows.length - 1].startsAt);
   if (last.getTime() - now.getTime() > 3 * 86_400_000) return null;
@@ -81,7 +86,8 @@ export function rankForYou(films: BoardFilm[], near: Set<string>, now: Date) {
     .map((f) => ({ f, rows: nearScreenings(f, near, now) }))
     .filter((x) => x.rows.length > 0)
     .map((x) => {
-      const last = new Date(x.rows[x.rows.length - 1].startsAt).getTime();
+      const known = x.rows.filter((r) => !TODAY_ONLY.has(r.cinemaId));
+      const last = known.length ? new Date(known[known.length - 1].startsAt).getTime() : Infinity;
       const daysLeft = (last - now.getTime()) / 86_400_000;
       let score = 0;
       if (x.rows.length <= 2) score += 3;

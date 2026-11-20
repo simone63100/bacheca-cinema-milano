@@ -8,6 +8,7 @@ import { CINEMAS } from "../lib/cinemas";
 import { q } from "../lib/db";
 import { refreshLetterboxd } from "../lib/lbsync";
 import { renderFomoMail, sendMail } from "../lib/mail";
+import { clearTmdbCache } from "../lib/tmdb";
 import { runDaily } from "../lib/pipeline";
 import { scrape } from "../scrapers";
 
@@ -18,7 +19,8 @@ async function handle(request: Request): Promise<Response> {
   if (request.method !== "POST" || !(fromTrigger || manual)) return new Response("not found", { status: 404 });
 
   const now = new Date();
-  const site = process.env.SITE_URL ?? "";
+  const site = (process.env.SITE_URL ?? "https://bijoux.ing-albertodimaria.workers.dev").replace(/\/$/, "");
+  clearTmdbCache();
   const scraped = await Promise.all(
     CINEMAS.map(async (c) => {
       try {
@@ -40,7 +42,9 @@ async function handle(request: Request): Promise<Response> {
       await sendMail(u.email, m.subject, m.html, m.text);
     },
     alertAdmin: async (text) => {
-      if (process.env.ADMIN_EMAIL) await sendMail(process.env.ADMIN_EMAIL, "Bijoux: dati vecchi", `<p>${text}</p>`, text);
+      if (!process.env.ADMIN_EMAIL || !process.env.RESEND_API_KEY) return false;
+      await sendMail(process.env.ADMIN_EMAIL, "Bijoux: dati vecchi", `<p>${text}</p>`, text);
+      return true;
     },
   });
 

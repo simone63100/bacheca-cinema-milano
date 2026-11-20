@@ -63,9 +63,10 @@ export function evaluateUser(
   user: FomoUser,
   films: FomoFilm[],
   screenings: FomoScreening[],
-  cinemas: (LatLng & { id: string })[],
+  cinemas: (LatLng & { id: string; todayOnly?: boolean })[],
   now: Date,
 ): FomoHit[] {
+  const partial = new Set(cinemas.filter((c) => c.todayOnly).map((c) => c.id));
   if (user.lastMailAt && sameRomeDay(new Date(user.lastMailAt), now)) return [];
 
   const inRadius = new Set(cinemas.filter((c) => distanceKm(user, c) <= user.radiusKm).map((c) => c.id));
@@ -98,9 +99,11 @@ export function evaluateUser(
     const loved = mine.some((l) => l.kind === "favorite" || (l.kind === "seen" && (l.stars ?? 0) >= 4));
 
     if (onWatchlist) {
-      const last = near[near.length - 1];
-      const untilLast = new Date(last.startsAt).getTime() - now.getTime();
-      if (film.rerun || untilLast <= 3 * DAY) push("watchlist_last", near);
+      // a source that only lists today cannot tell us a run is ending
+      const known = near.filter((s) => !partial.has(s.cinemaId));
+      const last = known[known.length - 1];
+      const ending = !!last && new Date(last.startsAt).getTime() - now.getTime() <= 3 * DAY;
+      if (film.rerun || ending) push("watchlist_last", near);
     }
     if (loved) {
       const special = near.filter((s) => s.special);

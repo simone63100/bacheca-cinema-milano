@@ -134,7 +134,13 @@ export async function runFomo(now: Date, send: (userId: string, hits: ReturnType
     };
     const hits = evaluateUser(fu, films, screenings, CINEMAS, now);
     if (!hits.length) continue;
-    await send(u.id, hits, films);
+    try {
+      await send(u.id, hits, films);
+    } catch (e) {
+      // one bad address must not stop the others; no address in the log
+      console.error(`fomo: invio fallito per un utente: ${(e as Error).message}`);
+      continue;
+    }
     for (const h of hits) {
       await q("INSERT INTO notifications (user_id, film_id, rule, sent_at) VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING", [u.id, h.filmId, h.rule, now.toISOString()]);
     }
@@ -143,7 +149,8 @@ export async function runFomo(now: Date, send: (userId: string, hits: ReturnType
   return { users: users.length, mails };
 }
 
-export async function checkFreshness(now: Date, alert: (text: string) => Promise<void>) {
+/** `alert` returns true only when the message actually went out. */
+export async function checkFreshness(now: Date, alert: (text: string) => Promise<boolean>) {
   const last = await q<{ id: number; finished_at: string }>("SELECT id, finished_at FROM runs WHERE ok ORDER BY finished_at DESC LIMIT 1");
   const lastOk = last[0] ? { id: Number(last[0].id), finishedAt: new Date(last[0].finished_at).toISOString() } : null;
   const alerted = lastOk
@@ -151,8 +158,8 @@ export async function checkFreshness(now: Date, alert: (text: string) => Promise
     : await q<{ since_run: number }>("SELECT since_run FROM alerts WHERE kind = 'stale' AND since_run = 0");
   const state = freshness(lastOk, now, alerted.length ? Number(alerted[0].since_run) : null);
   if (state.alertAdmin) {
-    await alert(`Bijoux: ultimo aggiornamento riuscito ${state.label}. Il sito mostra il banner "${state.banner}".`);
-    await q("INSERT INTO alerts (kind, since_run) VALUES ('stale', $1) ON CONFLICT DO NOTHING", [lastOk?.id ?? 0]);
+    const sent = await alert(`Bijoux: ultimo aggiornamento riuscito ${state.label}. Il sito mostra il banner "${state.banner}".`);
+    if (sent) await q("INSERT INTO alerts (kind, since_run) VALUES ('stale', $1) ON CONFLICT DO NOTHING", [lastOk?.id ?? 0]);
   }
   return state;
 }
@@ -161,12 +168,13 @@ export async function runDaily(opts: {
   now?: Date;
   scraped: ScrapedCinema[];
   sendFomo?: Parameters<typeof runFomo>[1];
-  alertAdmin?: (text: string) => Promise<void>;
+  alertAdmin?: (text: string) => Promise<boolean>;
   refreshLetterboxd?: (now: Date) => Promise<void>;
 }) {
   const now = opts.now ?? new Date();
-  const runStart = new Date();
-  const [{ id: runId }] = await q<{ id: number }>("INSERT INTO runs (started_at) VALUES ($1) RETURNING id", [runStart.toISOString()]);
+  // run start from the DB clock: seen_at is written with the DB's now(), so both sides agree
+  const [{ id: runId, started_at }] = await q<{ id: number; started_at: string }>("INSERT INTO runs DEFAULT VALUES RETURNING id, started_at");
+  const runStart = new Date(started_at);
   const perCinema = Object.fromEntries(opts.scraped.map((s) => [s.cinemaId, s.error ? { n: 0, error: s.error } : { n: s.rows.length }]));
   const okCount = opts.scraped.filter((s) => !s.error && s.rows.length > 0).length;
   try {

@@ -26,6 +26,8 @@ export async function resolveUser(userId: string, films: ScreeningFilm[], opts: 
   const entries: LbEntry[] = rows.map((r) => ({ kind: r.kind, name: r.name, year: r.year || null, slug: r.slug, stars: r.stars == null ? null : Number(r.stars) }));
   const f = opts.fetchImpl ?? fetch;
   let fetched = 0;
+  // rebuilt from scratch: a film removed from Letterboxd must stop triggering mails
+  await q("DELETE FROM user_films WHERE user_id = $1", [userId]);
   for (const { entry, film } of likelyMatches(entries, films)) {
     let ok = false;
     if (entry.slug) {

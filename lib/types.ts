@@ -22,6 +22,8 @@ export interface Cinema {
   url: string;
   /** Page the scraper reads. */
   source: string;
+  /** Source lists only today's screenings: its "last screening" says nothing about the run. */
+  todayOnly?: boolean;
 }
 
 /** One screening as read from a cinema source, before TMDB matching. */
