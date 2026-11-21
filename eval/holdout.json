@@ -1,0 +1,20 @@
+{
+  "description": "Holdout: 15 titoli dalle stesse sale, mai usati per calibrare il matcher. Etichettati a mano sul regista, 2026-11-21.",
+  "items": [
+    { "title": "Mamma Roma", "director": "Pier Paolo Pasolini", "cinema": "mic", "tmdbId": 47796 },
+    { "title": "Andrej Rublev", "director": "Andrej Tarkovskij", "cinema": "arlecchino", "tmdbId": 895 },
+    { "title": "Uccellacci e Uccellini (Ed. Rest.)", "director": "Pier Paolo Pasolini", "cinema": "mic", "tmdbId": 33954 },
+    { "title": "L'Albero Degli Zoccoli (Ried.)", "director": "Ermanno Olmi", "cinema": "arlecchino", "tmdbId": 31542 },
+    { "title": "Nostra Signora dei Turchi", "director": "Carmelo Bene", "cinema": "mic", "tmdbId": 59048 },
+    { "title": "L'Imbalsamatore", "director": "Matteo Garrone", "cinema": "mic", "tmdbId": 35265 },
+    { "title": "Col cuore in gola", "director": "Tinto Brass", "cinema": "godard", "tmdbId": 81773 },
+    { "title": "Peppermint Candy", "director": "L. Chang Dong", "cinema": "anteo", "tmdbId": 41245 },
+    { "title": "Trainspotting", "director": "Danny Boyle", "cinema": "godard", "tmdbId": 627 },
+    { "title": "Ludwig", "director": "Luchino Visconti", "cinema": "arlecchino", "tmdbId": 3478 },
+    { "title": "Morte a Venezia", "director": "Luchino Visconti", "cinema": "arlecchino", "tmdbId": 6619 },
+    { "title": "Burning", "director": "Lee Chang Dong", "cinema": "anteo", "tmdbId": 491584 },
+    { "title": "Moonfleet", "director": "Fritz Lang", "cinema": "anteo", "tmdbId": 29967 },
+    { "title": "Lo Specchio", "director": "Andrej Tarkovskij", "cinema": "arlecchino", "tmdbId": 1396 },
+    { "title": "Get Shorty", "director": "Barry Sonnenfeld", "cinema": "arlecchino", "tmdbId": 8012 }
+  ]
+}

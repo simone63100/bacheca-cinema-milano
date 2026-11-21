@@ -16,7 +16,8 @@
     "deploy": "opennextjs-cloudflare build && node scripts/patch-opennext-win.mjs && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts",
-    "screens": "tsx scripts/screens.mts && python scripts/compose.py"
+    "screens": "tsx scripts/screens.mts && python scripts/compose.py",
+    "eval:holdout": "tsx --env-file-if-exists=.env.local scripts/eval-match.ts eval/holdout.json"
   },
   "dependencies": {
     "@neon/auth": "^0.8.2",

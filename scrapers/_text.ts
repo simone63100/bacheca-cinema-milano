@@ -3,25 +3,45 @@ const VO_PATTERNS = [
   /\bversione originale( con sottotitoli( in italiano)?)?/gi,
   /\blingua originale( sott\.? italiano)?/gi,
   /\|\s*film in [a-zà-ù]+/gi,
-  /\boriginale\b/gi,
 ];
 
-const SPECIAL_PATTERNS = [
-  /\banteprima\b\.?/gi,
-  /\bevento\b(\s*\d+)?/gi,
-  /\bospiti in sala\b/gi,
-  /\bregista in sala\b/gi,
-  /\bincontro\b/gi,
-  /\bintroduzione\b/gi,
-  /\brestaur(o|ato|ata|ati)\b/gi,
-  /\b(ried(\.|izione)?\s*\d{4})\b/gi,
-  /\bversione restaurata\b/gi,
-  /\bcinemino classics\b/gi,
-  /\blongtake film festival( \d{4})?\b/gi,
+/**
+ * Event tags are only stripped at the start or end of the printed title: "L'INCONTRO" or
+ * "Peccato originale" are titles, "ANTEPRIMA. EVENTO 10 FJORD" is a tag plus a title.
+ */
+const EDGE_PATTERNS = [
+  /anteprima/,
+  /evento(\s*\d+)?/,
+  /ospiti in sala/,
+  /regista in sala/,
+  /incontro/,
+  /introduzione/,
+  /versione restaurata/,
+  /restaur(o|ato|ata|ati)/,
+  /ried(\.|izione)?(\s*\d{4})?/,
+  /cinemino classics/,
+  /longtake film festival( \d{4})?/,
 ];
+
+function stripEdges(t: string): string {
+  for (let changed = true; changed; ) {
+    changed = false;
+    for (const p of EDGE_PATTERNS) {
+      // the tag must be a whole word bounded by spaces/separators: "L'INCONTRO" is not a tag
+      const head = new RegExp(`^\\s*(?:${p.source})(?:[\\s.:\\-–|]+|$)`, "i");
+      const tail = new RegExp(`[\\s.:\\-–|(]+(?:${p.source})\\.?\\)?\\s*$`, "i");
+      const next = t.replace(head, "").replace(tail, "");
+      if (next !== t && next.trim()) {
+        t = next;
+        changed = true;
+      }
+    }
+  }
+  return t;
+}
 
 const SPECIAL_HINT = /(anteprima|evento|ospit|regista in sala|incontro|introduzione|restaur|ried|classics|festival)/i;
-const VO_HINT = /(\bv\.?\s?o\b|versione originale|lingua originale|film in (inglese|francese|norvegese|spagnolo|tedesco|giapponese|coreano|[a-z]+ese)|sott\.? ?ita|\boriginale\b)/i;
+const VO_HINT = /(\bv\.?\s?o\b|versione originale|lingua originale|film in (inglese|francese|norvegese|spagnolo|tedesco|giapponese|coreano|[a-z]+ese)|sott\.? ?ita)/i;
 
 export function decodeEntities(s: string): string {
   return s
@@ -40,7 +60,8 @@ export function cleanTitle(raw: string): { title: string; vo: boolean; special: 
   let t = decodeEntities(raw).replace(/\s+/g, " ").trim();
   const vo = VO_HINT.test(t);
   const special = SPECIAL_HINT.test(t);
-  for (const p of [...VO_PATTERNS, ...SPECIAL_PATTERNS]) t = t.replace(p, " ");
+  for (const p of VO_PATTERNS) t = t.replace(p, " ");
+  t = stripEdges(t.replace(/\s+/g, " ").trim());
   t = t.replace(/^\s*new!\s*/i, "").replace(/\[\s*\d{4}\s*\]/g, " ");
   t = t
     .replace(/\(\s*\)/g, " ")

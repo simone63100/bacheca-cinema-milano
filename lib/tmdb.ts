@@ -7,6 +7,8 @@ export interface TmdbMovie {
   release_date?: string;
   poster_path?: string | null;
   vote_count?: number;
+  /** English title, when the candidate also came back from an en-US search. */
+  title_en?: string;
 }
 
 export interface TmdbDetails extends TmdbMovie {
@@ -46,11 +48,11 @@ async function get<T>(path: string, params: Record<string, string | number | und
 }
 
 export const tmdb = {
-  async search(query: string, year?: number): Promise<TmdbMovie[]> {
+  async search(query: string, year?: number, language: "it-IT" | "en-US" = "it-IT"): Promise<TmdbMovie[]> {
     const r = await get<{ results: TmdbMovie[] }>("/search/movie", {
       query,
-      language: "it-IT",
-      region: "IT",
+      language,
+      region: language === "it-IT" ? "IT" : undefined,
       include_adult: "false",
       primary_release_year: year,
     });
@@ -83,6 +85,22 @@ export const tmdb = {
 
   async directors(id: number): Promise<string[]> {
     return (await tmdb.details(id)).directors;
+  },
+
+  /** Most popular person with that name working in Directing. */
+  async directorByName(name: string): Promise<number | null> {
+    const r = await get<{ results: { id: number; known_for_department: string }[] }>("/search/person", { query: name, include_adult: "false" });
+    return r.results.find((p) => p.known_for_department === "Directing")?.id ?? null;
+  },
+
+  async directed(personId: number): Promise<TmdbMovie[]> {
+    const [it, en] = await Promise.all(
+      (["it-IT", "en-US"] as const).map((language) =>
+        get<{ crew: (TmdbMovie & { job: string })[] }>(`/person/${personId}/movie_credits`, { language }),
+      ),
+    );
+    const enTitle = new Map(en.crew.map((c) => [c.id, c.title]));
+    return it.crew.filter((c) => c.job === "Director").map((c) => ({ ...c, title_en: enTitle.get(c.id) }));
   },
 };
 

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { CINEMAS } from "@/lib/cinemas";
 import { SCRAPERS, sanitize } from "@/scrapers";
 import { pdfToText } from "@/scrapers/godard";
+import { cleanTitle } from "@/scrapers/_text";
 
 /** Fixtures were saved on 2026-11-20 (Milan) — parsers that depend on "today" use that date. */
 const FIXTURE_NOW = new Date("2026-11-20T09:00:00Z");
@@ -13,6 +14,17 @@ async function load(fixture: string, format: "text" | "pdf") {
   const buf = readFileSync(path.join(dir, fixture));
   return format === "pdf" ? pdfToText(new Uint8Array(buf)) : buf.toString("utf8");
 }
+
+describe("cleanTitle", () => {
+  it("toglie le etichette in testa e in coda, non dentro il titolo", () => {
+    expect(cleanTitle("ANTEPRIMA. EVENTO 10 V.O. SOTT. ITA YOU CAN SEE EVERYTHING")).toMatchObject({ title: "You Can See Everything", vo: true, special: true });
+    expect(cleanTitle("L'INCONTRO").title).toBe("L'Incontro");
+    expect(cleanTitle("Peccato originale").title).toBe("Peccato originale");
+    expect(cleanTitle("FJORD | FILM IN NORVEGESE")).toMatchObject({ title: "Fjord", vo: true });
+    expect(cleanTitle("Pinocchio (Ried.)").title).toBe("Pinocchio");
+    expect(cleanTitle("NEW! DUNE PARTE TRE | ANTEPRIMA").title).toBe("Dune Parte Tre");
+  });
+});
 
 describe("scraper delle 13 sale su fixture", () => {
   it("copre esattamente le 13 sale", () => {
