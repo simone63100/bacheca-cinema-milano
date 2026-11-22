@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { saveSettings, uploadCsv, type SaveState } from "@/lib/account";
 import { QUARTIERI } from "@/lib/view";
-import { Monogram } from "./Monogram";
+import { Logo } from "./Logo";
 
 export interface AccountData {
   email: string;
@@ -26,16 +26,16 @@ export function SignIn() {
       <Link className="lab back" href="/">
         ‹ la bacheca
       </Link>
-      <Monogram />
+      <div style={{ marginTop: 18 }}><Logo /></div>
       <h1 className="t disp" style={{ marginTop: 16 }}>
         Non perderti niente
       </h1>
       <p className="m" style={{ maxWidth: 360, margin: "10px auto 0" }}>
         Collega Letterboxd: ti scriviamo solo quando un film della tua lista sta per lasciare le sale.
       </p>
-      <div className="acts" style={{ maxWidth: 320, margin: "26px auto 0" }}>
+      <div className="acts" style={{ maxWidth: 320, margin: "26px auto 0", display: "flex" }}>
         <a
-          className="p"
+          className="pill p"
           href="#"
           aria-disabled={pending}
           onClick={async (e) => {
@@ -52,7 +52,7 @@ export function SignIn() {
         </a>
       </div>
       {error && (
-        <p className="lab" role="alert" style={{ marginTop: 14, color: "var(--red-ink)" }}>
+        <p className="lab" role="alert" style={{ marginTop: 14, color: "var(--orange)" }}>
           {error}
         </p>
       )}
@@ -143,12 +143,12 @@ export function AccountView({ data }: { data: AccountData }) {
         <input type="hidden" name="lng" value={pos.lng ?? ""} />
 
         <div className="acts">
-          <button className="p" type="submit" disabled={saving} style={{ flex: 1, minHeight: 44, borderRadius: 999, background: "var(--red)", color: "var(--pink2)", font: "500 11px var(--sans)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+          <button className="p" type="submit" disabled={saving} style={{ flex: 1, minHeight: 44, borderRadius: 999, background: "var(--orange)", color: "var(--on-orange)", font: "500 11px var(--sans)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
             {saving ? "Salvo…" : "Salva"}
           </button>
         </div>
         {state.message && (
-          <p role="status" style={{ marginTop: 10, fontSize: 14, color: state.ok ? "inherit" : "var(--red-ink)" }}>
+          <p role="status" style={{ marginTop: 10, fontSize: 14, color: state.ok ? "inherit" : "var(--orange)" }}>
             {state.message}
           </p>
         )}
@@ -178,7 +178,7 @@ export function AccountView({ data }: { data: AccountData }) {
           </button>
         </div>
         {csvState.message && (
-          <p role="status" style={{ marginTop: 10, fontSize: 14, color: csvState.ok ? "inherit" : "var(--red-ink)" }}>
+          <p role="status" style={{ marginTop: 10, fontSize: 14, color: csvState.ok ? "inherit" : "var(--orange)" }}>
             {csvState.message}
           </p>
         )}

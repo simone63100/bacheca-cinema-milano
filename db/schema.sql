@@ -110,3 +110,5 @@ CREATE TABLE IF NOT EXISTS lb_slugs (
   slug     text PRIMARY KEY,
   tmdb_id  integer
 );
+
+ALTER TABLE films ADD COLUMN IF NOT EXISTS accent text;

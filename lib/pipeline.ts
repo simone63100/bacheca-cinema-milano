@@ -9,6 +9,25 @@ import { evaluateUser, type FomoFilm, type FomoScreening, type FomoUser } from "
 import { freshness } from "./freshness";
 import { matchTitle, normalizeTitle } from "./match";
 import { posterUrl, tmdb } from "./tmdb";
+import { FALLBACK_ACCENT, posterAccent } from "./accent";
+
+/** Glow colour for films that have a poster but no colour yet; 6 posters at a time. */
+export async function fillAccents(limit = 400) {
+  const rows = await q<{ id: number; poster: string }>(
+    "SELECT id, poster FROM films WHERE accent IS NULL AND poster IS NOT NULL LIMIT $1",
+    [limit],
+  );
+  for (let i = 0; i < rows.length; i += 6) {
+    await Promise.all(
+      rows.slice(i, i + 6).map(async (r) => {
+        const c = await posterAccent(r.poster);
+        if (c === "retry") return; // transient failure: leave NULL, the next run tries again
+        await q("UPDATE films SET accent = $2 WHERE id = $1", [r.id, c ?? FALLBACK_ACCENT]);
+      }),
+    );
+  }
+  return rows.length;
+}
 import type { CinemaId, Screening } from "./types";
 
 export interface ScrapedCinema {
@@ -179,6 +198,7 @@ export async function runDaily(opts: {
   const okCount = opts.scraped.filter((s) => !s.error && s.rows.length > 0).length;
   try {
     await storeScreenings(opts.scraped, now, runStart);
+    await fillAccents();
     if (opts.refreshLetterboxd) await opts.refreshLetterboxd(now);
     const fomo = opts.sendFomo ? await runFomo(now, opts.sendFomo) : null;
     const ok = okCount >= MIN_CINEMAS_OK;

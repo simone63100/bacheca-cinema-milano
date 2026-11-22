@@ -17,20 +17,20 @@ export function renderFomoMail(hits: FomoHit[], films: FomoFilm[], siteUrl: stri
     const f = films.find((x) => x.filmId === h.filmId)!;
     const rows = h.screenings
       .slice(0, 6)
-      .map((s) => `<tr><td style="padding:4px 0;font:15px Georgia,serif;color:#1a2647">${esc(name(s.cinemaId))}</td><td style="padding:4px 0;text-align:right;font:15px Helvetica,Arial,sans-serif;color:#1a2647">${esc(when(s.startsAt))}</td></tr>`)
+      .map((s) => `<tr><td style="padding:4px 0;font:15px Georgia,serif;color:#f6ede0">${esc(name(s.cinemaId))}</td><td style="padding:4px 0;text-align:right;font:15px Helvetica,Arial,sans-serif;color:#f6ede0">${esc(when(s.startsAt))}</td></tr>`)
       .join("");
     return `<div style="margin:0 0 28px">
-      <p style="margin:0;font:600 11px Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#8f1620">${esc(RULE_LABEL[h.rule])}</p>
-      <h2 style="margin:6px 0 8px;font:500 30px Georgia,serif;color:#1a2647"><a href="${siteUrl}/film/${h.filmId}" style="color:#1a2647;text-decoration:none">${esc(f.title)}</a></h2>
-      <table style="width:100%;border-top:1px solid #1a2647;border-collapse:collapse">${rows}</table></div>`;
+      <p style="margin:0;font:600 11px Helvetica,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#f08a1f">${esc(RULE_LABEL[h.rule])}</p>
+      <h2 style="margin:6px 0 8px;font:500 30px Georgia,serif;color:#f6ede0"><a href="${siteUrl}/?film=${h.filmId}" style="color:#f6ede0;text-decoration:none">${esc(f.title)}</a></h2>
+      <table style="width:100%;border-top:1px solid #f6ede0;border-collapse:collapse">${rows}</table></div>`;
   });
   const titles = hits.map((h) => films.find((f) => f.filmId === h.filmId)!.title);
   const subject = titles.length === 1 ? `Bijoux · ${titles[0]}` : `Bijoux · ${titles[0]} e altri ${titles.length - 1}`;
-  const html = `<!doctype html><html lang="it"><body style="margin:0;background:#f3c9d1;padding:24px">
-  <div style="max-width:520px;margin:0 auto;border:1.5px solid #1a2647;padding:6px"><div style="border:1px solid #1a2647;padding:28px 26px;background:#f3c9d1">
-  <p style="margin:0 0 22px;text-align:center;font:italic 34px Georgia,serif;color:#1a2647">Bijoux</p>
+  const html = `<!doctype html><html lang="it"><body style="margin:0;background:#0d0c0b;padding:24px">
+  <div style="max-width:520px;margin:0 auto;border:1px solid #dcc196;padding:0"><div style="padding:28px 26px;background:#0d0c0b">
+  <p style="margin:0 0 22px;text-align:center;font:600 34px Georgia,serif;color:#dcc196">Bijoux</p>
   ${blocks.join("")}
-  <p style="margin:24px 0 0;font:12px Helvetica,Arial,sans-serif;color:#1a2647">Ti scriviamo solo quando stai per perderti qualcosa, al massimo una volta al giorno. <a href="${siteUrl}/account" style="color:#1a2647">Impostazioni</a></p>
+  <p style="margin:24px 0 0;font:12px Helvetica,Arial,sans-serif;color:#f6ede0">Ti scriviamo solo quando stai per perderti qualcosa, al massimo una volta al giorno. <a href="${siteUrl}/account" style="color:#f6ede0">Impostazioni</a></p>
   </div></div></body></html>`;
   const text = hits
     .map((h) => {

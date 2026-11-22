@@ -19,6 +19,7 @@ Per un cinefilo milanese che oggi controlla a mano 10+ siti di sale diverse: un 
   3. film in lista con ≤2 proiezioni totali (evento): appena rilevato.
   Ogni film/utente notificato una sola volta per regola.
 - **UI:** una sola interfaccia, mobile-first. Cover Flow in alto ("per te", "stasera"); **clic sulla copertina → scheda** con orari raggruppati per sala, + calendario, trailer, link sala. Sotto, **vista elenco per sala e per giorno**. Lo stile Zune si toglie del tutto. Direzione estetica: 2-3 artboard, sceglie il team.
+- **Direzione visiva sostituita il 2026-11-22 da `TODO.md` ("Arcanine al buio": fondo nero, Cover Flow stile iPod a schermata unica, pannello orari al posto della scheda).** Sotto, la direzione precedente per storico.
 - **Nome: Bijoux.** Direzione **"Mendl's"** (scelta il 2026-11-20 fra 6 proposte, riferimento visivo: `refs/bijoux.html` sezione 1 e `refs/bijoux.png` in alto). Mondo: Grand Budapest Hotel × Velluto blu × la lounge anni '70 di *Tranquility Base Hotel & Casino*; sale d'essai che resistono al tempo, eleganza ironica e colta.
   - Colori: rosa cipria `#f3c9d1` = superficie; rosa chiaro `#f9e2e6` = passe-partout delle locandine; navy `#1a2647` = inchiostro, testo, cornici; rosso `#b3202a` = solo urgenza (nastro "ultime N sere") e azione primaria (Biglietti).
   - Tipografia: Fraunces (SOFT 100, opsz alto) per i titoli dei film; Fraunces corsivo per regista/anno e nomi delle sale; Jost maiuscolo con tracking 0.2em per etichette e tab; Pinyon Script solo per il monogramma.
@@ -55,4 +56,4 @@ Per un cinefilo milanese che oggi controlla a mano 10+ siti di sale diverse: un 
 - [ ] Deploy Cloudflare: l'URL risponde 200 e mostra "aggiornato oggi" dopo il trigger.
 - [ ] Neon schedule trigger: 3 run consecutivi riusciti nella tabella `runs`, in 3 giorni diversi.
 - [ ] Login Google sul deploy + mail FOMO reale ricevuta su un account di test (screenshot).
-- [ ] Screenshot a 390px di home e scheda accanto a `refs/bijoux.png` (Mendl's): stessi token colore (verificati con `getComputedStyle`), stessi font, monogramma ricamato, doppia cornice, passe-partout, nastro rosso; Lighthouse accessibility ≥90 (il navy su rosa e il rosa chiaro su rosso passano il contrasto AA).
+- [ ] *(sostituito dai criteri di accettazione di `TODO.md`)* Screenshot a 390px di home e scheda accanto a `refs/bijoux.png` (Mendl's): stessi token colore (verificati con `getComputedStyle`), stessi font, monogramma ricamato, doppia cornice, passe-partout, nastro rosso; Lighthouse accessibility ≥90 (il navy su rosa e il rosa chiaro su rosso passano il contrasto AA).

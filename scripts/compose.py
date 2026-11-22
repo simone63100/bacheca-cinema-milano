@@ -1,18 +1,22 @@
-"""Side-by-side: reference Mendl's (refs/bijoux.png, section 1) vs real home and scheda at 390px."""
+"""Tile home and panel at 390px and 1280px into one image for review (docs/screens/confronto.png)."""
 from PIL import Image, ImageDraw
-ref = Image.open("refs/bijoux.png").convert("RGB")
-# section 1 phones: home x≈14-414, scheda x≈422-822, y≈180-1020 (in the 900px-wide original)
-s = ref.width / 900
-crop = lambda x0, x1: ref.crop((int(x0*s), int(180*s), int(x1*s), int(1022*s))).resize((390, 844))
-ref_home, ref_sheet = crop(14, 414), crop(422, 822)
-home = Image.open("docs/screens/home-390.png").convert("RGB").resize((390, 844))
-sheet = Image.open("docs/screens/scheda-390.png").convert("RGB").resize((390, 844))
-W, H, pad = 390, 844, 24
-out = Image.new("RGB", (4 * W + 5 * pad, H + 2 * pad + 28), (217, 214, 208))
+
+bg, ink = (13, 12, 11), (220, 193, 150)
+mob = [Image.open(f"docs/screens/{n}-390.png").convert("RGB").resize((390, 844)) for n in ("home", "pannello")]
+desk = [Image.open(f"docs/screens/{n}-1280.png").convert("RGB").resize((640, 400)) for n in ("home", "pannello")]
+pad = 24
+W = pad * 3 + 390 * 2 + pad + 640
+H = pad * 2 + 28 + 844
+out = Image.new("RGB", (W, H), bg)
 d = ImageDraw.Draw(out)
-for i, (img, label) in enumerate([(ref_home, "reference · home"), (home, "Bijoux live · home"), (ref_sheet, "reference · scheda"), (sheet, "Bijoux live · scheda")]):
-    x = pad + i * (W + pad)
+x = pad
+for img, label in zip(mob, ("390 · home", "390 · pannello")):
+    d.text((x, pad), label, fill=ink)
     out.paste(img, (x, pad + 28))
-    d.text((x, pad), label, fill=(26, 38, 71))
-out.save("docs/screens/confronto-390.png")
-print("docs/screens/confronto-390.png")
+    x += 390 + pad
+for i, (img, label) in enumerate(zip(desk, ("1280 · home", "1280 · pannello"))):
+    y = pad + 28 + i * (400 + 44)
+    d.text((x, y - 22), label, fill=ink)
+    out.paste(img, (x, y))
+out.save("docs/screens/confronto.png")
+print("docs/screens/confronto.png")

@@ -1,22 +1,7 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { FilmSheet } from "@/components/FilmSheet";
-import { loadFilm } from "@/lib/board";
-import { CINEMAS } from "@/lib/cinemas";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-type Props = { params: Promise<{ id: string }> };
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const film = await loadFilm(Number((await params).id));
-  return { title: film ? `${film.title} · Bijoux` : "Bijoux" };
-}
-
-export default async function FilmPage({ params }: Props) {
+/** Old and mailed links: the scheda now opens as a panel on the home, at /?film=<id>. */
+export default async function FilmRedirect({ params }: { params: Promise<{ id: string }> }) {
   const id = Number((await params).id);
-  if (!Number.isInteger(id)) notFound();
-  const film = await loadFilm(id);
-  if (!film) notFound();
-  return <FilmSheet film={film} cinemas={CINEMAS} />;
+  redirect(Number.isInteger(id) ? `/?film=${id}` : "/");
 }

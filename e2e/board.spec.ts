@@ -1,68 +1,84 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { CINEMAS } from "../lib/cinemas";
 import { distanceKm } from "../lib/geo";
 
-const HERE = { lat: 45.5148, lng: 9.2113 };
+const HERE = { lat: 45.5148, lng: 9.2113 }; // Bicocca: several cinemas beyond 5 km
 
-async function noHorizontalScroll(page: import("@playwright/test").Page) {
-  const { sw, cw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
-  expect(sw, "scroll orizzontale").toBeLessThanOrEqual(cw);
+async function noPageScroll(page: Page) {
+  const m = await page.evaluate(() => ({
+    sh: document.documentElement.scrollHeight,
+    ih: window.innerHeight,
+    sw: document.documentElement.scrollWidth,
+    cw: document.documentElement.clientWidth,
+  }));
+  expect(m.sh, "scroll verticale della pagina").toBeLessThanOrEqual(m.ih);
+  expect(m.sw, "scroll orizzontale della pagina").toBeLessThanOrEqual(m.cw);
 }
 
-test("visita anonima con geolocalizzazione: solo sale nel raggio", async ({ page }) => {
+async function ready(page: Page) {
   await page.goto("/");
-  await expect(page.getByRole("button", { name: "da qui" })).toBeVisible();
-  const halls = page.getByTestId("hall");
-  // a day with screenings near Isola: try the next days until one has halls
-  const chips = page.locator(".days button");
-  for (let i = 0; i < 7 && (await halls.count()) === 0; i++) await chips.nth(i).click();
-  expect(await halls.count()).toBeGreaterThan(0);
-  const ids = await halls.evaluateAll((els) => els.map((e) => e.getAttribute("data-cinema")!));
-  for (const id of ids) {
-    const c = CINEMAS.find((x) => x.id === id)!;
-    expect(distanceKm(HERE, c), `${c.name} fuori dai 5 km`).toBeLessThanOrEqual(5);
-  }
-  const outside = CINEMAS.filter((c) => distanceKm(HERE, c) > 5).map((c) => c.id);
-  expect(outside.length).toBeGreaterThan(0);
-  for (const id of outside) expect(ids).not.toContain(id);
-  await noHorizontalScroll(page);
+  await expect(page.getByRole("button", { name: /da qui/ })).toBeVisible(); // list re-ranks after geolocation
+  await expect(page.getByTestId("cover-active")).toBeVisible();
+}
+
+test("una sola schermata: nessuno scroll della pagina", async ({ page }) => {
+  await ready(page);
+  await noPageScroll(page);
 });
 
-test("raggio più stretto toglie le sale lontane", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "da qui" }).click();
+test("per sala: solo le sale nel raggio, e il raggio più stretto le riduce", async ({ page }) => {
+  await ready(page);
+  await page.getByRole("button", { name: "Per sala" }).click();
+  const ids = async () =>
+    page.locator("#sala option").evaluateAll((os) => os.map((o) => (o as HTMLOptionElement).value));
+  const within5 = await ids();
+  expect(within5.length).toBeGreaterThan(0);
+  for (const id of within5) expect(distanceKm(HERE, CINEMAS.find((c) => c.id === id)!)).toBeLessThanOrEqual(5);
+  expect(CINEMAS.filter((c) => distanceKm(HERE, c) > 5).length).toBeGreaterThan(0);
+  await noPageScroll(page);
+
+  await page.getByRole("button", { name: /da qui/ }).click();
   await page.getByLabel("Raggio in km").selectOption("3");
-  await expect(page.locator(".loc")).toContainText("entro 3 km");
-  const ids = await page.getByTestId("hall").evaluateAll((els) => els.map((e) => e.getAttribute("data-cinema")!));
-  for (const id of ids) expect(distanceKm(HERE, CINEMAS.find((x) => x.id === id)!)).toBeLessThanOrEqual(3);
+  await page.getByRole("button", { name: "Fatto" }).click();
+  await expect(page.getByRole("button", { name: /entro 3 km/ })).toBeVisible();
+  for (const id of await ids()) expect(distanceKm(HERE, CINEMAS.find((c) => c.id === id)!)).toBeLessThanOrEqual(3);
 });
 
-test("clic sulla copertina → scheda con orari raggruppati per sala", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("button", { name: "da qui" })).toBeVisible(); // list re-ranks after geolocation
-  const cover = page.getByTestId("cover-active");
-  await expect(cover).toBeVisible();
-  const title = (await page.locator("h2.t").innerText()).trim();
-  await cover.click();
-  await expect(page).toHaveURL(/\/film\/\d+$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
-  const salas = page.getByTestId("sala");
-  expect(await salas.count()).toBeGreaterThan(0);
-  await expect(salas.first().locator(".sl").first()).toContainText(/\d{2}:\d{2}/);
-  await expect(page.getByRole("link", { name: "Biglietti" })).toBeVisible();
-  await noHorizontalScroll(page);
+test("clic sulla locandina → pannello con cinema e orari nella stessa pagina", async ({ page }) => {
+  await ready(page);
+  const title = (await page.locator(".info h2").innerText()).trim();
+  await page.getByTestId("cover-active").click();
+  const panel = page.getByTestId("panel");
+  await expect(panel).toBeVisible();
+  await expect(panel.getByRole("heading", { level: 2 })).toHaveText(title);
+  await expect(page).toHaveURL(/\/\?film=\d+$/); // same page, panel state in the query
+  const rows = panel.getByTestId("row");
+  expect(await rows.count()).toBeGreaterThan(0);
+  await expect(rows.first()).toContainText(/\d{2}:\d{2}/);
+  await expect(rows.first().getByRole("link", { name: "Biglietti" })).toBeVisible();
+  await expect(rows.first().getByRole("link", { name: /calendario/ })).toBeVisible();
+  await noPageScroll(page);
+
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeHidden();
+  await expect(page).toHaveURL(/\/$/);
 });
 
-test("vista elenco per sala e per giorno", async ({ page }) => {
-  await page.goto("/");
-  const chips = page.locator(".days button");
-  await expect(chips).toHaveCount(7);
-  await chips.nth(1).click();
-  await expect(chips.nth(1)).toHaveAttribute("aria-pressed", "true");
-  const halls = page.getByTestId("hall");
-  if ((await halls.count()) > 0) {
-    await expect(halls.first().locator(".cn b")).not.toBeEmpty();
-    await expect(halls.first().locator(".sl").first()).toContainText(/\d{2}:\d{2}/);
+test("un link /film/<id> (mail FOMO) apre il pannello", async ({ page }) => {
+  await ready(page);
+  await page.getByTestId("cover-active").click();
+  const id = new URL(page.url()).searchParams.get("film");
+  await page.goto(`/film/${id}`);
+  await expect(page).toHaveURL(new RegExp(`\\?film=${id}$`));
+  await expect(page.getByTestId("panel")).toBeVisible();
+});
+
+test("l'alone cambia colore passando da un film all'altro", async ({ page }) => {
+  await ready(page);
+  const seen = new Set<string>();
+  for (let i = 0; i < 8; i++) {
+    seen.add(await page.locator(".ipod").evaluate((el) => getComputedStyle(el).getPropertyValue("--accent").trim()));
+    await page.keyboard.press("ArrowRight");
   }
-  await noHorizontalScroll(page);
+  expect(seen.size).toBeGreaterThan(1);
 });

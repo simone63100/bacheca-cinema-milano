@@ -22,6 +22,8 @@ export interface BoardFilm {
   poster: string | null;
   trailer: string | null;
   tags: string[];
+  /** Glow colour from the poster (pipeline), null → interface orange. */
+  accent: string | null;
   screenings: BoardScreening[];
 }
 
@@ -48,8 +50,9 @@ export async function loadBoard(now = new Date()): Promise<Board> {
       poster: string | null;
       trailer: string | null;
       tags: string[];
+      accent: string | null;
     }>(
-      `SELECT f.id, f.tmdb_id, f.title, f.original_title, f.director, f.year, f.runtime, f.poster, f.trailer, f.tags
+      `SELECT f.id, f.tmdb_id, f.title, f.original_title, f.director, f.year, f.runtime, f.poster, f.trailer, f.tags, f.accent
        FROM films f WHERE EXISTS (SELECT 1 FROM screenings s WHERE s.film_id = f.id AND s.starts_at > $1 AND s.starts_at < $2)`,
       [now.toISOString(), until],
     ),
@@ -81,6 +84,7 @@ export async function loadBoard(now = new Date()): Promise<Board> {
         poster: f.poster,
         trailer: f.trailer,
         tags: f.tags,
+        accent: f.accent,
         screenings: byFilm.get(Number(f.id)) ?? [],
       }))
       .filter((f) => f.screenings.length > 0),
@@ -94,8 +98,8 @@ export async function loadBoard(now = new Date()): Promise<Board> {
 export const loadFilm = cache(async (id: number): Promise<BoardFilm | null> => {
   const now = new Date().toISOString();
   const [films, screenings] = await Promise.all([
-    q<{ id: string; tmdb_id: number | null; title: string; original_title: string | null; director: string | null; year: number | null; runtime: number | null; poster: string | null; trailer: string | null; tags: string[] }>(
-      "SELECT id, tmdb_id, title, original_title, director, year, runtime, poster, trailer, tags FROM films WHERE id = $1",
+    q<{ id: string; tmdb_id: number | null; title: string; original_title: string | null; director: string | null; year: number | null; runtime: number | null; poster: string | null; trailer: string | null; tags: string[]; accent: string | null }>(
+      "SELECT id, tmdb_id, title, original_title, director, year, runtime, poster, trailer, tags, accent FROM films WHERE id = $1",
       [id],
     ),
     q<{ cinema_id: string; starts_at: string; vo: boolean; special: boolean; url: string | null }>(
@@ -116,6 +120,7 @@ export const loadFilm = cache(async (id: number): Promise<BoardFilm | null> => {
     poster: f.poster,
     trailer: f.trailer,
     tags: f.tags,
+    accent: f.accent,
     screenings: screenings.map((s) => ({ cinemaId: s.cinema_id, startsAt: new Date(s.starts_at).toISOString(), vo: s.vo, special: s.special, url: s.url })),
   };
 });
