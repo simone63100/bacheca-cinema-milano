@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { saveSettings, uploadCsv, type SaveState } from "@/lib/account";
 import { QUARTIERI } from "@/lib/view";
-import { Logo } from "./Logo";
+
 
 export interface AccountData {
   email: string;
@@ -23,11 +23,11 @@ export function SignIn() {
   const [error, setError] = useState<string | null>(null);
   return (
     <main className="page tc">
-      <Link className="lab back" href="/">
+      <Link className="back" href="/">
         ‹ la bacheca
       </Link>
-      <div style={{ marginTop: 18 }}><Logo /></div>
-      <h1 className="t disp" style={{ marginTop: 16 }}>
+
+      <h1 className="t disp" style={{ marginTop: 28 }}>
         Non perderti niente
       </h1>
       <p className="m" style={{ maxWidth: 360, margin: "10px auto 0" }}>
@@ -35,7 +35,7 @@ export function SignIn() {
       </p>
       <div className="acts" style={{ maxWidth: 320, margin: "26px auto 0", display: "flex" }}>
         <a
-          className="pill p"
+          className="btn"
           href="#"
           aria-disabled={pending}
           onClick={async (e) => {
@@ -73,7 +73,7 @@ export function AccountView({ data }: { data: AccountData }) {
   return (
     <main className="page">
       <div className="tc">
-        <Link className="lab back" href="/">
+        <Link className="back" href="/">
           ‹ la bacheca
         </Link>
         <h1 className="t disp" style={{ marginTop: 10 }}>
@@ -143,7 +143,7 @@ export function AccountView({ data }: { data: AccountData }) {
         <input type="hidden" name="lng" value={pos.lng ?? ""} />
 
         <div className="acts">
-          <button className="p" type="submit" disabled={saving} style={{ flex: 1, minHeight: 44, borderRadius: 999, background: "var(--orange)", color: "var(--on-orange)", font: "500 11px var(--sans)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+          <button className="btn" type="submit" disabled={saving} style={{ flex: 1 }}>
             {saving ? "Salvo…" : "Salva"}
           </button>
         </div>

@@ -17,7 +17,8 @@ for (const [name, viewport] of [
   });
   const page = await ctx.newPage();
   await page.goto(base, { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: /da qui/ }).waitFor();
+  await page.getByTestId("cover-active").waitFor();
+  await page.waitForTimeout(1200); // geolocation re-ranks the list
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(900);
   await page.screenshot({ path: `docs/screens/home-${name}.png` });

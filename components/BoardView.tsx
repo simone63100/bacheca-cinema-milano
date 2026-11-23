@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { SlidersHorizontal, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Board, BoardFilm, BoardScreening } from "@/lib/board";
 import { distanceKm } from "@/lib/geo";
@@ -19,7 +20,6 @@ import {
   weekday,
   when,
 } from "@/lib/view";
-import { Logo } from "./Logo";
 import { usePlace } from "./usePlace";
 
 type Tab = "perte" | "stasera" | "sala";
@@ -29,6 +29,14 @@ interface Item {
 }
 
 const ORANGE = "#f08a1f";
+const TABS: [Tab, string][] = [
+  ["perte", "Per te"],
+  ["stasera", "Stasera"],
+  ["sala", "Per sala"],
+];
+
+const longDay = new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", weekday: "long" });
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 function Poster({ f, eager }: { f: BoardFilm; eager?: boolean }) {
   return f.poster ? (
@@ -53,7 +61,7 @@ export function BoardView({ board }: { board: Board }) {
   const [idx, setIdx] = useState(2);
   const [openId, setOpenId] = useState<number | null>(null);
   const [sel, setSel] = useState(0);
-  const [pop, setPop] = useState(false);
+  const [settings, setSettings] = useState(false);
   const [now, setNow] = useState(() => new Date(board.generatedAt));
   const pushed = useRef(false);
 
@@ -117,7 +125,6 @@ export function BoardView({ board }: { board: Board }) {
     return () => window.removeEventListener("popstate", sync);
   }, []);
   useEffect(() => {
-    // a film opened from a link becomes the centre cover when it is in the list
     if (openId == null) return;
     const i = list.findIndex((x) => x.f.id === openId);
     if (i >= 0) setIdx(i);
@@ -142,7 +149,11 @@ export function BoardView({ board }: { board: Board }) {
   // ---- keyboard: arrows, Enter, Esc
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (pop || (e.target instanceof HTMLElement && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName))) return;
+      if (e.target instanceof HTMLElement && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+      if (settings) {
+        if (e.key === "Escape") setSettings(false);
+        return;
+      }
       if (openFilm) {
         if (e.key === "Escape" || e.key === "ArrowLeft") {
           e.preventDefault();
@@ -162,7 +173,7 @@ export function BoardView({ board }: { board: Board }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [openFilm, panelRows.length, close, move, open, cur, pop]);
+  }, [openFilm, panelRows.length, close, move, open, cur, settings]);
 
   useEffect(() => {
     document.querySelector(`[data-row="${sel}"]`)?.scrollIntoView({ block: "nearest" });
@@ -183,7 +194,7 @@ export function BoardView({ board }: { board: Board }) {
     }
   };
 
-  const rib = cur ? ribbon(cur.rows, now) : null;
+  const urgency = cur ? ribbon(cur.rows, now) : null;
   const first = cur?.rows[0];
   const accent = (openFilm ?? cur?.f)?.accent ?? ORANGE;
   const tags = (f: BoardFilm) =>
@@ -195,103 +206,19 @@ export function BoardView({ board }: { board: Board }) {
 
   return (
     <div className="ipod" style={{ ["--accent" as string]: accent }}>
-      <header className="top">
-        <div className="top-row">
-          <Logo />
-          <button type="button" className="lab place" onClick={() => setPop((p) => !p)} aria-expanded={pop} aria-controls="placepop">
-            entro <b>{place.radiusKm} km</b> · {asking ? "cerco…" : place.precise ? "da qui" : `da ${place.label}`}
-          </button>
-        </div>
-        <div className="top-row">
-          <span className="lab cf" aria-hidden="true">
-            Cover Flow
-          </span>
-          <div className="tabs lab" role="group" aria-label="Selezione">
-            {(
-              [
-                ["perte", "Per te"],
-                ["stasera", "Stasera"],
-                ["sala", "Per sala"],
-              ] as const
-            ).map(([k, label]) => (
-              <button key={k} type="button" aria-pressed={tab === k} onClick={() => (openFilm ? close() : null, setTab(k))}>
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-        {tab === "sala" && (
-          <div className="filters">
-            <label className="sr" htmlFor="sala">
-              Sala
-            </label>
-            <select id="sala" value={selHall ?? ""} onChange={(e) => setHall(e.target.value)}>
-              {halls.map((h) => (
-                <option key={h.id} value={h.id}>
-                  {h.name} · {fmtKm(h.km)}
-                </option>
-              ))}
-            </select>
-            <label className="sr" htmlFor="giorno">
-              Giorno
-            </label>
-            <select id="giorno" value={selDay} onChange={(e) => setDay(e.target.value)}>
-              {days.map((k, i) => (
-                <option key={k} value={k}>
-                  {i === 0 ? "oggi" : `${weekday(new Date(`${k}T12:00:00Z`))} ${dayNum(new Date(`${k}T12:00:00Z`))}`}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        {pop && (
-          <div id="placepop" className="pop" role="dialog" aria-label="Posizione e raggio">
-            <label className="lab sand" htmlFor="quartiere">
-              Quartiere
-            </label>
-            <select
-              id="quartiere"
-              value={place.precise ? "" : place.label}
-              onChange={(e) => {
-                const q = QUARTIERI.find((x) => x.label === e.target.value);
-                if (q) setPlace({ ...q, radiusKm: place.radiusKm, precise: false });
-              }}
-            >
-              <option value="" disabled>
-                Scegli un quartiere
-              </option>
-              {QUARTIERI.map((q) => (
-                <option key={q.label}>{q.label}</option>
-              ))}
-            </select>
-            <label className="lab sand" htmlFor="raggio">
-              Raggio in km
-            </label>
-            <select id="raggio" value={place.radiusKm} onChange={(e) => setPlace({ ...place, radiusKm: Number(e.target.value) })}>
-              {[2, 3, 5, 8, 12, 20].map((k) => (
-                <option key={k} value={k}>
-                  entro {k} km
-                </option>
-              ))}
-            </select>
-            <button type="button" className="pill" onClick={() => locate(place.radiusKm)}>
-              Usa la mia posizione
-            </button>
-            {denied && <p className="lab sand">posizione non disponibile: scegli un quartiere</p>}
-            <button type="button" className="pill p" onClick={() => setPop(false)}>
-              Fatto
-            </button>
-          </div>
-        )}
-      </header>
+      <h1 className="sr">Bijoux, cinema d&apos;essai a Milano</h1>
+      {board.freshness.banner && (
+        <p className="stale" role="status">
+          {board.freshness.banner}
+        </p>
+      )}
 
       <main className="stage" data-open={openFilm ? "true" : "false"}>
         <div className="glow" aria-hidden="true" />
-        <h1 className="sr">Bijoux, cinema d&apos;essai a Milano</h1>
         {list.length === 0 && !openFilm ? (
           <p className="empty">
             {halls.length === 0
-              ? "Nessuna sala d'essai in questo raggio: allargalo."
+              ? "Nessuna sala d'essai in questo raggio: allargalo dalle impostazioni."
               : tab === "sala"
                 ? "Nessuna proiezione in questa sala, in questo giorno."
                 : "Niente in programma qui, per ora."}
@@ -300,7 +227,7 @@ export function BoardView({ board }: { board: Board }) {
           <section
             className="flow"
             aria-roledescription="carosello"
-            aria-label={tab === "perte" ? "Per te" : tab === "stasera" ? "Stasera" : "Per sala"}
+            aria-label={TABS.find(([k]) => k === tab)![1]}
             onWheel={onWheel}
             onPointerDown={(e) => (drag.current = { x: e.clientX, y: e.clientY, moved: false })}
             onPointerMove={(e) => {
@@ -325,7 +252,6 @@ export function BoardView({ board }: { board: Board }) {
                   className="cov"
                   data-pos={pos}
                   data-testid={d === 0 ? "cover-active" : undefined}
-                  data-accent={d === 0 ? (f.accent ?? ORANGE) : undefined}
                   tabIndex={pos === "hidden" || openFilm ? -1 : 0}
                   aria-hidden={pos === "hidden"}
                   aria-label={d === 0 ? `Apri gli orari di ${f.title}` : `Mostra ${f.title}`}
@@ -352,31 +278,25 @@ export function BoardView({ board }: { board: Board }) {
                 drag.current = null;
               }}
             >
-              <button type="button" className="thumb" onClick={close} aria-label="Torna al Cover Flow">
+              <button type="button" className="thumb" onClick={close} aria-label="Torna alle locandine">
                 <Poster f={openFilm} eager />
               </button>
               <div>
                 <h2 className="disp">{openFilm.title}</h2>
-                <p className="m">{[openFilm.director, openFilm.year, openFilm.runtime ? `${openFilm.runtime}′` : null].filter(Boolean).join(" · ")}</p>
-                <div className="tags lab">
-                  {tags(openFilm).map((t) => (
-                    <span key={t} className="tag">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <div className="acts">
-                  <a className="pill" href={trailerUrl(openFilm)} target="_blank" rel="noopener">
+                <p className="meta">{[openFilm.director, openFilm.year, openFilm.runtime ? `${openFilm.runtime}′` : null].filter(Boolean).join(", ")}</p>
+                {tags(openFilm).length > 0 && <p className="tags">{tags(openFilm).join(", ")}</p>}
+                <p className="links">
+                  <a href={trailerUrl(openFilm)} target="_blank" rel="noopener">
                     Trailer
                   </a>
-                  <a className="pill" href={letterboxdUrl(openFilm)} target="_blank" rel="noopener">
+                  <a href={letterboxdUrl(openFilm)} target="_blank" rel="noopener">
                     Letterboxd
                   </a>
-                  <button type="button" className="pill" onClick={close}>
-                    ‹ Indietro
-                  </button>
-                </div>
+                </p>
               </div>
+              <button type="button" className="icon close" onClick={close} aria-label="Chiudi">
+                <X size={20} strokeWidth={1.5} />
+              </button>
             </div>
             {panelRows.length === 0 ? (
               <p className="empty">Nessuna proiezione in programma.</p>
@@ -393,15 +313,14 @@ export function BoardView({ board }: { board: Board }) {
                     onClick={() => setSel(i)}
                   >
                     <span className="cin">{c.name}</span>
-                    <span className="lab km">{fmtKm(km)}</span>
+                    <span className="km">{fmtKm(km)}</span>
                     <span className="when">
-                      {when(s.startsAt)}
-                      {s.vo && <span className="lab vo">v.o.</span>}
+                      {cap(when(s.startsAt))}
+                      {s.vo && <span className="vo">v.o.</span>}
                     </span>
-                    <span />
                     <span className="ra">
                       <a href={calendarUrl(openFilm, s, c.name)} target="_blank" rel="noopener" aria-label={`Aggiungi al calendario: ${c.name}, ${when(s.startsAt)}`}>
-                        + calendario
+                        Calendario
                       </a>
                       <a href={s.url ?? c.url} target="_blank" rel="noopener">
                         Biglietti
@@ -417,35 +336,117 @@ export function BoardView({ board }: { board: Board }) {
         {cur && !openFilm && (
           <div className="info">
             <h2 className="t disp">
-              <button type="button" onClick={() => open(cur.f)} style={{ background: "none", border: 0, cursor: "pointer" }}>
+              <button type="button" onClick={() => open(cur.f)}>
                 {cur.f.title}
               </button>
             </h2>
-            {(cur.f.director || cur.f.year) && (
-              <p className="m">
-                {cur.f.director ? `di ${cur.f.director}` : ""}
-                {cur.f.director && cur.f.year ? ", " : ""}
-                {cur.f.year ?? ""}
-              </p>
-            )}
-            {rib && <div className="rib">{rib}</div>}
+            {(cur.f.director || cur.f.year) && <p className="meta">{[cur.f.director, cur.f.year].filter(Boolean).join(", ")}</p>}
             {first && (
-              <p className="next">
-                <span className="lab">Prossimo</span> <b>{cinemaName(first.cinemaId).replace(/^Cin(ema|eteca) /, "")}</b> · {weekday(first.startsAt)}{" "}
-                {hhmm(first.startsAt)}
+              <p className={`next${urgency?.startsWith("ultima") || urgency === "solo oggi" ? " urgent" : ""}`}>
+                {/* one evening left: the line itself is the warning; several: say how many first */}
+                {urgency?.startsWith("ultime") && <span className="urgent">{cap(urgency)}. </span>}
+                {urgency?.startsWith("ultima") ? "Ultima: " : urgency === "solo oggi" ? "Solo oggi: " : ""}
+                {urgency?.startsWith("ultima") || urgency === "solo oggi" ? longDay.format(new Date(first.startsAt)) : cap(longDay.format(new Date(first.startsAt)))}{" "}
+                {hhmm(first.startsAt)}, {cinemaName(first.cinemaId).replace(/^Cin(ema|eteca) /, "")}
               </p>
             )}
           </div>
         )}
       </main>
 
-      <footer className="foot lab">
-        <span className={board.freshness.banner ? "banner" : undefined} role={board.freshness.banner ? "status" : undefined}>
-          {board.freshness.banner ?? board.freshness.label}
-        </span>
-        <span aria-live="polite">{list.length ? `${safeIdx + 1} / ${list.length}` : ""}</span>
-        <Link href="/account">Collega Letterboxd</Link>
-      </footer>
+      <nav className="bar" aria-label="Viste">
+        {tab === "sala" && (
+          <div className="filters">
+            <label className="sr" htmlFor="sala">
+              Sala
+            </label>
+            <select id="sala" value={selHall ?? ""} onChange={(e) => setHall(e.target.value)}>
+              {halls.map((h) => (
+                <option key={h.id} value={h.id}>
+                  {h.name}, {fmtKm(h.km)}
+                </option>
+              ))}
+            </select>
+            <label className="sr" htmlFor="giorno">
+              Giorno
+            </label>
+            <select id="giorno" value={selDay} onChange={(e) => setDay(e.target.value)}>
+              {days.map((k, i) => (
+                <option key={k} value={k}>
+                  {i === 0 ? "Oggi" : `${cap(weekday(new Date(`${k}T12:00:00Z`)))} ${dayNum(new Date(`${k}T12:00:00Z`))}`}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        <div className="bar-row">
+          <div className="views" role="group" aria-label="Selezione">
+            {TABS.map(([k, label]) => (
+              <button
+                key={k}
+                type="button"
+                aria-pressed={tab === k}
+                onClick={() => {
+                  if (openFilm) close();
+                  setTab(k);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <button type="button" className="icon" onClick={() => setSettings(true)} aria-label="Impostazioni: posizione e raggio" aria-haspopup="dialog">
+            <SlidersHorizontal size={20} strokeWidth={1.5} />
+          </button>
+        </div>
+      </nav>
+
+      {settings && (
+        <div className="sheet-scrim" onClick={() => setSettings(false)}>
+          <section className="sheet" role="dialog" aria-modal="true" aria-labelledby="settings-h" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet-head">
+              <h2 id="settings-h" className="disp">
+                Impostazioni
+              </h2>
+              <button type="button" className="icon" onClick={() => setSettings(false)} aria-label="Chiudi le impostazioni">
+                <X size={20} strokeWidth={1.5} />
+              </button>
+            </div>
+            <label htmlFor="quartiere">Da dove parti</label>
+            <select
+              id="quartiere"
+              value={place.precise ? "" : place.label}
+              onChange={(e) => {
+                const q = QUARTIERI.find((x) => x.label === e.target.value);
+                if (q) setPlace({ ...q, radiusKm: place.radiusKm, precise: false });
+              }}
+            >
+              <option value="" disabled>
+                {place.precise ? "La tua posizione" : "Scegli un quartiere"}
+              </option>
+              {QUARTIERI.map((q) => (
+                <option key={q.label}>{q.label}</option>
+              ))}
+            </select>
+            <button type="button" className="textbtn" onClick={() => locate(place.radiusKm)}>
+              {asking ? "Cerco la posizione…" : "Usa la mia posizione"}
+            </button>
+            {denied && <p className="hint">Posizione non disponibile: scegli un quartiere.</p>}
+            <label htmlFor="raggio">Quanto lontano</label>
+            <select id="raggio" value={place.radiusKm} onChange={(e) => setPlace({ ...place, radiusKm: Number(e.target.value) })}>
+              {[2, 3, 5, 8, 12, 20].map((k) => (
+                <option key={k} value={k}>
+                  Entro {k} km ({cinemasInRadius(board.cinemas, { ...place, radiusKm: k }).length} sale)
+                </option>
+              ))}
+            </select>
+            <p className="sheet-foot">
+              <Link href="/account">Collega Letterboxd</Link>
+              <span>{cap(board.freshness.label)}</span>
+            </p>
+          </section>
+        </div>
+      )}
     </div>
   );
 }

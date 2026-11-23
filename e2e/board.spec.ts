@@ -17,7 +17,8 @@ async function noPageScroll(page: Page) {
 
 async function ready(page: Page) {
   await page.goto("/");
-  await expect(page.getByRole("button", { name: /da qui/ })).toBeVisible(); // list re-ranks after geolocation
+  // the list re-ranks once geolocation lands (stored locally as a precise place)
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("bijoux.place") ?? "{}").precise === true);
   await expect(page.getByTestId("cover-active")).toBeVisible();
 }
 
@@ -37,10 +38,10 @@ test("per sala: solo le sale nel raggio, e il raggio più stretto le riduce", as
   expect(CINEMAS.filter((c) => distanceKm(HERE, c) > 5).length).toBeGreaterThan(0);
   await noPageScroll(page);
 
-  await page.getByRole("button", { name: /da qui/ }).click();
-  await page.getByLabel("Raggio in km").selectOption("3");
-  await page.getByRole("button", { name: "Fatto" }).click();
-  await expect(page.getByRole("button", { name: /entro 3 km/ })).toBeVisible();
+  await page.getByRole("button", { name: /Impostazioni/ }).click();
+  await page.getByLabel("Quanto lontano").selectOption("3");
+  await page.getByRole("button", { name: "Chiudi le impostazioni" }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
   for (const id of await ids()) expect(distanceKm(HERE, CINEMAS.find((c) => c.id === id)!)).toBeLessThanOrEqual(3);
 });
 

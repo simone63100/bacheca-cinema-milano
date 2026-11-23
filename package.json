@@ -16,9 +16,10 @@
     "deploy": "opennextjs-cloudflare build && node scripts/patch-opennext-win.mjs && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "db:migrate": "tsx --env-file=.env.local scripts/migrate.mts",
-    "screens": "tsx scripts/screens.mts && python scripts/compose.py",
+    "screens": "tsx scripts/screens.mts",
     "eval:holdout": "tsx --env-file-if-exists=.env.local scripts/eval-match.ts eval/holdout.json",
-    "accents": "tsx --env-file=.env.local scripts/backfill-accents.mts"
+    "accents": "tsx --env-file=.env.local scripts/backfill-accents.mts",
+    "screens:compose": "python scripts/compose.py"
   },
   "dependencies": {
     "@neon/auth": "^0.8.2",
@@ -26,6 +27,7 @@
     "@opennextjs/cloudflare": "^1.20.17",
     "cheerio": "^1.2.0",
     "jpeg-js": "0.4.4",
+    "lucide-react": "^1.78.0",
     "next": "15.5.29",
     "react": "19.1.0",
     "react-dom": "19.1.0",

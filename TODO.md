@@ -53,3 +53,10 @@ Sala scura, locandina accesa. Riferimento: il set LEGO Arcanine #72160 (scatola 
 4. `-webkit-box-reflect` non esiste su Firefox: lì niente riflesso, il resto è uguale.
 
 Prove: `pnpm e2e` (nessuno scroll a 375/1280 anche col pannello aperto e in "per sala"; pannello con righe; link `/film/<id>`; alone che cambia), Lighthouse accessibilità 100 mobile e desktop, screenshot in `docs/screens/confronto.png`.
+
+## Rifinitura del 2026-11-23 (dopo la review di Alberto)
+- Tolta la testata: niente nome dell'app in alto, niente scritta "Cover Flow" (sull'iPod è il titolo di una schermata a cui arrivi da un menu; qui il menu non c'è e la scritta non diceva niente).
+- Posizione e raggio spostati in un foglio impostazioni (icona in basso a destra), con "Collega Letterboxd" e la data di aggiornamento. Sullo schermo resta solo il banner se i dati sono vecchi.
+- Le tre viste (per te, stasera, per sala) sono parole in basso, dove arriva il pollice, con un punto arancio sulla vista attiva.
+- Niente più maiuscoletto spaziato né bottoni a pillola: tag e azioni sono testo semplice. L'urgenza è una riga arancio ("Ultima: mercoledì 21:00, Godard"), non un nastro.
+- Riflesso delle locandine più leggero: dietro il titolo non si legge più il manifesto al contrario.
