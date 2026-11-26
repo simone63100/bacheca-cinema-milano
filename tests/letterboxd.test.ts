@@ -40,15 +40,14 @@ describe("Letterboxd", () => {
     const watchlist = fx("letterboxd-watchlist.html");
     const fetchImpl = vi.fn(async (url: string | URL | Request) => {
       const u = String(url);
-      if (u.endsWith("/test/")) return new Response("<html><body></body></html>", { status: 200 });
       if (u.endsWith("/watchlist/")) return new Response(watchlist, { status: 200 });
       return new Response("<title>Just a moment...</title>", { status: 403 });
     });
     const r = await readProfile("test", { delayMs: 0, fetchImpl: fetchImpl as typeof fetch });
     expect(r.complete).toBe(false);
     expect(r.entries.filter((e) => e.kind === "watchlist")).toHaveLength(8);
-    // profile + watchlist p1 + watchlist p2 (403) → stop; ratings never requested
-    expect(fetchImpl).toHaveBeenCalledTimes(3);
+    // watchlist p1 + watchlist p2 (403) → stop; ratings and profile never requested
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 
   it("rifiuta username non validi (niente path injection)", async () => {

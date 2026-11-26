@@ -161,12 +161,17 @@ export async function readProfile(username: string, opts: ReadOptions = {}): Pro
     if (requests >= maxPages) complete = false;
   };
 
-  const profile = await get(`/${username}/`);
-  if (!profile) return { entries, complete: false, requests };
-  entries.push(...parseFavourites(profile));
+  // Watchlist first: it is what the FOMO rules need most. Letterboxd challenges Node's fetch on
+  // the profile page but not on the grids (checked 2026-11-25), so the profile (only the four
+  // favourites) goes last and its failure costs just the favourites.
   await grid("watchlist/", "watchlist");
   // blocked once → stop for today: a second request after a challenge only makes it worse
   if (complete) await grid("films/by/rating/", "seen");
+  if (complete) {
+    const profile = await get(`/${username}/`);
+    if (profile) entries.push(...parseFavourites(profile));
+    else complete = false;
+  }
   return { entries, complete, requests };
 }
 
