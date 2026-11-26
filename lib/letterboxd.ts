@@ -67,6 +67,12 @@ export function parseFilmTmdbId(html: string): number | null {
   return m ? Number(m[1] ?? m[2]) : null;
 }
 
+/** ratings.csv has a Rating column, watchlist.csv does not. */
+export function csvKind(text: string): LbKind {
+  const head = text.replace(/^\uFEFF/, "").split(/\r?\n/, 1)[0].toLowerCase();
+  return /(^|,)\s*rating\s*(,|$)/.test(head) ? "seen" : "watchlist";
+}
+
 /** Letterboxd export CSV (watchlist.csv: Date,Name,Year,Letterboxd URI; ratings.csv adds Rating). */
 export function parseCsv(text: string, kind: LbKind): LbEntry[] {
   const rows = csvRows(text.replace(/^﻿/, ""));
@@ -126,19 +132,26 @@ export interface ReadOptions {
   delayMs?: number;
   maxPages?: number;
   fetchImpl?: typeof fetch;
+  /** Only the watchlist (the "Collega" button): quick, and what the FOMO rules need most. */
+  watchlistOnly?: boolean;
 }
 
 /** Reads a public profile slowly. Returns what it could read and whether it was cut short. */
-export async function readProfile(username: string, opts: ReadOptions = {}): Promise<{ entries: LbEntry[]; complete: boolean; requests: number }> {
+export async function readProfile(
+  username: string,
+  opts: ReadOptions = {},
+): Promise<{ entries: LbEntry[]; complete: boolean; requests: number; notFound: boolean }> {
   if (!USERNAME_RE.test(username)) throw new Error("username Letterboxd non valido");
   const f = opts.fetchImpl ?? fetch;
   const delay = opts.delayMs ?? 3000;
   const maxPages = opts.maxPages ?? 40;
   let requests = 0;
+  let notFound = false;
   const get = async (path: string): Promise<string | null> => {
     if (requests > 0) await sleep(delay);
     requests++;
     const r = await f(`${BASE}${path}`, { headers: { "user-agent": UA, accept: "text/html" }, redirect: "follow" });
+    if (r.status === 404 && requests === 1) notFound = true;
     if (r.status !== 200) return null;
     const html = await r.text();
     return /<title>Just a moment/i.test(html) ? null : html;
@@ -165,6 +178,7 @@ export async function readProfile(username: string, opts: ReadOptions = {}): Pro
   // the profile page but not on the grids (checked 2026-11-25), so the profile (only the four
   // favourites) goes last and its failure costs just the favourites.
   await grid("watchlist/", "watchlist");
+  if (notFound || opts.watchlistOnly) return { entries, complete, requests, notFound };
   // blocked once → stop for today: a second request after a challenge only makes it worse
   if (complete) await grid("films/by/rating/", "seen");
   if (complete) {
@@ -172,7 +186,7 @@ export async function readProfile(username: string, opts: ReadOptions = {}): Pro
     if (profile) entries.push(...parseFavourites(profile));
     else complete = false;
   }
-  return { entries, complete, requests };
+  return { entries, complete, requests, notFound };
 }
 
 export interface ScreeningFilm {

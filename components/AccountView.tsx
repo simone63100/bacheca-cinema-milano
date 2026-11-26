@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-import { useActionState, useState } from "react";
+import { Check, ChevronLeft, Circle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useActionState, useRef, useState } from "react";
 import { authClient } from "@/lib/auth/client";
-import { saveSettings, uploadCsv, type SaveState } from "@/lib/account";
+import { connectLetterboxd, savePlace, uploadCsv, type SaveState } from "@/lib/account";
 import { QUARTIERI } from "@/lib/view";
 
 export interface AccountData {
@@ -12,7 +13,8 @@ export interface AccountData {
   lat: number | null;
   lng: number | null;
   radiusKm: number;
-  entries: number;
+  watchlist: number;
+  rated: number;
   syncedAt: string | null;
 }
 
@@ -136,11 +138,11 @@ export function SignIn() {
   return (
     <main className="auth">
       <Back />
-      <h1 className="disp">{mode === "reset" ? "Nuova password" : "Il tuo Bijoux"}</h1>
+      <h1 className="disp">{mode === "reset" ? "Nuova password" : "Account Bijoux"}</h1>
       <p className="lede">
         {mode === "reset"
           ? "Ti mandiamo un codice via mail, poi scegli la password nuova."
-          : "Serve solo per collegare Letterboxd e ricevere una mail quando un film della tua lista sta per lasciare le sale."}
+          : "Un account solo per Bijoux, con la tua email: non è il tuo account Letterboxd. Dopo, nelle impostazioni, colleghi Letterboxd scrivendo solo il nome del tuo profilo."}
       </p>
 
       {mode !== "reset" && (
@@ -177,7 +179,7 @@ export function SignIn() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {mode !== "signin" && <p className="hint">Almeno 8 caratteri.</p>}
+            {mode !== "signin" && <p className="hint">Una password nuova per Bijoux, non quella di Letterboxd. Almeno 8 caratteri.</p>}
           </>
         )}
 
@@ -221,44 +223,112 @@ export function SignIn() {
 }
 
 export function AccountView({ data }: { data: AccountData }) {
-  const [state, save, saving] = useActionState(saveSettings, idle);
+  const [lbState, connect, connecting] = useActionState(connectLetterboxd, idle);
   const [csvState, upload, uploading] = useActionState(uploadCsv, idle);
-  const near = QUARTIERI.find((q) => data.lat != null && Math.abs(q.lat - data.lat) < 1e-4 && Math.abs(q.lng - data.lng!) < 1e-4);
-  const [pos, setPos] = useState<{ lat: number | null; lng: number | null; label: string }>({
+  const csvForm = useRef<HTMLFormElement>(null);
+
+  const quartiere = QUARTIERI.find((q) => data.lat != null && Math.abs(q.lat - data.lat) < 1e-4 && Math.abs(q.lng - data.lng!) < 1e-4);
+  const [place, setPlace] = useState({
     lat: data.lat,
     lng: data.lng,
-    label: near?.label ?? (data.lat != null ? "Posizione salvata" : ""),
+    label: quartiere?.label ?? (data.lat != null ? "La tua posizione" : ""),
+    radius: data.radiusKm,
   });
+  const router = useRouter();
+  const [placeMsg, setPlaceMsg] = useState<SaveState>(idle);
+  const [placePending, setPlacePending] = useState(false);
+  const storePlace = async (next: typeof place) => {
+    setPlace(next);
+    if (next.lat == null || next.lng == null) return;
+    setPlacePending(true);
+    try {
+      const r = await savePlace(next.lat, next.lng, next.radius);
+      setPlaceMsg(r);
+      if (r.ok) router.refresh(); // updates the checklist at the top
+    } catch {
+      setPlaceMsg({ ok: false, message: "Non sono riuscito a salvare: riprova." });
+    } finally {
+      setPlacePending(false);
+    }
+  };
+
+  const steps = [
+    {
+      done: !!data.letterboxd && data.watchlist > 0,
+      title: "Letterboxd collegato",
+      detail: data.letterboxd ? `${data.letterboxd}, ${data.watchlist} film in watchlist` : "Non ancora",
+    },
+    {
+      done: data.lat != null,
+      title: "Dove sei",
+      detail: data.lat != null ? `${place.label || "Posizione salvata"}, entro ${data.radiusKm} km` : "Non ancora",
+    },
+    {
+      done: data.rated > 0,
+      title: "Voti caricati",
+      detail: data.rated > 0 ? `${data.rated} voti` : "Consigliato: servono per avvisarti dei film che hai amato",
+    },
+  ];
+  const ready = steps[0].done && steps[1].done;
 
   return (
     <main className="auth">
       <Back />
       <h1 className="disp">Impostazioni</h1>
-      <p className="lede">{data.email}</p>
+      <p className="lede">{ready ? `Pronto. Ti scriviamo a ${data.email} quando stai per perderti un film.` : `Due passi e ti scriviamo a ${data.email} quando stai per perderti un film.`}</p>
 
-      <form action={save} className="fields">
-        <h2 className="disp">Letterboxd</h2>
-        <label htmlFor="lb">Username pubblico</label>
-        <input id="lb" name="letterboxd" defaultValue={data.letterboxd ?? ""} placeholder="ilmionome" autoComplete="off" autoCapitalize="none" />
-        <p className="hint">
-          {data.entries > 0 ? `${data.entries} film letti` : "Nessun film letto finora"}
-          {data.syncedAt ? `, ultima lettura il ${new Date(data.syncedAt).toLocaleDateString("it-IT")}` : ""}. La watchlist si aggiorna una volta al giorno.
-        </p>
+      <ul className="steps" aria-label="Stato">
+        {steps.map((s) => (
+          <li key={s.title} data-done={s.done}>
+            {s.done ? <Check size={18} strokeWidth={2} aria-label="fatto" /> : <Circle size={18} strokeWidth={1.5} aria-label="da fare" />}
+            <span>
+              <b>{s.title}</b>
+              <small>{s.detail}</small>
+            </span>
+          </li>
+        ))}
+      </ul>
 
-        <h2 className="disp">Dove sei</h2>
-        <label htmlFor="q">Da dove parti</label>
+      <section className="fields" aria-labelledby="lb-h">
+        <h2 id="lb-h" className="disp">
+          Letterboxd
+        </h2>
+        <form action={connect} className="inline">
+          <label htmlFor="lb">Nome del tuo profilo Letterboxd</label>
+          <p className="hint">
+            Non entri con Letterboxd: ci basta il nome del profilo pubblico, quello nell&apos;indirizzo letterboxd.com/<b>nome</b>. Nessuna password.
+          </p>
+          <div className="row-input">
+            <input id="lb" name="letterboxd" defaultValue={data.letterboxd ?? ""} placeholder="es. albertodm" autoComplete="off" autoCapitalize="none" spellCheck={false} />
+            <button className="btn" type="submit" disabled={connecting}>
+              {connecting ? "Leggo…" : data.letterboxd ? "Aggiorna" : "Collega"}
+            </button>
+          </div>
+          {lbState.message && (
+            <p className={lbState.ok ? "ok" : "err"} role="status">
+              {lbState.message}
+            </p>
+          )}
+        </form>
+      </section>
+
+      <section className="fields" aria-labelledby="pos-h">
+        <h2 id="pos-h" className="disp">
+          Dove sei
+        </h2>
+        <p className="hint">Ti avvisiamo solo per le sale entro questa distanza. Si salva da solo.</p>
+        <label htmlFor="q">Quartiere</label>
         <select
           id="q"
-          value={near?.label ?? pos.label}
+          value={QUARTIERI.some((q) => q.label === place.label) ? place.label : ""}
           onChange={(e) => {
             const q = QUARTIERI.find((x) => x.label === e.target.value);
-            if (q) setPos({ lat: q.lat, lng: q.lng, label: q.label });
+            if (q) storePlace({ ...place, lat: q.lat, lng: q.lng, label: q.label });
           }}
         >
           <option value="" disabled>
-            Scegli un quartiere
+            {place.lat != null ? "La tua posizione" : "Scegli un quartiere"}
           </option>
-          {pos.label && !QUARTIERI.some((q) => q.label === pos.label) && <option>{pos.label}</option>}
           {QUARTIERI.map((q) => (
             <option key={q.label}>{q.label}</option>
           ))}
@@ -266,62 +336,74 @@ export function AccountView({ data }: { data: AccountData }) {
         <button
           type="button"
           className="textbtn"
-          onClick={() => navigator.geolocation?.getCurrentPosition((p) => setPos({ lat: p.coords.latitude, lng: p.coords.longitude, label: "Posizione attuale" }))}
+          onClick={() =>
+            navigator.geolocation?.getCurrentPosition(
+              (p) => storePlace({ ...place, lat: p.coords.latitude, lng: p.coords.longitude, label: "La tua posizione" }),
+              () => setPlaceMsg({ ok: false, message: "Posizione non disponibile: scegli un quartiere." }),
+            )
+          }
         >
           Usa la mia posizione
         </button>
-        <label htmlFor="r">Quanto lontano</label>
-        <select id="r" name="radius" defaultValue={data.radiusKm}>
+        <label htmlFor="r">Distanza massima</label>
+        <select id="r" value={place.radius} onChange={(e) => storePlace({ ...place, radius: Number(e.target.value) })}>
           {[2, 3, 5, 8, 12, 20].map((k) => (
             <option key={k} value={k}>
               Entro {k} km
             </option>
           ))}
         </select>
-        <input type="hidden" name="lat" value={pos.lat ?? ""} />
-        <input type="hidden" name="lng" value={pos.lng ?? ""} />
-
-        {state.message && (
-          <p className={state.ok ? "hint" : "err"} role="status">
-            {state.message}
+        {(placePending || placeMsg.message) && (
+          <p className={placeMsg.ok ? "ok" : "err"} role="status">
+            {placePending ? "Salvo…" : placeMsg.message}
           </p>
         )}
-        <button className="btn" type="submit" disabled={saving}>
-          {saving ? "Salvo…" : "Salva"}
-        </button>
-      </form>
+      </section>
 
-      <form action={upload} className="fields">
-        <h2 className="disp">Carica l&apos;export</h2>
-        <p className="hint">
-          I voti non si leggono dal profilo pubblico: caricali da Letterboxd, Impostazioni, Data, Export. Va bene anche la watchlist.
-        </p>
-        <label htmlFor="kind">File</label>
-        <select id="kind" name="kind" defaultValue="seen">
-          <option value="seen">ratings.csv (voti)</option>
-          <option value="watchlist">watchlist.csv</option>
-        </select>
-        <input id="csv" name="csv" type="file" accept=".csv,text/csv" aria-label="File CSV" />
-        {csvState.message && (
-          <p className={csvState.ok ? "hint" : "err"} role="status">
-            {csvState.message}
-          </p>
-        )}
-        <button className="btn ghost" type="submit" disabled={uploading}>
-          {uploading ? "Carico…" : "Carica"}
-        </button>
-      </form>
+      <section className="fields" aria-labelledby="csv-h">
+        <h2 id="csv-h" className="disp">
+          Voti
+        </h2>
+        <p className="hint">Letterboxd non mostra i voti a chi non è nel tuo account, quindi servono dal tuo export:</p>
+        <ol className="howto">
+          <li>
+            Apri{" "}
+            <a href="https://letterboxd.com/settings/data/" target="_blank" rel="noopener">
+              letterboxd.com/settings/data
+            </a>{" "}
+            e premi Export your data.
+          </li>
+          <li>Apri lo zip che scarica.</li>
+          <li>Qui sotto scegli il file ratings.csv: si carica da solo.</li>
+        </ol>
+        <form action={upload} ref={csvForm}>
+          <label className="btn ghost filebtn" htmlFor="csv">
+            {uploading ? "Carico…" : data.rated > 0 ? "Carica di nuovo ratings.csv" : "Scegli ratings.csv"}
+          </label>
+          <input id="csv" name="csv" type="file" accept=".csv,text/csv" className="sr" onChange={() => csvForm.current?.requestSubmit()} />
+          {csvState.message && (
+            <p className={csvState.ok ? "ok" : "err"} role="status">
+              {csvState.message}
+            </p>
+          )}
+        </form>
+      </section>
 
-      <button
-        type="button"
-        className="textbtn signout"
-        onClick={async () => {
-          await authClient.signOut();
-          window.location.assign("/");
-        }}
-      >
-        Esci
-      </button>
+      <div className="done-row">
+        <Link href="/" className="btn">
+          Torna alle locandine
+        </Link>
+        <button
+          type="button"
+          className="textbtn signout"
+          onClick={async () => {
+            await authClient.signOut();
+            window.location.assign("/");
+          }}
+        >
+          Esci dall&apos;account
+        </button>
+      </div>
     </main>
   );
 }

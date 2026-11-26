@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "./auth/server";
 import { q } from "./db";
 import { saveEntries } from "./lbsync";
-import { USERNAME_RE, parseCsv, type LbKind } from "./letterboxd";
+import { USERNAME_RE, csvKind, parseCsv, readProfile } from "./letterboxd";
 
 async function currentUser() {
   const { data } = await auth().getSession();
@@ -18,42 +18,63 @@ export interface SaveState {
   message: string;
 }
 
-export async function saveSettings(_prev: SaveState, form: FormData): Promise<SaveState> {
+/**
+ * "Collega": checks the profile exists and reads the watchlist right away (a few pages, once,
+ * because the user asked), so the page can say how many films it found.
+ */
+export async function connectLetterboxd(_prev: SaveState, form: FormData): Promise<SaveState> {
   const u = await currentUser();
-  const username = String(form.get("letterboxd") ?? "").trim().replace(/^@/, "");
-  if (username && !USERNAME_RE.test(username)) return { ok: false, message: "Username Letterboxd non valido." };
-  const lat = Number(form.get("lat"));
-  const lng = Number(form.get("lng"));
-  const radius = Number(form.get("radius"));
-  const validPos = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat - 45.46) < 0.5 && Math.abs(lng - 9.19) < 0.5;
-  if (!validPos) return { ok: false, message: "Scegli una posizione a Milano." };
-  if (!(radius >= 1 && radius <= 30)) return { ok: false, message: "Raggio fra 1 e 30 km." };
-  const prev = await q<{ letterboxd_username: string | null }>("SELECT letterboxd_username FROM users WHERE id = $1", [u.id]);
-  const changed = (prev[0]?.letterboxd_username ?? "") !== username;
-  await q(
-    `UPDATE users SET letterboxd_username = $2, lat = $3, lng = $4, radius_km = $5,
-       letterboxd_synced_at = CASE WHEN $6 THEN NULL ELSE letterboxd_synced_at END
-     WHERE id = $1`,
-    [u.id, username || null, lat, lng, radius, changed],
-  );
+  const raw = String(form.get("letterboxd") ?? "").trim();
+  const username = raw.replace(/^@/, "").replace(/^https?:\/\/(www\.)?letterboxd\.com\//i, "").replace(/\/.*$/, "");
+  if (!username) {
+    await q("UPDATE users SET letterboxd_username = NULL WHERE id = $1", [u.id]);
+    await q("DELETE FROM lb_entries WHERE user_id = $1 AND kind = 'watchlist'", [u.id]);
+    revalidatePath("/account");
+    return { ok: true, message: "Letterboxd scollegato." };
+  }
+  if (!USERNAME_RE.test(username)) return { ok: false, message: "Questo non sembra uno username di Letterboxd." };
+
+  const r = await readProfile(username, { watchlistOnly: true, delayMs: 1500, maxPages: 12 });
+  if (r.notFound) return { ok: false, message: `Su Letterboxd non esiste un profilo "${username}". Controlla lo username: è quello nell'indirizzo del tuo profilo.` };
+
+  await q("UPDATE users SET letterboxd_username = $2, letterboxd_synced_at = CASE WHEN $3 THEN now() ELSE NULL END WHERE id = $1", [u.id, username, r.complete]);
+  if (r.entries.length || r.complete) await saveEntries(u.id, r.entries, ["watchlist"]);
   revalidatePath("/account");
-  return { ok: true, message: username ? "Salvato. La watchlist si aggiorna una volta al giorno, all'alba." : "Salvato." };
+  if (!r.complete && !r.entries.length) {
+    return { ok: true, message: `Collegato a ${username}. Letterboxd ora non risponde: leggo la watchlist con l'aggiornamento di stanotte.` };
+  }
+  return { ok: true, message: `Collegato a ${username}: ${r.entries.length} film nella watchlist.` };
 }
 
+/** Position and radius save as soon as they change. */
+export async function savePlace(lat: number, lng: number, radius: number): Promise<SaveState> {
+  const u = await currentUser();
+  const validPos = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat - 45.46) < 0.5 && Math.abs(lng - 9.19) < 0.5;
+  if (!validPos) return { ok: false, message: "La posizione deve essere a Milano." };
+  if (!(radius >= 1 && radius <= 30)) return { ok: false, message: "Raggio fra 1 e 30 km." };
+  await q("UPDATE users SET lat = $2, lng = $3, radius_km = $4 WHERE id = $1", [u.id, lat, lng, radius]);
+  return { ok: true, message: "Salvato." };
+}
+
+/** Uploads ratings.csv or watchlist.csv: the type is read from the file's columns. */
 export async function uploadCsv(_prev: SaveState, form: FormData): Promise<SaveState> {
   const u = await currentUser();
   const file = form.get("csv");
-  const kind = String(form.get("kind")) as LbKind;
-  if (!(file instanceof File) || file.size === 0) return { ok: false, message: "Scegli un file CSV." };
+  if (!(file instanceof File) || file.size === 0) return { ok: false, message: "Scegli un file." };
   if (file.size > 2_000_000) return { ok: false, message: "File troppo grande (max 2 MB)." };
-  if (!["watchlist", "seen"].includes(kind)) return { ok: false, message: "Tipo di lista non valido." };
   try {
-    const entries = parseCsv(await file.text(), kind);
+    const text = await file.text();
+    const kind = csvKind(text);
+    const entries = parseCsv(text, kind);
+    if (!entries.length) return { ok: false, message: "Il file non contiene film. Serve ratings.csv o watchlist.csv dall'export di Letterboxd." };
     await saveEntries(u.id, entries, [kind]);
     revalidatePath("/account");
-    return { ok: true, message: `${entries.length} film importati.` };
-  } catch (e) {
-    return { ok: false, message: (e as Error).message };
+    return {
+      ok: true,
+      message: kind === "seen" ? `${entries.length} voti importati da ${file.name}.` : `${entries.length} film della watchlist importati da ${file.name}.`,
+    };
+  } catch {
+    return { ok: false, message: "Non riesco a leggere il file. Serve ratings.csv o watchlist.csv dall'export di Letterboxd." };
   }
 }
 

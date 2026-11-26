@@ -176,3 +176,22 @@ body.screen { height: 100dvh; overflow: hidden; }
 .or { text-align: center; color: var(--sand); font-size: 14px; margin-top: 10px; }
 .auth .textbtn { min-height: 44px; }
 .signout { margin-top: 28px; color: var(--sand) !important; }
+
+/* impostazioni: stato in cima, conferme visibili */
+.steps { list-style: none; display: grid; gap: 2px; margin: 6px 0 8px; background: var(--panel); border-radius: 6px; padding: 6px 14px; }
+.steps li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; padding: 9px 0; }
+.steps li + li { border-top: 1px solid rgba(220, 193, 150, 0.12); }
+.steps svg { margin-top: 3px; color: var(--sand); }
+.steps li[data-done="true"] svg { color: var(--orange); }
+.steps b { display: block; font-weight: 500; }
+.steps small { display: block; color: var(--sand); font-size: 14px; }
+.fields .inline { display: grid; gap: 6px; }
+.row-input { display: flex; gap: 8px; }
+.row-input input { flex: 1; min-width: 0; }
+.row-input .btn { margin-top: 0; width: auto; flex: 0 0 auto; }
+.ok { color: var(--text); font-size: 15px; margin-top: 6px; padding-left: 10px; border-left: 2px solid var(--orange); }
+.howto { padding-left: 20px; color: var(--text); font-size: 15px; display: grid; gap: 4px; }
+.filebtn { width: 100%; margin-top: 8px; cursor: pointer; }
+.done-row { display: grid; gap: 4px; margin-top: 28px; }
+.done-row .btn { width: 100%; }
+.done-row .signout { margin-top: 0; justify-self: center; }
