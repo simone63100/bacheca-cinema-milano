@@ -12,7 +12,7 @@ Per un cinefilo milanese che oggi controlla a mano 10+ siti di sale diverse: un 
 - **Input utente:** (1) posizione dal browser (`navigator.geolocation`, con permesso), fallback indirizzo/quartiere; raggio in km regolabile; ogni sala ha lat/lng nel DB. (2) Letterboxd opzionale.
 - **Letterboxd:** A = username → watchlist + film visti/voti pubblici letti dal server 1 volta al giorno (scraping, zona grigia: rate limit basso, cache). B = upload CSV come riserva. C = richiesta API a api@letterboxd.com da mandare quando il sito v1 è online e mostrabile.
 - **Matching film:** tramite id TMDB (titolo italiano ↔ originale ↔ Letterboxd). LLM economico solo per i casi ambigui (v.o., titolo non trovato).
-- **Sito aperto senza login.** Login **Google** (Neon Auth) solo per collegare Letterboxd e ricevere mail. Niente magic link come standard.
+- **Sito aperto senza login.** Login (Neon Auth) solo per collegare Letterboxd e ricevere mail: **email e password** oppure **Google** (email e password aggiunte il 2026-11-26, su richiesta di Alberto). Reset password con codice via mail. Niente magic link.
 - **Mail solo FOMO, mai newsletter di novità.** Max 1 mail al giorno per utente, nessuna se non c'è niente. Regole:
   1. watchlist: ultima proiezione entro il raggio tra ≤3 giorni; se è un film non di prima visione (riproposto) → appena rilevato;
   2. visti con voto ≥4★ o preferiti: appena rilevati, **solo se restauro o proiezione speciale**;

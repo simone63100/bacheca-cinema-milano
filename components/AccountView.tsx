@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { useActionState, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { saveSettings, uploadCsv, type SaveState } from "@/lib/account";
 import { QUARTIERI } from "@/lib/view";
-
 
 export interface AccountData {
   email: string;
@@ -18,43 +18,203 @@ export interface AccountData {
 
 const idle: SaveState = { ok: true, message: "" };
 
+function Back() {
+  return (
+    <Link href="/" className="back">
+      <ChevronLeft size={18} strokeWidth={1.5} aria-hidden="true" /> Locandine
+    </Link>
+  );
+}
+
+type Mode = "signin" | "signup" | "reset";
+
+/** Better Auth error codes → Italian, the rest falls back to the server message. */
+const BY_MESSAGE: [RegExp, string][] = [
+  [/invalid email or password|invalid password|user not found/i, "INVALID_EMAIL_OR_PASSWORD"],
+  [/already exists/i, "USER_ALREADY_EXISTS"],
+  [/password (is )?too short/i, "PASSWORD_TOO_SHORT"],
+  [/invalid otp|otp expired|invalid code/i, "INVALID_OTP"],
+];
+
+function explain(e: { code?: string; message?: string; status?: number } | null | undefined): string {
+  // thrown AuthApiError carries its own code; the server's code survives only in the message
+  const code = BY_MESSAGE.find(([re]) => re.test(e?.message ?? ""))?.[1] ?? e?.code;
+  if (!code && (e?.status === 401 || e?.status === 403)) return "Email o password non corretti.";
+  switch (code) {
+    case "INVALID_EMAIL_OR_PASSWORD":
+    case "INVALID_PASSWORD":
+    case "USER_NOT_FOUND":
+      return "Email o password non corretti.";
+    case "USER_ALREADY_EXISTS":
+    case "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL":
+      return "Esiste già un account con questa email: entra invece di crearne uno.";
+    case "PASSWORD_TOO_SHORT":
+      return "La password deve avere almeno 8 caratteri.";
+    case "INVALID_OTP":
+    case "OTP_EXPIRED":
+      return "Codice non valido o scaduto.";
+    default:
+      return e?.message || "Qualcosa non ha funzionato, riprova.";
+  }
+}
+
+// emailOtp is a managed plugin: typed loosely so a missing method fails at runtime with a message
+type OtpClient = {
+  emailOtp?: {
+    sendVerificationOtp?: (a: { email: string; type: "forget-password" }) => Promise<{ error?: { code?: string; message?: string } | null }>;
+    resetPassword?: (a: { email: string; otp: string; password: string }) => Promise<{ error?: { code?: string; message?: string } | null }>;
+  };
+};
+
 export function SignIn() {
+  const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [codeSent, setCodeSent] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  return (
-    <main className="page tc">
-      <Link className="back" href="/">
-        ‹ la bacheca
-      </Link>
+  const [notice, setNotice] = useState<string | null>(null);
 
-      <h1 className="t disp" style={{ marginTop: 28 }}>
-        Non perderti niente
-      </h1>
-      <p className="m" style={{ maxWidth: 360, margin: "10px auto 0" }}>
-        Collega Letterboxd: ti scriviamo solo quando un film della tua lista sta per lasciare le sale.
+  const switchTo = (m: Mode) => {
+    setMode(m);
+    setError(null);
+    setNotice(null);
+    setCodeSent(false);
+  };
+
+  const submit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPending(true);
+    setError(null);
+    setNotice(null);
+    try {
+      if (mode === "signin") {
+        const { error } = await authClient.signIn.email({ email, password });
+        if (error) return setError(explain(error));
+        window.location.assign("/account");
+      } else if (mode === "signup") {
+        const { error } = await authClient.signUp.email({ email, password, name: email.split("@")[0] });
+        if (error) return setError(explain(error));
+        window.location.assign("/account");
+      } else {
+        const otpApi = (authClient as unknown as OtpClient).emailOtp;
+        if (!codeSent) {
+          const r = await otpApi?.sendVerificationOtp?.({ email, type: "forget-password" });
+          if (!r || r.error) return setError(explain(r?.error));
+          setCodeSent(true);
+          setNotice(`Ti abbiamo mandato un codice a ${email}.`);
+        } else {
+          const r = await otpApi?.resetPassword?.({ email, otp, password });
+          if (!r || r.error) return setError(explain(r?.error));
+          switchTo("signin");
+          setNotice("Password cambiata: ora puoi entrare.");
+        }
+      }
+    } catch (err) {
+      // the Neon client throws AuthApiError on 4xx instead of returning { error }
+      setError(explain(err as { code?: string; message?: string; status?: number }));
+    } finally {
+      setPending(false);
+    }
+  };
+
+  const google = async () => {
+    setPending(true);
+    try {
+      const { error } = await authClient.signIn.social({ provider: "google", callbackURL: "/account" });
+      if (error) throw error;
+    } catch (err) {
+      setError(explain(err as { code?: string; message?: string; status?: number }));
+      setPending(false);
+    }
+  };
+
+  const cta =
+    mode === "signin" ? "Entra" : mode === "signup" ? "Crea account" : codeSent ? "Imposta la nuova password" : "Mandami il codice";
+
+  return (
+    <main className="auth">
+      <Back />
+      <h1 className="disp">{mode === "reset" ? "Nuova password" : "Il tuo Bijoux"}</h1>
+      <p className="lede">
+        {mode === "reset"
+          ? "Ti mandiamo un codice via mail, poi scegli la password nuova."
+          : "Serve solo per collegare Letterboxd e ricevere una mail quando un film della tua lista sta per lasciare le sale."}
       </p>
-      <div className="acts" style={{ maxWidth: 320, margin: "26px auto 0", display: "flex" }}>
-        <a
-          className="btn"
-          href="#"
-          aria-disabled={pending}
-          onClick={async (e) => {
-            e.preventDefault();
-            setPending(true);
-            const { error } = await authClient.signIn.social({ provider: "google", callbackURL: "/account" });
-            if (error) {
-              setError(error.message ?? "Accesso non riuscito");
-              setPending(false);
-            }
-          }}
-        >
-          {pending ? "Un attimo…" : "Entra con Google"}
-        </a>
-      </div>
-      {error && (
-        <p className="lab" role="alert" style={{ marginTop: 14, color: "var(--orange)" }}>
-          {error}
-        </p>
+
+      {mode !== "reset" && (
+        <div className="views auth-switch" role="group" aria-label="Accesso">
+          <button type="button" aria-pressed={mode === "signin"} onClick={() => switchTo("signin")}>
+            Entra
+          </button>
+          <button type="button" aria-pressed={mode === "signup"} onClick={() => switchTo("signup")}>
+            Crea account
+          </button>
+        </div>
+      )}
+
+      <form className="fields" onSubmit={submit}>
+        <label htmlFor="email">Email</label>
+        <input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={mode === "reset" && codeSent} />
+
+        {mode === "reset" && codeSent && (
+          <>
+            <label htmlFor="otp">Codice</label>
+            <input id="otp" inputMode="numeric" autoComplete="one-time-code" required value={otp} onChange={(e) => setOtp(e.target.value.trim())} />
+          </>
+        )}
+
+        {(mode !== "reset" || codeSent) && (
+          <>
+            <label htmlFor="password">{mode === "reset" ? "Nuova password" : "Password"}</label>
+            <input
+              id="password"
+              type="password"
+              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {mode !== "signin" && <p className="hint">Almeno 8 caratteri.</p>}
+          </>
+        )}
+
+        {error && (
+          <p className="err" role="alert">
+            {error}
+          </p>
+        )}
+        {notice && (
+          <p className="hint" role="status">
+            {notice}
+          </p>
+        )}
+
+        <button className="btn" type="submit" disabled={pending}>
+          {pending ? "Un attimo…" : cta}
+        </button>
+      </form>
+
+      {mode === "signin" && (
+        <button type="button" className="textbtn" onClick={() => switchTo("reset")}>
+          Password dimenticata?
+        </button>
+      )}
+      {mode === "reset" && (
+        <button type="button" className="textbtn" onClick={() => switchTo("signin")}>
+          Torna all&apos;accesso
+        </button>
+      )}
+
+      {mode !== "reset" && (
+        <>
+          <p className="or">oppure</p>
+          <button type="button" className="btn ghost" onClick={google} disabled={pending}>
+            Continua con Google
+          </button>
+        </>
       )}
     </main>
   );
@@ -67,136 +227,101 @@ export function AccountView({ data }: { data: AccountData }) {
   const [pos, setPos] = useState<{ lat: number | null; lng: number | null; label: string }>({
     lat: data.lat,
     lng: data.lng,
-    label: near?.label ?? (data.lat != null ? "posizione salvata" : ""),
+    label: near?.label ?? (data.lat != null ? "Posizione salvata" : ""),
   });
 
   return (
-    <main className="page">
-      <div className="tc">
-        <Link className="back" href="/">
-          ‹ la bacheca
-        </Link>
-        <h1 className="t disp" style={{ marginTop: 10 }}>
-          Le tue impostazioni
-        </h1>
-        <p className="m">{data.email}</p>
-      </div>
+    <main className="auth">
+      <Back />
+      <h1 className="disp">Impostazioni</h1>
+      <p className="lede">{data.email}</p>
 
-      <form action={save} className="tb" style={{ maxWidth: 440, margin: "24px auto 0" }}>
-        <div className="cn">
-          <b>Letterboxd</b>
-        </div>
-        <label className="lab" htmlFor="lb" style={{ display: "block", marginTop: 10 }}>
-          Username pubblico
-        </label>
-        <div className="locform" style={{ margin: "6px 0 0", maxWidth: "none", justifyContent: "flex-start" }}>
-          <input id="lb" name="letterboxd" defaultValue={data.letterboxd ?? ""} placeholder="es. ilmionome" autoComplete="off" />
-        </div>
-        <p style={{ fontSize: 14, marginTop: 6 }}>
+      <form action={save} className="fields">
+        <h2 className="disp">Letterboxd</h2>
+        <label htmlFor="lb">Username pubblico</label>
+        <input id="lb" name="letterboxd" defaultValue={data.letterboxd ?? ""} placeholder="ilmionome" autoComplete="off" autoCapitalize="none" />
+        <p className="hint">
           {data.entries > 0 ? `${data.entries} film letti` : "Nessun film letto finora"}
-          {data.syncedAt ? ` · ultima lettura ${new Date(data.syncedAt).toLocaleDateString("it-IT")}` : ""}
+          {data.syncedAt ? `, ultima lettura il ${new Date(data.syncedAt).toLocaleDateString("it-IT")}` : ""}. La watchlist si aggiorna una volta al giorno.
         </p>
 
-        <div className="cn" style={{ marginTop: 18 }}>
-          <b>Dove sei</b>
-        </div>
-        <div className="locform" style={{ margin: "10px 0 0", maxWidth: "none", justifyContent: "flex-start" }}>
-          <label className="sr" htmlFor="q">
-            Quartiere
-          </label>
-          <select
-            id="q"
-            value={near?.label ?? pos.label}
-            onChange={(e) => {
-              const q = QUARTIERI.find((x) => x.label === e.target.value);
-              if (q) setPos({ lat: q.lat, lng: q.lng, label: q.label });
-            }}
-          >
-            <option value="" disabled>
-              Scegli un quartiere
+        <h2 className="disp">Dove sei</h2>
+        <label htmlFor="q">Da dove parti</label>
+        <select
+          id="q"
+          value={near?.label ?? pos.label}
+          onChange={(e) => {
+            const q = QUARTIERI.find((x) => x.label === e.target.value);
+            if (q) setPos({ lat: q.lat, lng: q.lng, label: q.label });
+          }}
+        >
+          <option value="" disabled>
+            Scegli un quartiere
+          </option>
+          {pos.label && !QUARTIERI.some((q) => q.label === pos.label) && <option>{pos.label}</option>}
+          {QUARTIERI.map((q) => (
+            <option key={q.label}>{q.label}</option>
+          ))}
+        </select>
+        <button
+          type="button"
+          className="textbtn"
+          onClick={() => navigator.geolocation?.getCurrentPosition((p) => setPos({ lat: p.coords.latitude, lng: p.coords.longitude, label: "Posizione attuale" }))}
+        >
+          Usa la mia posizione
+        </button>
+        <label htmlFor="r">Quanto lontano</label>
+        <select id="r" name="radius" defaultValue={data.radiusKm}>
+          {[2, 3, 5, 8, 12, 20].map((k) => (
+            <option key={k} value={k}>
+              Entro {k} km
             </option>
-            {pos.label && !QUARTIERI.some((q) => q.label === pos.label) && <option>{pos.label}</option>}
-            {QUARTIERI.map((q) => (
-              <option key={q.label}>{q.label}</option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={() =>
-              navigator.geolocation?.getCurrentPosition((p) => setPos({ lat: p.coords.latitude, lng: p.coords.longitude, label: "posizione attuale" }))
-            }
-          >
-            Usa la posizione
-          </button>
-          <label className="sr" htmlFor="r">
-            Raggio
-          </label>
-          <select id="r" name="radius" defaultValue={data.radiusKm}>
-            {[2, 3, 5, 8, 12, 20].map((k) => (
-              <option key={k} value={k}>
-                entro {k} km
-              </option>
-            ))}
-          </select>
-        </div>
+          ))}
+        </select>
         <input type="hidden" name="lat" value={pos.lat ?? ""} />
         <input type="hidden" name="lng" value={pos.lng ?? ""} />
 
-        <div className="acts">
-          <button className="btn" type="submit" disabled={saving} style={{ flex: 1 }}>
-            {saving ? "Salvo…" : "Salva"}
-          </button>
-        </div>
         {state.message && (
-          <p role="status" style={{ marginTop: 10, fontSize: 14, color: state.ok ? "inherit" : "var(--orange)" }}>
+          <p className={state.ok ? "hint" : "err"} role="status">
             {state.message}
           </p>
         )}
+        <button className="btn" type="submit" disabled={saving}>
+          {saving ? "Salvo…" : "Salva"}
+        </button>
       </form>
 
-      <form action={upload} className="tb" style={{ maxWidth: 440, margin: "36px auto 0" }}>
-        <div className="cn">
-          <b>Oppure carica l&apos;export</b>
-        </div>
-        <p style={{ fontSize: 14, marginTop: 8 }}>
-          Da Letterboxd: Settings → Data → Export. Carica <i>watchlist.csv</i> o <i>ratings.csv</i>.
+      <form action={upload} className="fields">
+        <h2 className="disp">Carica l&apos;export</h2>
+        <p className="hint">
+          I voti non si leggono dal profilo pubblico: caricali da Letterboxd, Impostazioni, Data, Export. Va bene anche la watchlist.
         </p>
-        <div className="locform" style={{ margin: "10px 0 0", maxWidth: "none", justifyContent: "flex-start" }}>
-          <label className="sr" htmlFor="csv">
-            File CSV
-          </label>
-          <input id="csv" name="csv" type="file" accept=".csv,text/csv" />
-          <label className="sr" htmlFor="kind">
-            Tipo
-          </label>
-          <select id="kind" name="kind" defaultValue="watchlist">
-            <option value="watchlist">watchlist.csv</option>
-            <option value="seen">ratings.csv</option>
-          </select>
-          <button type="submit" disabled={uploading}>
-            {uploading ? "Carico…" : "Carica"}
-          </button>
-        </div>
+        <label htmlFor="kind">File</label>
+        <select id="kind" name="kind" defaultValue="seen">
+          <option value="seen">ratings.csv (voti)</option>
+          <option value="watchlist">watchlist.csv</option>
+        </select>
+        <input id="csv" name="csv" type="file" accept=".csv,text/csv" aria-label="File CSV" />
         {csvState.message && (
-          <p role="status" style={{ marginTop: 10, fontSize: 14, color: csvState.ok ? "inherit" : "var(--orange)" }}>
+          <p className={csvState.ok ? "hint" : "err"} role="status">
             {csvState.message}
           </p>
         )}
+        <button className="btn ghost" type="submit" disabled={uploading}>
+          {uploading ? "Carico…" : "Carica"}
+        </button>
       </form>
 
-      <p className="tc" style={{ marginTop: 40 }}>
-        <button
-          type="button"
-          className="lab"
-          style={{ textDecoration: "underline", textUnderlineOffset: 3 }}
-          onClick={async () => {
-            await authClient.signOut();
-            window.location.href = "/";
-          }}
-        >
-          Esci
-        </button>
-      </p>
+      <button
+        type="button"
+        className="textbtn signout"
+        onClick={async () => {
+          await authClient.signOut();
+          window.location.assign("/");
+        }}
+      >
+        Esci
+      </button>
     </main>
   );
 }
