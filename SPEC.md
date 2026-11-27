@@ -57,3 +57,28 @@ Per un cinefilo milanese che oggi controlla a mano 10+ siti di sale diverse: un 
 - [ ] Neon schedule trigger: 3 run consecutivi riusciti nella tabella `runs`, in 3 giorni diversi.
 - [ ] Login Google sul deploy + mail FOMO reale ricevuta su un account di test (screenshot).
 - [ ] *(sostituito dai criteri di accettazione di `TODO.md`)* Screenshot a 390px di home e scheda accanto a `refs/bijoux.png` (Mendl's): stessi token colore (verificati con `getComputedStyle`), stessi font, monogramma ricamato, doppia cornice, passe-partout, nastro rosso; Lighthouse accessibility ≥90 (il navy su rosa e il rosa chiaro su rosso passano il contrasto AA).
+
+---
+
+# v2 — più città (grilling 2026-11-27)
+
+## Decisioni
+- **Città: Milano e Bogotá**, poi Napoli. La struttura deve rendere una città nuova un lavoro di giorni, non una riscrittura.
+- **Solo sale d'essai anche a Bogotá** (stessa identità; niente multisala, che lì sono quasi tutti in v.o. e non distinguono niente).
+- **Lettura delle sale: scraper scritti a mano** per ogni fonte, con fixture e test, come a Milano. *Idea annotata per dopo:* estrattore LLM come ripiego quando uno scraper torna 0 righe, e per partire subito con sale nuove (vincolo: data e ora devono comparire nel testo della pagina).
+- **Dove sei:** la città si ricava dalla posizione (la più vicina entro 50 km), altrimenti si sceglie. Default **"vicino a me"** quando la posizione c'è, altrimenti tutta la città; quartiere e raggio restano nelle impostazioni. Le mail FOMO seguono la stessa scelta.
+- **Lingua:** interfaccia solo in italiano per ora (lo spagnolo dopo). **Titoli come li scrive la sala**, nella lingua della città; sotto, titolo originale e, se diverso, quello italiano da TMDB.
+- **Sale di Bogotá in v1:** Cinemateca de Bogotá (sito), salas asociadas (PDF mensile della Cinemateca), Cine Tonalá (fonte da trovare: `cinetonala.com` porta al Messico). Le altre dopo.
+- **Fuso orario per città** (`Europe/Rome`, `America/Bogota`): oggi `Europe/Rome` è scritto fisso nel codice, diventa un campo della città.
+- **Aggiornamento:** Milano ogni giorno alle 04:30 UTC; Bogotá **ogni settimana, il giovedì alle 10:00 UTC** (le 5 locali; le uscite in Colombia sono il giovedì). Guardia di freschezza per città: 26 ore a Milano, 8 giorni a Bogotá.
+- **TMDB:** ricerca anche in `es-CO` per Bogotá.
+- **Costi:** con scraper a mano ~0 €. Il costo vero è la manutenzione (una sala che si rompe ogni tanto per città).
+
+## Pass bar v2
+- [ ] `typecheck`, `lint`, `build`, `test` verdi; test su fixture per ognuna delle 3 fonti di Bogotá (0 righe = fallisce).
+- [ ] `pnpm scrape --dry --city=bogota`: proiezioni future da ≥2 fonti su 3; Milano resta 13/13.
+- [ ] Matching TMDB su 20 titoli di Bogotá etichettati a mano ≥90%.
+- [ ] Orari giusti nel fuso della città: test su "stasera" e "ultime sere" a Bogotá contro Milano.
+- [ ] Selezione città: con posizione simulata a Bogotá si vedono solo le sale di Bogotá, vicine; senza posizione si sceglie la città; nessuno scroll a 375 e 1280px.
+- [ ] Trigger di Bogotá: 2 run settimanali consecutivi riusciti.
+- [ ] Mail FOMO con il fuso e le sale della città dell'utente.
