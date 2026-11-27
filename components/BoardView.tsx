@@ -78,8 +78,19 @@ export function BoardView({ board }: { board: Board }) {
   const days = useMemo(() => Array.from({ length: 7 }, (_, i) => dayKey(new Date(now.getTime() + i * 86_400_000))), [now]);
   const [hall, setHall] = useState<string | null>(null);
   const [day, setDay] = useState<string | null>(null);
-  const selHall = hall && near.has(hall) ? hall : (halls[0]?.id ?? null);
-  const selDay = day ?? days[0];
+  // late in the evening "oggi" is over: start from the first day that still has something in the radius
+  const firstBusyDay = useMemo(
+    () => days.find((k) => board.films.some((f) => f.screenings.some((r) => near.has(r.cinemaId) && dayKey(r.startsAt) === k && new Date(r.startsAt) > now))) ?? days[0],
+    [days, board.films, near, now],
+  );
+  // halls with something on the chosen day; the default is the nearest of those
+  const busy = useMemo(() => {
+    const s = new Set<string>();
+    for (const f of board.films) for (const r of f.screenings) if (dayKey(r.startsAt) === (day ?? firstBusyDay) && new Date(r.startsAt) > now) s.add(r.cinemaId);
+    return s;
+  }, [board.films, day, firstBusyDay, now]);
+  const selHall = hall && near.has(hall) ? hall : (halls.find((h) => busy.has(h.id))?.id ?? halls[0]?.id ?? null);
+  const selDay = day ?? firstBusyDay;
 
   const list: Item[] = useMemo(() => {
     if (tab === "sala") {
@@ -215,6 +226,40 @@ export function BoardView({ board }: { board: Board }) {
 
       <main className="stage" data-open={openFilm ? "true" : "false"}>
         <div className="glow" aria-hidden="true" />
+        {tab === "sala" && !openFilm && (
+          <div className="picker">
+            <div className="halls" role="radiogroup" aria-label="Sala">
+              {halls.map((h) => (
+                <button
+                  key={h.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={h.id === selHall}
+                  data-hall={h.id}
+                  data-empty={!busy.has(h.id)}
+                  ref={(el) => {
+                    if (el && h.id === selHall) el.scrollIntoView({ block: "nearest", inline: "center" });
+                  }}
+                  onClick={() => setHall(h.id)}
+                >
+                  {h.name.replace(/^Cin(ema|eteca) /, "")}
+                  <small>{fmtKm(h.km)}</small>
+                </button>
+              ))}
+            </div>
+            <div className="days" role="radiogroup" aria-label="Giorno">
+              {days.map((k, i) => {
+                const d = new Date(`${k}T12:00:00Z`);
+                return (
+                  <button key={k} type="button" role="radio" aria-checked={k === selDay} onClick={() => setDay(k)}>
+                    <small>{i === 0 ? "oggi" : weekday(d)}</small>
+                    {dayNum(d)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
         {list.length === 0 && !openFilm ? (
           <p className="empty">
             {halls.length === 0
@@ -341,7 +386,9 @@ export function BoardView({ board }: { board: Board }) {
               </button>
             </h2>
             {(cur.f.director || cur.f.year) && <p className="meta">{[cur.f.director, cur.f.year].filter(Boolean).join(", ")}</p>}
-            {first && (
+            {tab === "sala" && first ? (
+              <p className="next times">{cur.rows.map((r) => hhmm(r.startsAt)).join("  ·  ")}</p>
+            ) : first && (
               <p className={`next${urgency?.startsWith("ultima") || urgency === "solo oggi" ? " urgent" : ""}`}>
                 {/* one evening left: the line itself is the warning; several: say how many first */}
                 {urgency?.startsWith("ultime") && <span className="urgent">{cap(urgency)}. </span>}
@@ -355,30 +402,6 @@ export function BoardView({ board }: { board: Board }) {
       </main>
 
       <nav className="bar" aria-label="Viste">
-        {tab === "sala" && (
-          <div className="filters">
-            <label className="sr" htmlFor="sala">
-              Sala
-            </label>
-            <select id="sala" value={selHall ?? ""} onChange={(e) => setHall(e.target.value)}>
-              {halls.map((h) => (
-                <option key={h.id} value={h.id}>
-                  {h.name}, {fmtKm(h.km)}
-                </option>
-              ))}
-            </select>
-            <label className="sr" htmlFor="giorno">
-              Giorno
-            </label>
-            <select id="giorno" value={selDay} onChange={(e) => setDay(e.target.value)}>
-              {days.map((k, i) => (
-                <option key={k} value={k}>
-                  {i === 0 ? "Oggi" : `${cap(weekday(new Date(`${k}T12:00:00Z`)))} ${dayNum(new Date(`${k}T12:00:00Z`))}`}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
         <div className="bar-row">
           <div className="views" role="group" aria-label="Selezione">
             {TABS.map(([k, label]) => (

@@ -31,7 +31,7 @@ test("per sala: solo le sale nel raggio, e il raggio più stretto le riduce", as
   await ready(page);
   await page.getByRole("button", { name: "Per sala" }).click();
   const ids = async () =>
-    page.locator("#sala option").evaluateAll((os) => os.map((o) => (o as HTMLOptionElement).value));
+    page.locator("[data-hall]").evaluateAll((bs) => bs.map((b) => b.getAttribute("data-hall")!));
   const within5 = await ids();
   expect(within5.length).toBeGreaterThan(0);
   for (const id of within5) expect(distanceKm(HERE, CINEMAS.find((c) => c.id === id)!)).toBeLessThanOrEqual(5);

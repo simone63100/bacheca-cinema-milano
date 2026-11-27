@@ -59,6 +59,8 @@ export const CITIES: City[] = [
       { label: "Chapinero", lat: 4.6486, lng: -74.0628 },
       { label: "Zona G / Quinta Camacho", lat: 4.6587, lng: -74.0565 },
       { label: "Usaquén", lat: 4.6951, lng: -74.0308 },
+      { label: "Cedritos", lat: 4.7225, lng: -74.0445 },
+      { label: "Toberín / Santafé", lat: 4.7465, lng: -74.0462 },
     ],
   },
 ];
