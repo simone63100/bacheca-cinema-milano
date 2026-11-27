@@ -1,9 +1,12 @@
 import { CINEMAS, cinemaById } from "@/lib/cinemas";
+import { cityById } from "@/lib/cities";
+import { hourIn } from "@/lib/time";
 import type { CinemaId, Screening } from "@/lib/types";
 import { fetchBytes, fetchText } from "./_http";
 import { parse18tickets } from "./_18tickets";
 import { parseIcs } from "./_ics";
 import { parseMovieplayer } from "./_movieplayer";
+import * as cinemateca from "./cinemateca-bogota";
 import * as cinemino from "./cinemino";
 import * as colosseo from "./colosseo";
 import * as godard from "./godard";
@@ -34,6 +37,12 @@ export const SCRAPERS: Record<CinemaId, ScraperDef> = {
   ariosto: { id: "ariosto", fixture: "ariosto.html", format: "text", parse: (b) => parse18tickets(b, "ariosto") },
   centrale: { id: "centrale", fixture: "centrale.html", format: "text", parse: (b, n) => parseMovieplayer(b, "centrale", src("centrale"), n) },
   mexico: { id: "mexico", fixture: "mexico.html", format: "text", parse: (b, n) => parseMovieplayer(b, "mexico", src("mexico"), n) },
+  "cinemateca-bogota": {
+    id: "cinemateca-bogota",
+    fixture: "cinemateca-bogota.html",
+    format: "text",
+    parse: (b, n) => cinemateca.parse(b, n, src("cinemateca-bogota")),
+  },
 };
 
 const NOT_A_FILM = /^(visita|presentaz|laboratorio|aperitivo|concerto|reading|dj set|live set)\b/i;
@@ -42,7 +51,7 @@ const NOT_A_FILM = /^(visita|presentaz|laboratorio|aperitivo|concerto|reading|dj
 export function sanitize(rows: Screening[]): Screening[] {
   const seen = new Set<string>();
   return rows.filter((r) => {
-    const h = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Rome", hour: "2-digit", hourCycle: "h23" }).format(new Date(r.startsAt)));
+    const h = hourIn(cityById(cinemaById(r.cinemaId).city).tz, r.startsAt); // local hour in the cinema's city
     if (!r.title || h < 8 || NOT_A_FILM.test(r.title)) return false;
     const k = `${r.cinemaId}|${r.title.toLowerCase()}|${r.startsAt}`;
     if (seen.has(k)) return false;

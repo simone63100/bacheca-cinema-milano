@@ -68,7 +68,7 @@ Per un cinefilo milanese che oggi controlla a mano 10+ siti di sale diverse: un 
 - **Lettura delle sale: scraper scritti a mano** per ogni fonte, con fixture e test, come a Milano. *Idea annotata per dopo:* estrattore LLM come ripiego quando uno scraper torna 0 righe, e per partire subito con sale nuove (vincolo: data e ora devono comparire nel testo della pagina).
 - **Dove sei:** la città si ricava dalla posizione (la più vicina entro 50 km), altrimenti si sceglie. Default **"vicino a me"** quando la posizione c'è, altrimenti tutta la città; quartiere e raggio restano nelle impostazioni. Le mail FOMO seguono la stessa scelta.
 - **Lingua:** interfaccia solo in italiano per ora (lo spagnolo dopo). **Titoli come li scrive la sala**, nella lingua della città; sotto, titolo originale e, se diverso, quello italiano da TMDB.
-- **Sale di Bogotá in v1:** Cinemateca de Bogotá (sito), salas asociadas (PDF mensile della Cinemateca), Cine Tonalá (fonte da trovare: `cinetonala.com` porta al Messico). Le altre dopo.
+- **Sale di Bogotá in v1** (rivisto il 2026-11-27 dopo la ricognizione): **Cinemateca de Bogotá** (agenda leggibile, 4 sale) più **un paio di multisala** (Cine Colombia: le sale di Bogotá sono nel JSON della pagina cartelera). Scartate: salas asociadas (il PDF è una griglia illeggibile e non ha i titoli), Cine Tonalá (ha chiuso), Cinema Paraíso e Cine BAM (siti non raggiungibili). Eccezione voluta alla regola "solo sale d'essai": a Bogotá le sale d'essai leggibili sono troppo poche.
 - **Fuso orario per città** (`Europe/Rome`, `America/Bogota`): oggi `Europe/Rome` è scritto fisso nel codice, diventa un campo della città.
 - **Aggiornamento:** Milano ogni giorno alle 04:30 UTC; Bogotá **ogni settimana, il giovedì alle 10:00 UTC** (le 5 locali; le uscite in Colombia sono il giovedì). Guardia di freschezza per città: 26 ore a Milano, 8 giorni a Bogotá.
 - **TMDB:** ricerca anche in `es-CO` per Bogotá.
@@ -76,7 +76,7 @@ Per un cinefilo milanese che oggi controlla a mano 10+ siti di sale diverse: un 
 
 ## Pass bar v2
 - [ ] `typecheck`, `lint`, `build`, `test` verdi; test su fixture per ognuna delle 3 fonti di Bogotá (0 righe = fallisce).
-- [ ] `pnpm scrape --dry --city=bogota`: proiezioni future da ≥2 fonti su 3; Milano resta 13/13.
+- [ ] `pnpm scrape --dry --city=bogota`: proiezioni future dalla Cinemateca e dai multisala scelti; Milano resta 13/13.
 - [ ] Matching TMDB su 20 titoli di Bogotá etichettati a mano ≥90%.
 - [ ] Orari giusti nel fuso della città: test su "stasera" e "ultime sere" a Bogotá contro Milano.
 - [ ] Selezione città: con posizione simulata a Bogotá si vedono solo le sale di Bogotá, vicine; senza posizione si sceglie la città; nessuno scroll a 375 e 1280px.

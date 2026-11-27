@@ -29,7 +29,7 @@ describe("cleanTitle", () => {
 describe("scraper delle 13 sale su fixture", () => {
   it("copre esattamente le 13 sale", () => {
     expect(Object.keys(SCRAPERS).sort()).toEqual(CINEMAS.map((c) => c.id).sort());
-    expect(CINEMAS).toHaveLength(13);
+    expect(CINEMAS.filter((c) => c.city === "milano")).toHaveLength(13);
   });
 
   for (const def of Object.values(SCRAPERS)) {
@@ -68,6 +68,15 @@ describe("scraper delle 13 sale su fixture", () => {
     const rows = SCRAPERS.cinemino.parse(await load("cinemino.html", "text"), FIXTURE_NOW);
     expect(rows.some((r) => r.startsAt.startsWith("2026-11-20"))).toBe(true);
     expect(rows.every((r) => r.startsAt >= "2026-11-19")).toBe(true);
+  });
+
+  it("cinemateca di Bogotá: orari nel fuso di Bogotá, solo da oggi in poi", async () => {
+    const rows = sanitize(SCRAPERS["cinemateca-bogota"].parse(await load("cinemateca-bogota.html", "text"), FIXTURE_NOW));
+    // "Pulse (Kairo)", Sala 2, Noviembre 28 8:00 pm → 01:00 UTC del 29 (Bogotá è UTC-5)
+    const pulse = rows.find((r) => r.title === "Pulse (Kairo)");
+    expect(pulse?.startsAt).toBe("2026-11-29T01:00:00.000Z");
+    expect(rows.every((r) => r.startsAt >= "2026-11-20T05:00:00.000Z")).toBe(true);
+    expect(rows.length).toBeGreaterThan(20);
   });
 
   it("beltrade: scarta i segnaposto alle 06:00", async () => {

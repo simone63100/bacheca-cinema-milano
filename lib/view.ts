@@ -1,22 +1,47 @@
-/** Presentation helpers shared by server and client components. */
+/** Presentation helpers shared by server and client components. Every time is read in the city's zone. */
 import type { BoardFilm, BoardScreening } from "./board";
 import { CINEMAS } from "./cinemas";
+import type { City } from "./cities";
 import { distanceKm, type LatLng } from "./geo";
 
 const TODAY_ONLY = new Set<string>(CINEMAS.filter((c) => c.todayOnly).map((c) => c.id));
 
-const TZ = "Europe/Rome";
-const dayKeyFmt = new Intl.DateTimeFormat("en-CA", { timeZone: TZ });
-const timeFmt = new Intl.DateTimeFormat("it-IT", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
-const wdFmt = new Intl.DateTimeFormat("it-IT", { timeZone: TZ, weekday: "short" });
-const dFmt = new Intl.DateTimeFormat("it-IT", { timeZone: TZ, day: "numeric" });
+export interface Clock {
+  dayKey: (iso: string | Date) => string;
+  hhmm: (iso: string | Date) => string;
+  weekday: (iso: string | Date) => string;
+  longDay: (iso: string | Date) => string;
+  dayNum: (iso: string | Date) => string;
+  /** "gio 19 · 20:45" */
+  when: (iso: string | Date) => string;
+}
 
-export const dayKey = (iso: string | Date) => dayKeyFmt.format(new Date(iso));
-export const hhmm = (iso: string) => timeFmt.format(new Date(iso));
-export const weekday = (iso: string | Date) => wdFmt.format(new Date(iso)).replace(".", "");
-export const dayNum = (iso: string | Date) => dFmt.format(new Date(iso));
-/** "gio 19 · 20:45" */
-export const when = (iso: string) => `${weekday(iso)} ${dayNum(iso)} · ${hhmm(iso)}`;
+const clocks = new Map<string, Clock>();
+
+/** Formatters for one zone (cached: Intl formatters are expensive to build). */
+export function clock(tz: string): Clock {
+  let c = clocks.get(tz);
+  if (!c) {
+    const key = new Intl.DateTimeFormat("en-CA", { timeZone: tz });
+    const time = new Intl.DateTimeFormat("it-IT", { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+    const wd = new Intl.DateTimeFormat("it-IT", { timeZone: tz, weekday: "short" });
+    const wdl = new Intl.DateTimeFormat("it-IT", { timeZone: tz, weekday: "long" });
+    const d = new Intl.DateTimeFormat("it-IT", { timeZone: tz, day: "numeric" });
+    const weekday = (iso: string | Date) => wd.format(new Date(iso)).replace(".", "");
+    const dayNum = (iso: string | Date) => d.format(new Date(iso));
+    const hhmm = (iso: string | Date) => time.format(new Date(iso));
+    c = {
+      dayKey: (iso) => key.format(new Date(iso)),
+      hhmm,
+      weekday,
+      longDay: (iso) => wdl.format(new Date(iso)),
+      dayNum,
+      when: (iso) => `${weekday(iso)} ${dayNum(iso)} · ${hhmm(iso)}`,
+    };
+    clocks.set(tz, c);
+  }
+  return c;
+}
 
 export const fmtKm = (km: number) => `${km.toLocaleString("it-IT", { maximumFractionDigits: 1, minimumFractionDigits: 1 })} km`;
 
@@ -27,25 +52,10 @@ export interface Place extends LatLng {
   precise: boolean;
 }
 
-export const DEFAULT_PLACE: Place = { label: "Duomo", lat: 45.4642, lng: 9.19, radiusKm: 5, precise: false };
-
-/** Quartieri for the no-geolocation fallback: resolved locally, nothing is sent anywhere. */
-export const QUARTIERI: { label: string; lat: number; lng: number }[] = [
-  { label: "Duomo", lat: 45.4642, lng: 9.19 },
-  { label: "Brera", lat: 45.4719, lng: 9.1879 },
-  { label: "Porta Venezia", lat: 45.4744, lng: 9.2052 },
-  { label: "Isola", lat: 45.4876, lng: 9.1897 },
-  { label: "NoLo", lat: 45.4964, lng: 9.2186 },
-  { label: "Città Studi", lat: 45.4783, lng: 9.2275 },
-  { label: "Porta Romana", lat: 45.4513, lng: 9.2032 },
-  { label: "Navigli", lat: 45.4522, lng: 9.1772 },
-  { label: "Porta Genova / Tortona", lat: 45.4535, lng: 9.1665 },
-  { label: "Sempione / Arco della Pace", lat: 45.4757, lng: 9.1725 },
-  { label: "CityLife / Fiera", lat: 45.4775, lng: 9.1555 },
-  { label: "Bicocca / Niguarda", lat: 45.5148, lng: 9.2113 },
-  { label: "Lambrate", lat: 45.4846, lng: 9.2398 },
-  { label: "Corvetto", lat: 45.4405, lng: 9.2229 },
-];
+/** Without a position: the whole city (radius large enough to include every cinema). */
+export const WHOLE_CITY_KM = 40;
+export const defaultPlace = (city: City): Place => ({ label: "Tutta la città", lat: city.lat, lng: city.lng, radiusKm: WHOLE_CITY_KM, precise: false });
+export const NEAR_ME_KM = 5;
 
 export function cinemasInRadius<T extends LatLng & { id: string }>(cinemas: T[], place: Place) {
   return cinemas
@@ -58,23 +68,17 @@ export function nearScreenings(f: BoardFilm, near: Set<string>, now: Date): Boar
   return f.screenings.filter((s) => near.has(s.cinemaId) && new Date(s.startsAt) > now);
 }
 
-/** Distinct evenings left in the radius. */
-export function eveningsLeft(rows: BoardScreening[]): number {
-  return new Set(rows.map((r) => dayKey(r.startsAt))).size;
-}
-
-/** Urgency ribbon: only when the last screening is ≤3 days away. */
-export function ribbon(rows: BoardScreening[], now: Date, prefix?: string): string | null {
+/** Urgency: only when the last screening is ≤3 days away. */
+export function ribbon(rows: BoardScreening[], now: Date, tz: string): string | null {
   // today-only sources (movieplayer) cannot tell us a run is ending
   rows = rows.filter((r) => !TODAY_ONLY.has(r.cinemaId));
   if (!rows.length) return null;
+  const k = clock(tz);
   const last = new Date(rows[rows.length - 1].startsAt);
   if (last.getTime() - now.getTime() > 3 * 86_400_000) return null;
-  const n = eveningsLeft(rows);
-  const today = dayKey(now);
-  const core =
-    n === 1 ? (dayKey(rows[0].startsAt) === today ? "solo oggi" : `ultima: ${weekday(rows[0].startsAt)}`) : `ultime ${n} sere`;
-  return prefix ? `${prefix} · ${core}` : core;
+  const n = new Set(rows.map((r) => k.dayKey(r.startsAt))).size;
+  if (n > 1) return `ultime ${n} sere`;
+  return k.dayKey(rows[0].startsAt) === k.dayKey(now) ? "solo oggi" : `ultima: ${k.weekday(rows[0].startsAt)}`;
 }
 
 /**
@@ -101,10 +105,12 @@ export function rankForYou(films: BoardFilm[], near: Set<string>, now: Date) {
     .sort((a, b) => b.score - a.score || a.rows[0].startsAt.localeCompare(b.rows[0].startsAt));
 }
 
-export function tonight(films: BoardFilm[], near: Set<string>, now: Date) {
-  const today = dayKey(now);
+/** Screenings from 18:00 today, in the city's own evening. */
+export function tonight(films: BoardFilm[], near: Set<string>, now: Date, tz: string) {
+  const k = clock(tz);
+  const today = k.dayKey(now);
   return films
-    .map((f) => ({ f, rows: nearScreenings(f, near, now).filter((r) => dayKey(r.startsAt) === today && Number(hhmm(r.startsAt).slice(0, 2)) >= 18) }))
+    .map((f) => ({ f, rows: nearScreenings(f, near, now).filter((r) => k.dayKey(r.startsAt) === today && Number(k.hhmm(r.startsAt).slice(0, 2)) >= 18) }))
     .filter((x) => x.rows.length > 0)
     .sort((a, b) => a.rows[0].startsAt.localeCompare(b.rows[0].startsAt));
 }
@@ -125,6 +131,9 @@ export function calendarUrl(f: Pick<BoardFilm, "title" | "runtime">, s: BoardScr
   return `https://calendar.google.com/calendar/render?${p}`;
 }
 
-export function metaLine(f: Pick<BoardFilm, "director" | "year" | "runtime">, vo: boolean) {
-  return [f.director, f.year, f.runtime ? `${f.runtime}′` : null, vo ? "v.o." : null].filter(Boolean).join(" · ");
-}
+// ---- compat while the UI moves to per-city clocks (v2): Milan defaults, to be removed with the city UI
+import { CITIES } from "./cities";
+const MILANO = CITIES[0];
+export const { dayKey, hhmm, weekday, dayNum, when } = clock(MILANO.tz);
+export const QUARTIERI = MILANO.quartieri;
+export const DEFAULT_PLACE: Place = { label: "Duomo", lat: 45.4642, lng: 9.19, radiusKm: 5, precise: false };

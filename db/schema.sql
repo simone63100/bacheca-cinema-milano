@@ -112,3 +112,10 @@ CREATE TABLE IF NOT EXISTS lb_slugs (
 );
 
 ALTER TABLE films ADD COLUMN IF NOT EXISTS accent text;
+
+-- v2: more cities
+ALTER TABLE cinemas ADD COLUMN IF NOT EXISTS city text NOT NULL DEFAULT 'milano';
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS city text NOT NULL DEFAULT 'milano';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS city text NOT NULL DEFAULT 'milano';
+ALTER TABLE alerts ADD COLUMN IF NOT EXISTS city text NOT NULL DEFAULT 'milano';
+CREATE INDEX IF NOT EXISTS runs_city_ok ON runs (city, ok, finished_at);

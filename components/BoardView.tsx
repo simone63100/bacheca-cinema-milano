@@ -88,7 +88,7 @@ export function BoardView({ board }: { board: Board }) {
         .filter((x) => x.rows.length)
         .sort((a, b) => a.rows[0].startsAt.localeCompare(b.rows[0].startsAt));
     }
-    const ranked = (tab === "perte" ? rankForYou(board.films, near, now) : tonight(board.films, near, now)).slice(0, 24);
+    const ranked = (tab === "perte" ? rankForYou(board.films, near, now) : tonight(board.films, near, now, "Europe/Rome")).slice(0, 24);
     // symmetric composition: the best film in the middle, the runners-up on both sides
     return ranked.length >= 3 ? [ranked[2], ranked[1], ranked[0], ...ranked.slice(3)] : ranked;
   }, [tab, board.films, near, now, selHall, selDay]);
@@ -194,7 +194,7 @@ export function BoardView({ board }: { board: Board }) {
     }
   };
 
-  const urgency = cur ? ribbon(cur.rows, now) : null;
+  const urgency = cur ? ribbon(cur.rows, now, "Europe/Rome") : null;
   const first = cur?.rows[0];
   const accent = (openFilm ?? cur?.f)?.accent ?? ORANGE;
   const tags = (f: BoardFilm) =>

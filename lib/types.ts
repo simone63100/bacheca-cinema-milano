@@ -11,10 +11,12 @@ export type CinemaId =
   | "cinemino"
   | "ariosto"
   | "centrale"
-  | "mexico";
+  | "mexico"
+  | "cinemateca-bogota";
 
 export interface Cinema {
   id: CinemaId;
+  city: import("./cities").CityId;
   name: string;
   lat: number;
   lng: number;

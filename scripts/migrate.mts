@@ -16,9 +16,9 @@ const statements = readFileSync("db/schema.sql", "utf8")
 for (const s of statements) await sql.query(s);
 for (const c of CINEMAS) {
   await sql.query(
-    `INSERT INTO cinemas (id, name, lat, lng, url) VALUES ($1,$2,$3,$4,$5)
-     ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, lat = EXCLUDED.lat, lng = EXCLUDED.lng, url = EXCLUDED.url`,
-    [c.id, c.name, c.lat, c.lng, c.url],
+    `INSERT INTO cinemas (id, name, lat, lng, url, city) VALUES ($1,$2,$3,$4,$5,$6)
+     ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, lat = EXCLUDED.lat, lng = EXCLUDED.lng, url = EXCLUDED.url, city = EXCLUDED.city`,
+    [c.id, c.name, c.lat, c.lng, c.url, c.city],
   );
 }
 const [{ n }] = (await sql.query("SELECT count(*)::int AS n FROM cinemas")) as { n: number }[];
