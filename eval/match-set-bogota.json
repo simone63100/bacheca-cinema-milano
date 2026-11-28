@@ -1,0 +1,206 @@
+{
+ "description": "Bogotá, 31 titoli come li stampano Cinemateca (con regista e anno dalla pagina del film) e Cine Colombia Santafé (con il titolo originale). Etichetta = id TMDB verificato a mano su regista e anno stampati o sul titolo originale, 2026-11-28; null = programma di corti, non deve avere match.",
+ "lang": "es-CO",
+ "region": "CO",
+ "now": "2026-11-28T13:00:00Z",
+ "items": [
+  {
+   "title": "Bright Future (Akarui mirai)",
+   "director": "Kiyoshi Kurosawa",
+   "year": 2003,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 26886
+  },
+  {
+   "title": "Dune: Parte Dos",
+   "originalTitle": "Dune Part Two",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 693134
+  },
+  {
+   "title": "Ebenezer",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 1567605
+  },
+  {
+   "title": "El Gato con Sombrero",
+   "originalTitle": "The Cat in the Hat",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 1117898
+  },
+  {
+   "title": "Habitación Nº13",
+   "originalTitle": "Hemmet",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 1275788
+  },
+  {
+   "title": "Hechizo: Bienvenidos a Hexe",
+   "originalTitle": "Hexed",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 1538497
+  },
+  {
+   "title": "La Ciudad Blanca (Dans la ville blanche)",
+   "director": "Alain Tanner",
+   "year": 1983,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 33802
+  },
+  {
+   "title": "La Nueva Focker",
+   "originalTitle": "Focker in Law",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 1400336
+  },
+  {
+   "title": "La sinfonía de los bichos raros",
+   "director": "Julián Duque",
+   "year": 2025,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1776754
+  },
+  {
+   "title": "La última ronda en Venecia (Le città di Pianura)",
+   "director": "Francesco Sossai",
+   "year": 2025,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1462322
+  },
+  {
+   "title": "Laguna",
+   "director": "Sharunas Bartas",
+   "year": 2025,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1520513
+  },
+  {
+   "title": "Las Nuevas Desventuras De Cliff Both",
+   "originalTitle": "The Further Mis-Adventures Of Cliff Booth",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 1457866
+  },
+  {
+   "title": "License to Live (Ningen gokaku)",
+   "director": "Kiyoshi Kurosawa",
+   "year": 1998,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 48341
+  },
+  {
+   "title": "Los Golfos",
+   "director": "Carlos Saura",
+   "year": 1960,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 198915
+  },
+  {
+   "title": "Los Juegos del Hambre: Amanecer en la Cosecha",
+   "originalTitle": "The Hunger Games: Sunrise on the Reaping",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 1300968
+  },
+  {
+   "title": "Mi vecino Totoro",
+   "director": "Hayao Miyazaki",
+   "year": 1988,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 8392
+  },
+  {
+   "title": "Nadie a la vista (არავინ არ ჩანს)",
+   "director": "Kote Kalandadze",
+   "year": 2025,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1594652
+  },
+  {
+   "title": "Pulse (Kairo)",
+   "director": "Kiyoshi Kurosawa",
+   "year": 2001,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 27324
+  },
+  {
+   "title": "Ramayana",
+   "originalTitle": "Ramayana: Rise of a Legend",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 656908
+  },
+  {
+   "title": "Retorno antes de las 3PM (Back before 3 p.m.)",
+   "director": "Gaël Lepingle",
+   "year": 2026,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1633356
+  },
+  {
+   "title": "Retratos de Churcampa",
+   "director": "Luis Cintora",
+   "year": 2026,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1641453
+  },
+  {
+   "title": "Shaun, el cordero: El monstruo de Mossy Bottom",
+   "originalTitle": "Shaun the Sheep: The Beast of Mossy Bottom",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 1477104
+  },
+  {
+   "title": "Spider-Man:Un Nuevo Día",
+   "originalTitle": "Spider- Man: Brand New New Day",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 969681
+  },
+  {
+   "title": "The Megalomaniacs (Megalomani)",
+   "director": "Spiros Stathoulopoulos",
+   "year": 2025,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1567508
+  },
+  {
+   "title": "Todas las canciones del Mundo",
+   "director": "Santiago Flórez Rincón",
+   "year": 2026,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1744092
+  },
+  {
+   "title": "Tunun",
+   "director": "Yannick Constantin, Yanina Luponio Sáenz",
+   "year": 2025,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1594413
+  },
+  {
+   "title": "Un muerto en el pueblo",
+   "director": "Mauricio Cuervo",
+   "year": 2025,
+   "cinema": "cinemateca-bogota",
+   "tmdbId": 1452437
+  },
+  {
+   "title": "Dune: Parte Uno",
+   "originalTitle": "Dune Part One",
+   "cinema": "cinecolombia-santafe",
+   "tmdbId": 438631
+  },
+  {
+   "title": "Competencia Internacional Animación 1",
+   "cinema": "cinemateca-bogota",
+   "tmdbId": null
+  },
+  {
+   "title": "Colecciones: Fútbol",
+   "cinema": "cinemateca-bogota",
+   "tmdbId": null
+  },
+  {
+   "title": "Hecho en Colombia 1",
+   "cinema": "cinemateca-bogota",
+   "tmdbId": null
+  }
+ ]
+}

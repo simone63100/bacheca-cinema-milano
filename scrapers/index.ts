@@ -18,7 +18,7 @@ export interface ScraperDef {
   /** File name under scrapers/__fixtures__/. */
   fixture: string;
   /** "pdf" sources are converted to text before parse(). */
-  format: "text" | "pdf" | "cine-colombia";
+  format: "text" | "pdf" | "cine-colombia" | "cinemateca";
   parse(body: string, now: Date): Screening[];
 }
 
@@ -47,8 +47,8 @@ export const SCRAPERS: Record<CinemaId, ScraperDef> = {
   "cinemateca-bogota": {
     id: "cinemateca-bogota",
     fixture: "cinemateca-bogota.html",
-    format: "text",
-    parse: (b, n) => cinemateca.parse(b, n, src("cinemateca-bogota")),
+    format: "cinemateca",
+    parse: (b, n) => cinemateca.parseBundle(JSON.parse(b) as cinemateca.CinematecaBundle, n, src("cinemateca-bogota")),
   },
 };
 
@@ -71,6 +71,7 @@ export async function readSource(def: ScraperDef): Promise<string> {
   const url = src(def.id);
   if (def.format === "pdf") return godard.pdfToText(await fetchBytes(url));
   if (def.format === "cine-colombia") return JSON.stringify(await cineColombia.fetchBundle(url, "6659"));
+  if (def.format === "cinemateca") return JSON.stringify(await cinemateca.fetchBundle(url));
   return fetchText(url);
 }
 

@@ -1,7 +1,7 @@
 import { fetch as undiciFetch } from "undici";
 import { dispatcherFor } from "./_tls";
 export const USER_AGENT =
-  "BijouxBot/1.0 (listings delle sale d'essai di Milano; 1 richiesta al giorno per pagina)";
+  "BijouxBot/1.0 (listings di sale d'essai a Milano e Bogotá; 1 richiesta per pagina a ogni aggiornamento)";
 
 /**
  * One polite GET: declared UA, no retries. Deliberately no module-level cache: the Neon

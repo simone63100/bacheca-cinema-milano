@@ -14,6 +14,8 @@ export interface MatchInput {
   now?: Date;
   /** The city's language for printed titles (TMDB search), English is always tried too. */
   lang?: "it-IT" | "es-CO";
+  /** Original title published by the cinema next to the printed one (Cine Colombia). */
+  originalTitle?: string;
   region?: "IT" | "CO";
 }
 
@@ -63,8 +65,13 @@ export function titleVariants(raw: string): string[] {
   return [...out].filter((t) => t.length > 0);
 }
 
+/** Articles and prepositions (it/es/en/fr): "de la" alone must not make two titles look alike. */
+const STOP = new Set("il lo la i gli le l' un una uno di del della dei degli delle da e ed a al in con per el los las de del y en o the a an of and to le les du des et".split(" "));
+
 function tokens(s: string): Set<string> {
-  return new Set(normalizeTitle(s).split(" ").filter(Boolean));
+  const all = normalizeTitle(s).split(" ").filter(Boolean);
+  const content = all.filter((w) => !STOP.has(w));
+  return new Set(content.length ? content : all);
 }
 
 /** Dice coefficient on word tokens, 1 for exact normalised equality. */
@@ -105,9 +112,12 @@ export function directorMatches(printed: string | undefined, directors: string[]
   return false;
 }
 
+const inputVariants = (input: MatchInput) => [...new Set([...titleVariants(input.title), ...(input.originalTitle ? titleVariants(input.originalTitle) : [])])];
+const inputFull = (input: MatchInput) => [...fullVariants(input.title), ...(input.originalTitle ? fullVariants(input.originalTitle) : [])];
+
 export function scoreCandidate(input: MatchInput, c: TmdbMovie, directors: string[] | null): number {
-  const variants = titleVariants(input.title);
-  const full = new Set(fullVariants(input.title).map(normalizeTitle));
+  const variants = inputVariants(input);
+  const full = new Set(inputFull(input).map(normalizeTitle));
   const names = [c.title, c.original_title, c.title_en].filter((x): x is string => !!x);
   const sim = Math.max(
     ...variants.flatMap((v) =>
@@ -146,11 +156,11 @@ async function anyDirectorMatch(input: MatchInput, cands: TmdbMovie[]): Promise<
 }
 
 /** Films directed by the first printed name (a cheap person search + their credits). */
-async function filmsByDirector(printed: string): Promise<TmdbMovie[]> {
+async function filmsByDirector(printed: string, lang: "it-IT" | "es-CO" = "it-IT"): Promise<TmdbMovie[]> {
   const name = printed.split(/,|\/|&|\se\s|\sand\s/)[0].replace(/\b[A-Z]\.\s*/g, "").trim();
   if (name.length < 4) return [];
   const person = await tmdb.directorByName(name);
-  return person ? tmdb.directed(person) : [];
+  return person ? tmdb.directed(person, lang) : [];
 }
 
 /** The whole printed title and its bracketed original title: not fragments. */
@@ -168,7 +178,7 @@ export async function matchTitle(input: MatchInput): Promise<MatchResult> {
     if (lang === "en-US") seen.set(c.id, { ...(prev ?? c), title_en: c.title });
     else seen.set(c.id, { ...c, title_en: prev?.title_en });
   };
-  for (const v of titleVariants(input.title)) {
+  for (const v of inputVariants(input)) {
     for (const lang of [local, "en-US"] as const) {
       for (const c of await tmdb.search(v, input.year, lang, input.region)) add(c, lang);
       if (input.year) for (const c of await tmdb.search(v, undefined, lang, input.region)) add(c, lang);
@@ -190,7 +200,7 @@ export async function matchTitle(input: MatchInput): Promise<MatchResult> {
   // printed director but no candidate by them: the film may be outside the top search results
   // ("Tutto o niente" by Mike Leigh) — look through the director's own filmography
   if (input.director && !(await anyDirectorMatch(input, pre.map((p) => p.c)))) {
-    for (const c of await filmsByDirector(input.director)) {
+    for (const c of await filmsByDirector(input.director, local)) {
       if (!scored.some((s) => s.c.id === c.id)) scored.push({ c, s: scoreCandidate(input, c, await tmdb.directors(c.id)) });
     }
   }

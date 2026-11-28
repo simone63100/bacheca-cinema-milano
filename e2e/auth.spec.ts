@@ -68,7 +68,7 @@ test("impostazioni: ogni passo conferma e la lista di stato si aggiorna", async 
 
   // the place saves on change, with a visible confirmation
   await page.getByLabel("Quartiere").selectOption("Isola");
-  await expect(page.locator("section[aria-labelledby=pos-h] .ok")).toHaveText("Salvato.", { timeout: 30_000 });
+  await expect(page.locator("section[aria-labelledby=pos-h] .ok")).toHaveText("Salvato: Milano.", { timeout: 30_000 });
 
   // the ratings file uploads as soon as it is chosen; its type is read from the columns
   await page.locator("#csv").setInputFiles({

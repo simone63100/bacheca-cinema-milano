@@ -1,4 +1,5 @@
 "use server";
+import { CITIES, cityNear } from "./cities";
 import { revalidatePath } from "next/cache";
 import { auth } from "./auth/server";
 import { q } from "./db";
@@ -46,14 +47,14 @@ export async function connectLetterboxd(_prev: SaveState, form: FormData): Promi
   return { ok: true, message: `Collegato a ${username}: ${r.entries.length} film nella watchlist.` };
 }
 
-/** Position and radius save as soon as they change. */
+/** Position and radius save as soon as they change; the city follows the position. */
 export async function savePlace(lat: number, lng: number, radius: number): Promise<SaveState> {
   const u = await currentUser();
-  const validPos = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat - 45.46) < 0.5 && Math.abs(lng - 9.19) < 0.5;
-  if (!validPos) return { ok: false, message: "La posizione deve essere a Milano." };
-  if (!(radius >= 1 && radius <= 30)) return { ok: false, message: "Raggio fra 1 e 30 km." };
-  await q("UPDATE users SET lat = $2, lng = $3, radius_km = $4 WHERE id = $1", [u.id, lat, lng, radius]);
-  return { ok: true, message: "Salvato." };
+  const city = Number.isFinite(lat) && Number.isFinite(lng) ? cityNear({ lat, lng }) : null;
+  if (!city) return { ok: false, message: `La posizione deve essere in una di queste città: ${CITIES.map((c) => c.name).join(", ")}.` };
+  if (!(radius >= 1 && radius <= 40)) return { ok: false, message: "Raggio fra 1 e 40 km." };
+  await q("UPDATE users SET lat = $2, lng = $3, radius_km = $4, city = $5 WHERE id = $1", [u.id, lat, lng, radius, city.id]);
+  return { ok: true, message: `Salvato: ${city.name}.` };
 }
 
 /** Uploads ratings.csv or watchlist.csv: the type is read from the file's columns. */

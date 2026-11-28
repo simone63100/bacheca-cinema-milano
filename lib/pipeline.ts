@@ -51,35 +51,57 @@ export function tagsFor(rows: Screening[], year: number | null, now: Date): stri
   return [...tags];
 }
 
+/** Bogotá shows the Spanish poster; TMDB falls back to the original one when there is none. */
+export async function storeSpanishPoster(filmId: number, tmdbId: number) {
+  const es = await tmdb.details(tmdbId, "es-CO");
+  if (es.poster_path) await q("UPDATE films SET poster_es = $2 WHERE id = $1", [filmId, posterUrl(es.poster_path)]);
+}
+
+const isLatin = (s: string) => !/[^\p{Script=Latin}\p{P}\p{Zs}\p{M}]/u.test(s);
+
 async function resolveFilm(key: string, sample: Screening, rows: Screening[], now: Date, city: City): Promise<number> {
-  const cached = await q<{ tmdb_id: number | null }>("SELECT tmdb_id FROM title_matches WHERE title_key = $1", [key]);
+  // a "none" is retried after a week: it may come from a run where the film page (director, year) failed
+  const cached = await q<{ tmdb_id: number | null }>(
+    "SELECT tmdb_id FROM title_matches WHERE title_key = $1 AND (tmdb_id IS NOT NULL OR created_at > $2)",
+    [key, new Date(now.getTime() - 7 * 86_400_000).toISOString()],
+  );
   let tmdbId = cached[0]?.tmdb_id ?? null;
   if (!cached.length && process.env.TMDB_TOKEN) {
-    const m = await matchTitle({ title: sample.title, year: sample.year, director: sample.director, now, lang: city.tmdbLang, region: city.tmdbRegion });
+    const m = await matchTitle({ title: sample.title, originalTitle: rows.find((r) => r.originalTitle)?.originalTitle, year: sample.year, director: sample.director, now, lang: city.tmdbLang, region: city.tmdbRegion });
     tmdbId = m.tmdbId;
-    await q("INSERT INTO title_matches (title_key, tmdb_id, method) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING", [key, tmdbId, m.method]);
+    await q(
+      `INSERT INTO title_matches (title_key, tmdb_id, method) VALUES ($1,$2,$3)
+       ON CONFLICT (title_key) DO UPDATE SET tmdb_id = EXCLUDED.tmdb_id, method = EXCLUDED.method, created_at = now()`,
+      [key, tmdbId, m.method],
+    );
   }
 
   if (tmdbId) {
-    const existing = await q<{ id: number }>("SELECT id FROM films WHERE tmdb_id = $1", [tmdbId]);
+    const existing = await q<{ id: number; poster_es: string | null }>("SELECT id, poster_es FROM films WHERE tmdb_id = $1", [tmdbId]);
     if (existing.length) {
       await q("UPDATE films SET tags = (SELECT array(SELECT DISTINCT unnest(tags || $2::text[]))) WHERE id = $1", [existing[0].id, tagsFor(rows, null, now)]);
+      if (city.tmdbLang === "es-CO" && !existing[0].poster_es) await storeSpanishPoster(existing[0].id, tmdbId);
       return existing[0].id;
     }
     const d = await tmdb.details(tmdbId);
     const year = d.release_date ? Number(d.release_date.slice(0, 4)) : null;
+    // TMDB sometimes names directors in their own script (黒沢清): the cinema's spelling reads better
+    const printedDirector = rows.find((r) => r.director)?.director;
+    const director = d.directors.length && d.directors.every(isLatin) ? d.directors.join(", ") : (printedDirector ?? (d.directors.join(", ") || null));
     const ins = await q<{ id: number }>(
       `INSERT INTO films (tmdb_id, title, original_title, director, year, runtime, poster, trailer, tags)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
        ON CONFLICT (tmdb_id) DO UPDATE SET title = EXCLUDED.title RETURNING id`,
-      [tmdbId, d.title, d.original_title, d.directors.join(", ") || null, year, d.runtime ?? null, posterUrl(d.poster_path) ?? rows.find((r) => r.poster)?.poster ?? null, d.trailer ?? null, tagsFor(rows, year, now)],
+      [tmdbId, d.title, d.original_title, director, year, d.runtime ?? null, posterUrl(d.poster_path) ?? rows.find((r) => r.poster)?.poster ?? null, d.trailer ?? null, tagsFor(rows, year, now)],
     );
+    if (city.tmdbLang === "es-CO") await storeSpanishPoster(ins[0].id, tmdbId);
     return ins[0].id;
   }
 
   const ins = await q<{ id: number }>(
     `INSERT INTO films (title, director, year, tags, title_key, poster) VALUES ($1,$2,$3,$4,$5,$6)
-     ON CONFLICT (title_key) DO UPDATE SET tags = EXCLUDED.tags, poster = COALESCE(films.poster, EXCLUDED.poster) RETURNING id`,
+     ON CONFLICT (title_key) DO UPDATE SET tags = EXCLUDED.tags, poster = COALESCE(films.poster, EXCLUDED.poster),
+       director = COALESCE(films.director, EXCLUDED.director), year = COALESCE(films.year, EXCLUDED.year) RETURNING id`,
     [sample.title, sample.director ?? null, sample.year ?? null, tagsFor(rows, sample.year ?? null, now), key, rows.find((r) => r.poster)?.poster ?? null],
   );
   return ins[0].id;
@@ -100,7 +122,7 @@ export async function storeScreenings(scraped: ScrapedCinema[], now: Date, runSt
       `INSERT INTO screenings (film_id, cinema_id, starts_at, vo, special, url, raw_title, seen_at)
        SELECT $1, c, s::timestamptz, v, sp, u, t, now()
        FROM unnest($2::text[], $3::text[], $4::bool[], $5::bool[], $6::text[], $7::text[]) AS x(c, s, v, sp, u, t)
-       ON CONFLICT (cinema_id, starts_at, film_id) DO UPDATE SET vo = EXCLUDED.vo, special = EXCLUDED.special, url = EXCLUDED.url, seen_at = now()`,
+       ON CONFLICT (cinema_id, starts_at, film_id) DO UPDATE SET vo = EXCLUDED.vo, special = EXCLUDED.special, url = EXCLUDED.url, raw_title = EXCLUDED.raw_title, seen_at = now()`,
       [
         filmId,
         uniq.map((r) => r.cinemaId),

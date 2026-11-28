@@ -61,15 +61,16 @@ function jsonAfter(text: string, key: string): unknown {
 }
 
 export interface SitePlan {
-  titles: Map<string, string>;
+  /** film id → Spanish title as printed, and the original (usually English) title. */
+  titles: Map<string, { es: string; original: string }>;
   pairs: { filmId: string; date: string }[];
 }
 
 export function parseSitePage(html: string, siteId: string): SitePlan {
   const text = unescapePayload(html);
-  const titles = new Map<string, string>();
+  const titles: SitePlan["titles"] = new Map();
   for (const m of text.matchAll(/"id":"(HO\d+)","title":"((?:[^"\\]|\\.)*)","titleEs":"((?:[^"\\]|\\.)*)"/g)) {
-    titles.set(m[1], (m[3] || m[2]).trim());
+    titles.set(m[1], { es: (m[3] || m[2]).trim(), original: m[2].trim() });
   }
   const dates = (jsonAfter(text, "filmScreeningDates") ?? []) as {
     businessDate: string;
@@ -91,12 +92,13 @@ export function parseBundle(bundle: CcBundle, cinemaId: CinemaId, siteId: string
     const attrs = new Map((res.related_data?.attributes ?? []).map((a) => [a.id, a.name.toLowerCase()]));
     for (const site of res.sites ?? []) {
       for (const st of site.showtimes ?? []) {
-        const title = titles.get(st.film_id);
-        if (!title || !st.start_time) continue;
+        const t = titles.get(st.film_id);
+        if (!t || !st.start_time) continue;
         const names = st.attribute_ids.map((id) => attrs.get(id) ?? "");
         out.push({
           cinemaId,
-          title,
+          title: t.es,
+          ...(t.original && t.original !== t.es ? { originalTitle: t.original } : {}),
           startsAt: new Date(st.start_time).toISOString(),
           vo: names.includes("subtitulado"),
           special: false,

@@ -59,16 +59,16 @@ export const tmdb = {
     return r.results.slice(0, 10);
   },
 
-  async details(id: number): Promise<TmdbDetails> {
+  async details(id: number, language: "it-IT" | "es-CO" = "it-IT"): Promise<TmdbDetails> {
     const r = await get<
       TmdbMovie & {
         runtime?: number;
         credits: { crew: { job: string; name: string }[] };
         videos: { results: { site: string; type: string; key: string; iso_639_1: string }[] };
       }
-    >(`/movie/${id}`, { language: "it-IT", append_to_response: "credits,videos", include_video_language: "it,en,null" });
+    >(`/movie/${id}`, { language, append_to_response: "credits,videos", include_video_language: `${language.slice(0, 2)},en,null` });
     const trailer =
-      r.videos.results.find((v) => v.site === "YouTube" && v.type === "Trailer" && v.iso_639_1 === "it") ??
+      r.videos.results.find((v) => v.site === "YouTube" && v.type === "Trailer" && v.iso_639_1 === language.slice(0, 2)) ??
       r.videos.results.find((v) => v.site === "YouTube" && v.type === "Trailer");
     return {
       id: r.id,
@@ -93,9 +93,10 @@ export const tmdb = {
     return r.results.find((p) => p.known_for_department === "Directing")?.id ?? null;
   },
 
-  async directed(personId: number): Promise<TmdbMovie[]> {
+  /** Films the person directed, titled in the city's language (with the English title alongside). */
+  async directed(personId: number, local: "it-IT" | "es-CO" = "it-IT"): Promise<TmdbMovie[]> {
     const [it, en] = await Promise.all(
-      (["it-IT", "en-US"] as const).map((language) =>
+      ([local, "en-US"] as const).map((language) =>
         get<{ crew: (TmdbMovie & { job: string })[] }>(`/person/${personId}/movie_credits`, { language }),
       ),
     );

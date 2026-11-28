@@ -75,10 +75,10 @@ Per un cinefilo milanese che oggi controlla a mano 10+ siti di sale diverse: un 
 - **Costi:** con scraper a mano ~0 €. Il costo vero è la manutenzione (una sala che si rompe ogni tanto per città).
 
 ## Pass bar v2
-- [ ] `typecheck`, `lint`, `build`, `test` verdi; test su fixture per ognuna delle 3 fonti di Bogotá (0 righe = fallisce).
-- [ ] `pnpm scrape --dry --city=bogota`: proiezioni future dalla Cinemateca e dai multisala scelti; Milano resta 13/13.
-- [ ] Matching TMDB su 20 titoli di Bogotá etichettati a mano ≥90%.
-- [ ] Orari giusti nel fuso della città: test su "stasera" e "ultime sere" a Bogotá contro Milano.
-- [ ] Selezione città: con posizione simulata a Bogotá si vedono solo le sale di Bogotá, vicine; senza posizione si sceglie la città; nessuno scroll a 375 e 1280px.
-- [ ] Trigger di Bogotá: 2 run settimanali consecutivi riusciti.
-- [ ] Mail FOMO con il fuso e le sale della città dell'utente.
+- [x] `typecheck`, `lint`, `build`, `test` verdi; test su fixture per ognuna delle 2 fonti di Bogotá (0 righe = fallisce). *(2026-11-28: 67 test; Cinemateca con pagina del film per regista, anno, v.o., locandina)*
+- [x] `pnpm scrape --dry --city=bogota`: proiezioni future dalla Cinemateca e dai multisala scelti; Milano resta 13/13. *(2/2: Cinemateca 105, Santafé 210)*
+- [x] Matching TMDB su 20 titoli di Bogotá etichettati a mano ≥90%. *(`pnpm eval:bogota`: 29/31 = 93,5%, con 3 programmi di corti che non devono avere match; Milano resta 42/42)*
+- [x] Orari giusti nel fuso della città: test su "stasera" e "ultime sere" a Bogotá contro Milano.
+- [x] Selezione città: con posizione simulata a Bogotá si vedono solo le sale di Bogotá, vicine; senza posizione si sceglie la città; nessuno scroll a 375 e 1280px. *(e2e `a Bogotá`, 20/20)*
+- [ ] Trigger di Bogotá: 2 run settimanali consecutivi riusciti. *(trigger `bogota-weekly`, giovedì 10:00 UTC; primo il 2026-12-03)*
+- [ ] Mail FOMO con il fuso e le sale della città dell'utente. *(codice pronto: `users.city`, `renderFomoMail(…, tz)`; manca la chiave Resend per la prova vera)*

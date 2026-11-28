@@ -18,7 +18,7 @@ async function noPageScroll(page: Page) {
 async function ready(page: Page) {
   await page.goto("/");
   // the list re-ranks once geolocation lands (stored locally as a precise place)
-  await page.waitForFunction(() => JSON.parse(localStorage.getItem("bijoux.place") ?? "{}").precise === true);
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("bijoux.place.milano") ?? "{}").precise === true);
   await expect(page.getByTestId("cover-active")).toBeVisible();
 }
 
@@ -82,4 +82,37 @@ test("l'alone cambia colore passando da un film all'altro", async ({ page }) => 
     await page.keyboard.press("ArrowRight");
   }
   expect(seen.size).toBeGreaterThan(1);
+});
+
+test.describe("a Bogotá", () => {
+  const SANTAFE_AREA = { latitude: 4.7465, longitude: -74.0462 }; // Toberín, near Santafé
+  test.use({ geolocation: SANTAFE_AREA, timezoneId: "America/Bogota" });
+
+  test("la posizione sceglie la città: Bogotá, vicino a me, una sola schermata", async ({ page }) => {
+    await page.goto("/");
+    await expect(page).toHaveURL(/citta=bogota/, { timeout: 20_000 });
+    await expect(page).toHaveTitle(/Bogotá/);
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem("bijoux.place.bogota") ?? "{}").radiusKm === 5);
+    await expect(page.getByTestId("cover-active")).toBeVisible();
+    await noPageScroll(page);
+
+    await page.getByRole("button", { name: "Per sala" }).click();
+    const halls = await page.locator("[data-hall]").evaluateAll((bs) => bs.map((b) => b.getAttribute("data-hall")));
+    expect(halls).toEqual(["cinecolombia-santafe"]); // the Cinemateca is downtown, ~17 km
+    await noPageScroll(page);
+
+    await page.getByRole("button", { name: /Impostazioni/ }).click();
+    await expect(page.getByLabel("Città")).toHaveValue("bogota");
+    await page.getByLabel("Quanto lontano").selectOption("40");
+    await page.getByRole("button", { name: "Chiudi le impostazioni" }).click();
+    await expect(page.locator("[data-hall]")).toHaveCount(2);
+  });
+
+  test("dalle impostazioni si torna a Milano", async ({ page }) => {
+    await page.goto("/?citta=bogota");
+    await page.getByRole("button", { name: /Impostazioni/ }).click();
+    await page.getByLabel("Città").selectOption("milano");
+    await expect(page).toHaveURL(/citta=milano/);
+    await expect(page).toHaveTitle(/Milano/);
+  });
 });

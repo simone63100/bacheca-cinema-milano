@@ -112,6 +112,8 @@ CREATE TABLE IF NOT EXISTS lb_slugs (
 );
 
 ALTER TABLE films ADD COLUMN IF NOT EXISTS accent text;
+-- v2: TMDB poster in Spanish for Bogotá (films.poster is the Italian one, shared with Milano)
+ALTER TABLE films ADD COLUMN IF NOT EXISTS poster_es text;
 
 -- v2: more cities
 ALTER TABLE cinemas ADD COLUMN IF NOT EXISTS city text NOT NULL DEFAULT 'milano';

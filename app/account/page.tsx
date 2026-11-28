@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { DEFAULT_CITY, isCity } from "@/lib/cities";
 import { AccountView, SignIn } from "@/components/AccountView";
 import { auth } from "@/lib/auth/server";
 import { q } from "@/lib/db";
@@ -12,8 +14,9 @@ export default async function AccountPage() {
   if (!user?.id || !user.email) return <SignIn />;
 
   await q("INSERT INTO users (id, email) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email", [user.id, user.email]);
-  const [row] = await q<{ letterboxd_username: string | null; lat: number | null; lng: number | null; radius_km: number; letterboxd_synced_at: string | null; wl: string; rated: string }>(
-    `SELECT u.letterboxd_username, u.lat, u.lng, u.radius_km, u.letterboxd_synced_at,
+  const saved = (await cookies()).get("bijoux.citta")?.value;
+  const [row] = await q<{ letterboxd_username: string | null; lat: number | null; lng: number | null; radius_km: number; city: string; letterboxd_synced_at: string | null; wl: string; rated: string }>(
+    `SELECT u.letterboxd_username, u.lat, u.lng, u.radius_km, u.city, u.letterboxd_synced_at,
             (SELECT count(*) FROM lb_entries e WHERE e.user_id = u.id AND e.kind = 'watchlist') AS wl,
             (SELECT count(*) FROM lb_entries e WHERE e.user_id = u.id AND e.kind = 'seen') AS rated
      FROM users u WHERE u.id = $1`,
@@ -27,6 +30,8 @@ export default async function AccountPage() {
         lat: row.lat,
         lng: row.lng,
         radiusKm: row.radius_km,
+        // no position yet: the city the board was showing
+        city: row.lat == null && isCity(saved) ? saved : isCity(row.city) ? row.city : DEFAULT_CITY,
         watchlist: Number(row.wl),
         rated: Number(row.rated),
         syncedAt: row.letterboxd_synced_at ? new Date(row.letterboxd_synced_at).toISOString() : null,

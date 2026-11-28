@@ -1,5 +1,6 @@
 import { cache } from "react";
-import { CINEMAS } from "./cinemas";
+import { cinemasIn } from "./cinemas";
+import { DEFAULT_CITY, cityById, type City, type CityId } from "./cities";
 import { q } from "./db";
 import { freshness, type FreshnessState } from "./freshness";
 
@@ -29,14 +30,18 @@ export interface BoardFilm {
 
 export interface Board {
   films: BoardFilm[];
-  cinemas: typeof CINEMAS;
+  city: City;
+  cinemas: ReturnType<typeof cinemasIn>;
   freshness: FreshnessState;
   generatedAt: string;
 }
 
 const HORIZON_DAYS = 21;
 
-export async function loadBoard(now = new Date()): Promise<Board> {
+const hallTitle = (counts?: Map<string, number>) => (counts ? [...counts].sort((a, b) => b[1] - a[1])[0]?.[0] : undefined);
+
+export async function loadBoard(cityId: CityId = DEFAULT_CITY, now = new Date()): Promise<Board> {
+  const city = cityById(cityId);
   const until = new Date(now.getTime() + HORIZON_DAYS * 86_400_000).toISOString();
   const [films, screenings, last] = await Promise.all([
     q<{
@@ -51,21 +56,28 @@ export async function loadBoard(now = new Date()): Promise<Board> {
       trailer: string | null;
       tags: string[];
       accent: string | null;
+      poster_es: string | null;
     }>(
-      `SELECT f.id, f.tmdb_id, f.title, f.original_title, f.director, f.year, f.runtime, f.poster, f.trailer, f.tags, f.accent
-       FROM films f WHERE EXISTS (SELECT 1 FROM screenings s WHERE s.film_id = f.id AND s.starts_at > $1 AND s.starts_at < $2)`,
-      [now.toISOString(), until],
+      `SELECT f.id, f.tmdb_id, f.title, f.original_title, f.director, f.year, f.runtime, f.poster, f.trailer, f.tags, f.accent, f.poster_es
+       FROM films f WHERE EXISTS (SELECT 1 FROM screenings s JOIN cinemas c ON c.id = s.cinema_id
+         WHERE s.film_id = f.id AND s.starts_at > $1 AND s.starts_at < $2 AND c.city = $3)`,
+      [now.toISOString(), until, city.id],
     ),
-    q<{ film_id: string; cinema_id: string; starts_at: string; vo: boolean; special: boolean; url: string | null }>(
-      `SELECT film_id, cinema_id, starts_at, vo, special, url FROM screenings
-       WHERE starts_at > $1 AND starts_at < $2 ORDER BY starts_at`,
-      [now.toISOString(), until],
+    q<{ film_id: string; cinema_id: string; starts_at: string; vo: boolean; special: boolean; url: string | null; raw_title: string }>(
+      `SELECT s.film_id, s.cinema_id, s.starts_at, s.vo, s.special, s.url, s.raw_title FROM screenings s JOIN cinemas c ON c.id = s.cinema_id
+       WHERE s.starts_at > $1 AND s.starts_at < $2 AND c.city = $3 ORDER BY s.starts_at`,
+      [now.toISOString(), until, city.id],
     ),
-    q<{ id: string; finished_at: string }>("SELECT id, finished_at FROM runs WHERE ok ORDER BY finished_at DESC LIMIT 1"),
+    q<{ id: string; finished_at: string }>("SELECT id, finished_at FROM runs WHERE ok AND city = $1 ORDER BY finished_at DESC LIMIT 1", [city.id]),
   ]);
   const byFilm = new Map<number, BoardScreening[]>();
+  // printed titles per film, most frequent wins (for cities that show the hall's title)
+  const printed = new Map<number, Map<string, number>>();
   for (const s of screenings) {
     const id = Number(s.film_id);
+    const counts = printed.get(id) ?? new Map<string, number>();
+    counts.set(s.raw_title, (counts.get(s.raw_title) ?? 0) + 1);
+    printed.set(id, counts);
     byFilm.set(id, [
       ...(byFilm.get(id) ?? []),
       { cinemaId: s.cinema_id, startsAt: new Date(s.starts_at).toISOString(), vo: s.vo, special: s.special, url: s.url },
@@ -76,20 +88,21 @@ export async function loadBoard(now = new Date()): Promise<Board> {
       .map((f) => ({
         id: Number(f.id),
         tmdbId: f.tmdb_id,
-        title: f.title,
+        title: city.titles === "sala" ? hallTitle(printed.get(Number(f.id))) ?? f.title : f.title,
         originalTitle: f.original_title,
         director: f.director,
         year: f.year,
         runtime: f.runtime,
-        poster: f.poster,
+        poster: (city.tmdbLang === "es-CO" && f.poster_es) || f.poster,
         trailer: f.trailer,
         tags: f.tags,
         accent: f.accent,
         screenings: byFilm.get(Number(f.id)) ?? [],
       }))
       .filter((f) => f.screenings.length > 0),
-    cinemas: CINEMAS,
-    freshness: freshness(last[0] ? { id: Number(last[0].id), finishedAt: new Date(last[0].finished_at).toISOString() } : null, now, null),
+    city,
+    cinemas: cinemasIn(city.id),
+    freshness: freshness(last[0] ? { id: Number(last[0].id), finishedAt: new Date(last[0].finished_at).toISOString() } : null, now, null, city),
     generatedAt: now.toISOString(),
   };
 }

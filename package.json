@@ -19,7 +19,8 @@
     "screens": "tsx scripts/screens.mts",
     "eval:holdout": "tsx --env-file-if-exists=.env.local scripts/eval-match.ts eval/holdout.json",
     "accents": "tsx --env-file=.env.local scripts/backfill-accents.mts",
-    "screens:compose": "python scripts/compose.py"
+    "screens:compose": "python scripts/compose.py",
+    "eval:bogota": "tsx --env-file-if-exists=.env.local scripts/eval-match.ts eval/match-set-bogota.json"
   },
   "dependencies": {
     "@neon/auth": "^0.8.2",

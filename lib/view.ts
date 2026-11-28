@@ -130,10 +130,3 @@ export function calendarUrl(f: Pick<BoardFilm, "title" | "runtime">, s: BoardScr
   const p = new URLSearchParams({ action: "TEMPLATE", text: `${f.title} · ${cinemaName}`, dates: `${fmt(start)}/${fmt(end)}`, location: cinemaName });
   return `https://calendar.google.com/calendar/render?${p}`;
 }
-
-// ---- compat while the UI moves to per-city clocks (v2): Milan defaults, to be removed with the city UI
-import { CITIES } from "./cities";
-const MILANO = CITIES[0];
-export const { dayKey, hhmm, weekday, dayNum, when } = clock(MILANO.tz);
-export const QUARTIERI = MILANO.quartieri;
-export const DEFAULT_PLACE: Place = { label: "Duomo", lat: 45.4642, lng: 9.19, radiusKm: 5, precise: false };

@@ -4,22 +4,8 @@ import { SlidersHorizontal, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Board, BoardFilm, BoardScreening } from "@/lib/board";
 import { distanceKm } from "@/lib/geo";
-import {
-  QUARTIERI,
-  calendarUrl,
-  cinemasInRadius,
-  dayKey,
-  dayNum,
-  fmtKm,
-  hhmm,
-  letterboxdUrl,
-  rankForYou,
-  ribbon,
-  tonight,
-  trailerUrl,
-  weekday,
-  when,
-} from "@/lib/view";
+import { CITIES, type CityId } from "@/lib/cities";
+import { calendarUrl, cinemasInRadius, clock, defaultPlace, fmtKm, letterboxdUrl, rankForYou, ribbon, tonight, trailerUrl } from "@/lib/view";
 import { usePlace } from "./usePlace";
 
 type Tab = "perte" | "stasera" | "sala";
@@ -35,7 +21,6 @@ const TABS: [Tab, string][] = [
   ["sala", "Per sala"],
 ];
 
-const longDay = new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", weekday: "long" });
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 function Poster({ f, eager }: { f: BoardFilm; eager?: boolean }) {
@@ -56,7 +41,9 @@ function filmIdFromUrl(): number | null {
 }
 
 export function BoardView({ board }: { board: Board }) {
-  const { place, setPlace, locate, asking, denied } = usePlace();
+  const city = board.city;
+  const { dayKey, hhmm, weekday, dayNum, when, longDay } = useMemo(() => clock(city.tz), [city.tz]);
+  const { place, setPlace, locate, asking, denied, outside, switchCity } = usePlace(city);
   const [tab, setTab] = useState<Tab>("perte");
   const [idx, setIdx] = useState(2);
   const [openId, setOpenId] = useState<number | null>(null);
@@ -75,20 +62,20 @@ export function BoardView({ board }: { board: Board }) {
   const halls = useMemo(() => cinemasInRadius(board.cinemas, place), [board.cinemas, place]);
   const near = useMemo(() => new Set<string>(halls.map((c) => c.id)), [halls]);
 
-  const days = useMemo(() => Array.from({ length: 7 }, (_, i) => dayKey(new Date(now.getTime() + i * 86_400_000))), [now]);
+  const days = useMemo(() => Array.from({ length: 7 }, (_, i) => dayKey(new Date(now.getTime() + i * 86_400_000))), [now, dayKey]);
   const [hall, setHall] = useState<string | null>(null);
   const [day, setDay] = useState<string | null>(null);
   // late in the evening "oggi" is over: start from the first day that still has something in the radius
   const firstBusyDay = useMemo(
     () => days.find((k) => board.films.some((f) => f.screenings.some((r) => near.has(r.cinemaId) && dayKey(r.startsAt) === k && new Date(r.startsAt) > now))) ?? days[0],
-    [days, board.films, near, now],
+    [days, board.films, near, now, dayKey],
   );
   // halls with something on the chosen day; the default is the nearest of those
   const busy = useMemo(() => {
     const s = new Set<string>();
     for (const f of board.films) for (const r of f.screenings) if (dayKey(r.startsAt) === (day ?? firstBusyDay) && new Date(r.startsAt) > now) s.add(r.cinemaId);
     return s;
-  }, [board.films, day, firstBusyDay, now]);
+  }, [board.films, day, firstBusyDay, now, dayKey]);
   const selHall = hall && near.has(hall) ? hall : (halls.find((h) => busy.has(h.id))?.id ?? halls[0]?.id ?? null);
   const selDay = day ?? firstBusyDay;
 
@@ -99,10 +86,10 @@ export function BoardView({ board }: { board: Board }) {
         .filter((x) => x.rows.length)
         .sort((a, b) => a.rows[0].startsAt.localeCompare(b.rows[0].startsAt));
     }
-    const ranked = (tab === "perte" ? rankForYou(board.films, near, now) : tonight(board.films, near, now, "Europe/Rome")).slice(0, 24);
+    const ranked = (tab === "perte" ? rankForYou(board.films, near, now) : tonight(board.films, near, now, city.tz)).slice(0, 24);
     // symmetric composition: the best film in the middle, the runners-up on both sides
     return ranked.length >= 3 ? [ranked[2], ranked[1], ranked[0], ...ranked.slice(3)] : ranked;
-  }, [tab, board.films, near, now, selHall, selDay]);
+  }, [tab, board.films, near, now, selHall, selDay, dayKey, city.tz]);
 
   const startIdx = tab !== "sala" && list.length >= 3 ? 2 : 0;
   useEffect(() => setIdx(startIdx), [startIdx, tab, place.lat, place.lng, place.radiusKm, selHall, selDay]);
@@ -205,7 +192,7 @@ export function BoardView({ board }: { board: Board }) {
     }
   };
 
-  const urgency = cur ? ribbon(cur.rows, now, "Europe/Rome") : null;
+  const urgency = cur ? ribbon(cur.rows, now, city.tz) : null;
   const first = cur?.rows[0];
   const accent = (openFilm ?? cur?.f)?.accent ?? ORANGE;
   const tags = (f: BoardFilm) =>
@@ -217,7 +204,7 @@ export function BoardView({ board }: { board: Board }) {
 
   return (
     <div className="ipod" style={{ ["--accent" as string]: accent }}>
-      <h1 className="sr">Bijoux, cinema d&apos;essai a Milano</h1>
+      <h1 className="sr">Bijoux, cinema d&apos;essai a {city.name}</h1>
       {board.freshness.banner && (
         <p className="stale" role="status">
           {board.freshness.banner}
@@ -393,7 +380,7 @@ export function BoardView({ board }: { board: Board }) {
                 {/* one evening left: the line itself is the warning; several: say how many first */}
                 {urgency?.startsWith("ultime") && <span className="urgent">{cap(urgency)}. </span>}
                 {urgency?.startsWith("ultima") ? "Ultima: " : urgency === "solo oggi" ? "Solo oggi: " : ""}
-                {urgency?.startsWith("ultima") || urgency === "solo oggi" ? longDay.format(new Date(first.startsAt)) : cap(longDay.format(new Date(first.startsAt)))}{" "}
+                {urgency?.startsWith("ultima") || urgency === "solo oggi" ? longDay(first.startsAt) : cap(longDay(first.startsAt))}{" "}
                 {hhmm(first.startsAt)}, {cinemaName(first.cinemaId).replace(/^Cin(ema|eteca) /, "")}
               </p>
             )}
@@ -435,19 +422,30 @@ export function BoardView({ board }: { board: Board }) {
                 <X size={20} strokeWidth={1.5} />
               </button>
             </div>
+            <label htmlFor="citta">Città</label>
+            <select id="citta" value={city.id} onChange={(e) => switchCity(e.target.value as CityId)}>
+              {CITIES.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
             <label htmlFor="quartiere">Da dove parti</label>
             <select
               id="quartiere"
               value={place.precise ? "" : place.label}
               onChange={(e) => {
-                const q = QUARTIERI.find((x) => x.label === e.target.value);
-                if (q) setPlace({ ...q, radiusKm: place.radiusKm, precise: false });
+                const whole = defaultPlace(city);
+                if (e.target.value === whole.label) return setPlace(whole);
+                const q = city.quartieri.find((x) => x.label === e.target.value);
+                if (q) setPlace({ ...q, radiusKm: place.radiusKm >= whole.radiusKm ? 5 : place.radiusKm, precise: false });
               }}
             >
               <option value="" disabled>
-                {place.precise ? "La tua posizione" : "Scegli un quartiere"}
+                La tua posizione
               </option>
-              {QUARTIERI.map((q) => (
+              <option>{defaultPlace(city).label}</option>
+              {city.quartieri.map((q) => (
                 <option key={q.label}>{q.label}</option>
               ))}
             </select>
@@ -455,11 +453,12 @@ export function BoardView({ board }: { board: Board }) {
               {asking ? "Cerco la posizione…" : "Usa la mia posizione"}
             </button>
             {denied && <p className="hint">Posizione non disponibile: scegli un quartiere.</p>}
+            {outside && <p className="hint">Sei fuori dalle città di Bijoux: scegli una città e un quartiere.</p>}
             <label htmlFor="raggio">Quanto lontano</label>
             <select id="raggio" value={place.radiusKm} onChange={(e) => setPlace({ ...place, radiusKm: Number(e.target.value) })}>
-              {[2, 3, 5, 8, 12, 20].map((k) => (
+              {[2, 3, 5, 8, 12, 20, 40].map((k) => (
                 <option key={k} value={k}>
-                  Entro {k} km ({cinemasInRadius(board.cinemas, { ...place, radiusKm: k }).length} sale)
+                  {k === 40 ? "Tutta la città" : `Entro ${k} km`} ({cinemasInRadius(board.cinemas, { ...place, radiusKm: k }).length} sale)
                 </option>
               ))}
             </select>

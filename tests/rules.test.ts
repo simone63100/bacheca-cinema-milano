@@ -3,6 +3,9 @@ import { evaluateUser, planMail, type FomoFilm, type FomoScreening, type FomoUse
 import { freshness } from "@/lib/freshness";
 import { distanceKm, withinRadius } from "@/lib/geo";
 import { CINEMAS } from "@/lib/cinemas";
+import { cityById } from "@/lib/cities";
+import type { BoardFilm } from "@/lib/board";
+import { ribbon, tonight } from "@/lib/view";
 
 const NOW = new Date("2026-11-20T09:00:00Z");
 const at = (days: number, hour = 20) => new Date(NOW.getTime() + days * 86_400_000 + (hour - 10) * 3_600_000).toISOString();
@@ -163,5 +166,32 @@ describe("guardia di freschezza", () => {
 
   it("run riuscito stamattina → 'aggiornato oggi'", () => {
     expect(freshness(run(2), NOW, null).label).toBe("aggiornato oggi");
+  });
+});
+
+describe("fuso della città", () => {
+  // 28 nov 20:00 UTC = 15:00 a Bogotá, 21:00 a Milano
+  const now = new Date("2026-11-28T20:00:00Z");
+  const row = (startsAt: string) => ({ cinemaId: "cinemateca-bogota", startsAt, vo: false, special: false, url: null });
+  const filmWith = (...starts: string[]) =>
+    ({ id: 1, tmdbId: null, title: "Pulse", originalTitle: null, director: null, year: null, runtime: null, poster: null, trailer: null, tags: [], accent: null, screenings: starts.map(row) }) as BoardFilm;
+  const near = new Set(["cinemateca-bogota"]);
+
+  it("stasera: le 20:00 di Bogotá sono stasera a Bogotá, non a Milano (lì sono le 2 di notte di domani)", () => {
+    const f = filmWith("2026-11-29T01:00:00Z");
+    expect(tonight([f], near, now, cityById("bogota").tz)).toHaveLength(1);
+    expect(tonight([f], near, now, cityById("milano").tz)).toHaveLength(0);
+  });
+
+  it("ultime sere: due proiezioni nello stesso giorno di Bogotá ma a cavallo della mezzanotte di Milano", () => {
+    const rows = filmWith("2026-11-28T22:30:00Z", "2026-11-29T01:00:00Z").screenings;
+    expect(ribbon(rows, now, cityById("bogota").tz)).toBe("solo oggi");
+    expect(ribbon(rows, now, cityById("milano").tz)).toBe("ultime 2 sere");
+  });
+
+  it("la guardia di freschezza di Bogotá regge una settimana (scrape del giovedì)", () => {
+    const last = { id: 1, finishedAt: "2026-11-26T15:00:00Z" };
+    expect(freshness(last, new Date("2026-12-02T15:00:00Z"), null, cityById("bogota")).stale).toBe(false);
+    expect(freshness(last, new Date("2026-12-02T15:00:00Z"), null, cityById("milano")).stale).toBe(true);
   });
 });

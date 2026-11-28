@@ -1,6 +1,6 @@
 /**
- * Neon Function `daily` — invoked once a day by a Neon schedule trigger (never GitHub Actions).
- * scrape 13 cinemas → match TMDB → upsert → Letterboxd → FOMO mails → freshness guard.
+ * Neon Function `daily` — one Neon schedule trigger per city (never GitHub Actions): /milano daily, /bogota on Thursdays.
+ * scrape the city's cinemas → match TMDB → upsert → Letterboxd → FOMO mails → freshness guard.
  * DATABASE_URL is injected by Neon; TMDB_TOKEN, RESEND_API_KEY, MAIL_FROM, ADMIN_EMAIL,
  * SITE_URL, CRON_SECRET are function environment variables.
  */

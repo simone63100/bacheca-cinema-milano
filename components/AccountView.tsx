@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useActionState, useRef, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { connectLetterboxd, savePlace, uploadCsv, type SaveState } from "@/lib/account";
-import { QUARTIERI } from "@/lib/view";
+import { CITIES, cityById, cityNear, type CityId } from "@/lib/cities";
+import { defaultPlace } from "@/lib/view";
 
 export interface AccountData {
   email: string;
@@ -13,6 +14,7 @@ export interface AccountData {
   lat: number | null;
   lng: number | null;
   radiusKm: number;
+  city: CityId;
   watchlist: number;
   rated: number;
   syncedAt: string | null;
@@ -227,7 +229,11 @@ export function AccountView({ data }: { data: AccountData }) {
   const [csvState, upload, uploading] = useActionState(uploadCsv, idle);
   const csvForm = useRef<HTMLFormElement>(null);
 
-  const quartiere = QUARTIERI.find((q) => data.lat != null && Math.abs(q.lat - data.lat) < 1e-4 && Math.abs(q.lng - data.lng!) < 1e-4);
+  const [cityId, setCityId] = useState<CityId>(data.city);
+  const city = cityById(cityId);
+  const whole = defaultPlace(city);
+  const options = [{ label: whole.label, lat: whole.lat, lng: whole.lng }, ...city.quartieri];
+  const quartiere = options.find((q) => data.lat != null && Math.abs(q.lat - data.lat) < 1e-4 && Math.abs(q.lng - data.lng!) < 1e-4);
   const [place, setPlace] = useState({
     lat: data.lat,
     lng: data.lng,
@@ -317,19 +323,38 @@ export function AccountView({ data }: { data: AccountData }) {
           Dove sei
         </h2>
         <p className="hint">Ti avvisiamo solo per le sale entro questa distanza. Si salva da solo.</p>
+        <label htmlFor="c">Città</label>
+        <select
+          id="c"
+          value={cityId}
+          onChange={(e) => {
+            const next = cityById(e.target.value as CityId);
+            setCityId(next.id);
+            const w = defaultPlace(next);
+            storePlace({ lat: w.lat, lng: w.lng, label: w.label, radius: w.radiusKm });
+          }}
+        >
+          {CITIES.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
         <label htmlFor="q">Quartiere</label>
         <select
           id="q"
-          value={QUARTIERI.some((q) => q.label === place.label) ? place.label : ""}
+          value={options.some((q) => q.label === place.label) ? place.label : ""}
           onChange={(e) => {
-            const q = QUARTIERI.find((x) => x.label === e.target.value);
-            if (q) storePlace({ ...place, lat: q.lat, lng: q.lng, label: q.label });
+            const q = options.find((x) => x.label === e.target.value);
+            if (!q) return;
+            const radius = q.label === whole.label ? whole.radiusKm : place.radius >= whole.radiusKm ? 5 : place.radius;
+            storePlace({ lat: q.lat, lng: q.lng, label: q.label, radius });
           }}
         >
           <option value="" disabled>
             {place.lat != null ? "La tua posizione" : "Scegli un quartiere"}
           </option>
-          {QUARTIERI.map((q) => (
+          {options.map((q) => (
             <option key={q.label}>{q.label}</option>
           ))}
         </select>
@@ -338,7 +363,13 @@ export function AccountView({ data }: { data: AccountData }) {
           className="textbtn"
           onClick={() =>
             navigator.geolocation?.getCurrentPosition(
-              (p) => storePlace({ ...place, lat: p.coords.latitude, lng: p.coords.longitude, label: "La tua posizione" }),
+              (p) => {
+                const near = cityNear({ lat: p.coords.latitude, lng: p.coords.longitude });
+                if (!near) return setPlaceMsg({ ok: false, message: "Sei fuori dalle città di Bijoux: scegli una città." });
+                setCityId(near.id);
+                const radius = place.radius >= whole.radiusKm ? 5 : place.radius;
+                storePlace({ lat: p.coords.latitude, lng: p.coords.longitude, label: "La tua posizione", radius });
+              },
               () => setPlaceMsg({ ok: false, message: "Posizione non disponibile: scegli un quartiere." }),
             )
           }
@@ -347,9 +378,9 @@ export function AccountView({ data }: { data: AccountData }) {
         </button>
         <label htmlFor="r">Distanza massima</label>
         <select id="r" value={place.radius} onChange={(e) => storePlace({ ...place, radius: Number(e.target.value) })}>
-          {[2, 3, 5, 8, 12, 20].map((k) => (
+          {[2, 3, 5, 8, 12, 20, 40].map((k) => (
             <option key={k} value={k}>
-              Entro {k} km
+              {k === 40 ? "Tutta la città" : `Entro ${k} km`}
             </option>
           ))}
         </select>

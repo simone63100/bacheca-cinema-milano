@@ -10,8 +10,13 @@ import { cleanTitle } from "@/scrapers/_text";
 const FIXTURE_NOW = new Date("2026-11-20T09:00:00Z");
 const dir = path.join(__dirname, "..", "scrapers", "__fixtures__");
 
-async function load(fixture: string, format: "text" | "pdf" | "cine-colombia") {
+async function load(fixture: string, format: "text" | "pdf" | "cine-colombia" | "cinemateca") {
   const buf = readFileSync(path.join(dir, fixture));
+  if (format === "cinemateca") {
+    // the agenda plus one film page (Pulse), as fetchBundle would return them
+    const pulse = readFileSync(path.join(dir, "cinemateca-bogota-pulse.html"), "utf8");
+    return JSON.stringify({ grid: buf.toString("utf8"), details: { "https://cinematecadebogota.gov.co/node/peliculas/4086?sede=11": pulse } });
+  }
   return format === "pdf" ? pdfToText(new Uint8Array(buf)) : buf.toString("utf8");
 }
 
@@ -71,10 +76,16 @@ describe("scraper delle 13 sale su fixture", () => {
   });
 
   it("cinemateca di Bogotá: orari nel fuso di Bogotá, solo da oggi in poi", async () => {
-    const rows = sanitize(SCRAPERS["cinemateca-bogota"].parse(await load("cinemateca-bogota.html", "text"), FIXTURE_NOW));
+    const rows = sanitize(SCRAPERS["cinemateca-bogota"].parse(await load("cinemateca-bogota.html", "cinemateca"), FIXTURE_NOW));
     // "Pulse (Kairo)", Sala 2, Noviembre 28 8:00 pm → 01:00 UTC del 29 (Bogotá è UTC-5)
     const pulse = rows.find((r) => r.title === "Pulse (Kairo)");
     expect(pulse?.startsAt).toBe("2026-11-29T01:00:00.000Z");
+    // from the film page: director, year, Japanese with Spanish subtitles, the Cinemateca's poster
+    expect(pulse).toMatchObject({ director: "Kiyoshi Kurosawa", year: 2001, vo: true });
+    expect(pulse?.poster).toMatch(/^https:\/\/cinematecadebogota\.gov\.co\/sites\/default\/files\//);
+    // festival programme codes are dropped from the title
+    expect(rows.some((r) => /^[A-Z0-9-]+ \|/.test(r.title))).toBe(false);
+    expect(rows.some((r) => r.title === "Competencia Internacional Animación 1")).toBe(true);
     expect(rows.every((r) => r.startsAt >= "2026-11-20T05:00:00.000Z")).toBe(true);
     expect(rows.length).toBeGreaterThan(20);
   });
@@ -83,6 +94,8 @@ describe("scraper delle 13 sale su fixture", () => {
     const rows = sanitize(SCRAPERS["cinecolombia-santafe"].parse(await load("cine-colombia-santafe.json", "cine-colombia"), FIXTURE_NOW));
     expect(rows.length).toBeGreaterThan(50);
     expect(rows.some((r) => /Juegos del Hambre/.test(r.title))).toBe(true);
+    // the original title travels along for TMDB, the printed one stays Spanish
+    expect(rows.find((r) => r.title === "Spider-Man:Un Nuevo Día")?.originalTitle).toBe("Spider- Man: Brand New New Day");
     expect(rows.some((r) => r.vo)).toBe(true);
     expect(rows.some((r) => !r.vo)).toBe(true);
   });

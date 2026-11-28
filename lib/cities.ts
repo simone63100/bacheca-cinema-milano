@@ -13,6 +13,12 @@ export interface City extends LatLng {
   tmdbRegion: "IT" | "CO";
   /** Freshness guard: older than this → banner + one admin alert (daily vs weekly scrape). */
   staleAfterHours: number;
+  /**
+   * Which title the board shows: "tmdb" = TMDB's localised title (Milano, Italian),
+   * "sala" = as printed by the city's cinemas (Bogotá: TMDB has no reliable es-CO titles,
+   * and a film shared with Milano would otherwise show in Italian).
+   */
+  titles: "tmdb" | "sala";
   quartieri: { label: string; lat: number; lng: number }[];
 }
 
@@ -26,6 +32,7 @@ export const CITIES: City[] = [
     tmdbLang: "it-IT",
     tmdbRegion: "IT",
     staleAfterHours: 26,
+    titles: "tmdb",
     quartieri: [
       { label: "Duomo", lat: 45.4642, lng: 9.19 },
       { label: "Brera", lat: 45.4719, lng: 9.1879 },
@@ -52,6 +59,7 @@ export const CITIES: City[] = [
     tmdbLang: "es-CO",
     tmdbRegion: "CO",
     staleAfterHours: 8 * 24, // weekly scrape, on Thursdays
+    titles: "sala",
     quartieri: [
       { label: "La Candelaria / Centro", lat: 4.5981, lng: -74.0758 },
       { label: "La Macarena / La Merced", lat: 4.6146, lng: -74.0663 },
@@ -74,3 +82,5 @@ export function cityNear(p: LatLng): City | null {
   const best = CITIES.map((c) => ({ c, km: distanceKm(p, c) })).sort((a, b) => a.km - b.km)[0];
   return best && best.km <= 50 ? best.c : null;
 }
+
+export const isCity = (v: unknown): v is CityId => CITIES.some((c) => c.id === v);
