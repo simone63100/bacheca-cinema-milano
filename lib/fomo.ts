@@ -54,8 +54,8 @@ export interface FomoHit {
 
 const DAY = 86_400_000;
 
-export function sameRomeDay(a: Date, b: Date): boolean {
-  const f = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" });
+export function sameDay(a: Date, b: Date, tz: string): boolean {
+  const f = new Intl.DateTimeFormat("en-CA", { timeZone: tz });
   return f.format(a) === f.format(b);
 }
 
@@ -65,9 +65,11 @@ export function evaluateUser(
   screenings: FomoScreening[],
   cinemas: (LatLng & { id: string; todayOnly?: boolean })[],
   now: Date,
+  tz = "Europe/Rome",
 ): FomoHit[] {
   const partial = new Set(cinemas.filter((c) => c.todayOnly).map((c) => c.id));
-  if (user.lastMailAt && sameRomeDay(new Date(user.lastMailAt), now)) return [];
+  // "one mail a day" is the user's day, in their city's zone
+  if (user.lastMailAt && sameDay(new Date(user.lastMailAt), now, tz)) return [];
 
   const inRadius = new Set(cinemas.filter((c) => distanceKm(user, c) <= user.radiusKm).map((c) => c.id));
   const future = screenings.filter((s) => new Date(s.startsAt) > now);

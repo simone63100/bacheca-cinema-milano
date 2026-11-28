@@ -1,14 +1,20 @@
 /**
- * pnpm scrape --dry  → live scrape of the 13 cinemas, per-cinema report, nothing written.
+ * pnpm scrape --dry [--city=bogota] → live scrape of one city (default milano), per-cinema report, nothing written.
  * pnpm scrape        → same, then the full daily pipeline (needs DATABASE_URL).
  * Exit code 1 if fewer than 11 cinemas return ≥1 future screening.
  */
-import { CINEMAS } from "@/lib/cinemas";
+import { cinemasIn } from "@/lib/cinemas";
+import { CITIES } from "@/lib/cities";
+import { minCinemasOk } from "@/lib/pipeline";
 import { scrape } from "@/scrapers";
 import type { Screening } from "@/lib/types";
 
 const dry = process.argv.includes("--dry");
-const MIN_OK = 11;
+const cityArg = process.argv.find((a) => a.startsWith("--city="))?.slice(7) ?? "milano";
+if (!CITIES.some((c) => c.id === cityArg)) throw new Error(`città sconosciuta: ${cityArg}`);
+const CITY = cityArg as (typeof CITIES)[number]["id"];
+const CINEMAS = cinemasIn(CITY);
+const MIN_OK = minCinemasOk(CITY);
 
 async function main() {
   const now = new Date();
@@ -40,7 +46,7 @@ async function main() {
 
   if (!dry) {
     const { runDaily } = await import("@/lib/pipeline");
-    await runDaily({ now, scraped: results.map((r) => ({ cinemaId: r.c.id, rows: r.rows, error: r.error })) });
+    await runDaily({ city: CITY, now, scraped: results.map((r) => ({ cinemaId: r.c.id, rows: r.rows, error: r.error })) });
   }
   process.exit(ok >= MIN_OK ? 0 : 1);
 }

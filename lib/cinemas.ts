@@ -24,6 +24,15 @@ export const CINEMAS: Cinema[] = [
     url: "https://cinematecadebogota.gov.co/agenda/11",
     source: "https://cinematecadebogota.gov.co/agenda/11",
   },
+  {
+    id: "cinecolombia-santafe",
+    city: "bogota",
+    name: "Cine Colombia Santafé",
+    lat: 4.7628,
+    lng: -74.0463,
+    url: "https://www.cinecolombia.com/cartelera/bogota/santa-fe-bogota",
+    source: "https://www.cinecolombia.com/cartelera/bogota/santa-fe-bogota",
+  },
 ];
 
 export const cinemasIn = (city: CityId) => CINEMAS.filter((c) => c.city === city);

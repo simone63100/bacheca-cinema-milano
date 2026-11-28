@@ -1,7 +1,7 @@
 /** Resend over plain fetch (works in Workers and Neon Functions). No addresses are ever logged. */
 import { CINEMAS } from "./cinemas";
 import type { FomoFilm, FomoHit } from "./fomo";
-import { when } from "./view";
+import { clock } from "./view";
 
 const RULE_LABEL: Record<FomoHit["rule"], string> = {
   watchlist_last: "dalla tua watchlist, sta per uscire dalle sale",
@@ -11,7 +11,8 @@ const RULE_LABEL: Record<FomoHit["rule"], string> = {
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
-export function renderFomoMail(hits: FomoHit[], films: FomoFilm[], siteUrl: string) {
+export function renderFomoMail(hits: FomoHit[], films: FomoFilm[], siteUrl: string, tz = "Europe/Rome") {
+  const when = clock(tz).when;
   const name = (id: string) => CINEMAS.find((c) => c.id === id)?.name ?? id;
   const blocks = hits.map((h) => {
     const f = films.find((x) => x.filmId === h.filmId)!;

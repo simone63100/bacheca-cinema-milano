@@ -3,7 +3,8 @@
  * scrape 13 cinemas → normalise → TMDB match → upsert → refresh Letterboxd users →
  * FOMO rules → mails → freshness guard.
  */
-import { CINEMAS } from "./cinemas";
+import { cinemasIn } from "./cinemas";
+import { cityById, type City, type CityId } from "./cities";
 import { q } from "./db";
 import { evaluateUser, type FomoFilm, type FomoScreening, type FomoUser } from "./fomo";
 import { freshness } from "./freshness";
@@ -36,7 +37,8 @@ export interface ScrapedCinema {
   error: string | null;
 }
 
-export const MIN_CINEMAS_OK = 11;
+/** A run is ok when enough of the city's cinemas answered: 11/13 in Milan, all of them elsewhere. */
+export const minCinemasOk = (city: CityId) => (city === "milano" ? 11 : cinemasIn(city).length);
 
 export function tagsFor(rows: Screening[], year: number | null, now: Date): string[] {
   const tags = new Set<string>();
@@ -49,11 +51,11 @@ export function tagsFor(rows: Screening[], year: number | null, now: Date): stri
   return [...tags];
 }
 
-async function resolveFilm(key: string, sample: Screening, rows: Screening[], now: Date): Promise<number> {
+async function resolveFilm(key: string, sample: Screening, rows: Screening[], now: Date, city: City): Promise<number> {
   const cached = await q<{ tmdb_id: number | null }>("SELECT tmdb_id FROM title_matches WHERE title_key = $1", [key]);
   let tmdbId = cached[0]?.tmdb_id ?? null;
   if (!cached.length && process.env.TMDB_TOKEN) {
-    const m = await matchTitle({ title: sample.title, year: sample.year, director: sample.director, now });
+    const m = await matchTitle({ title: sample.title, year: sample.year, director: sample.director, now, lang: city.tmdbLang, region: city.tmdbRegion });
     tmdbId = m.tmdbId;
     await q("INSERT INTO title_matches (title_key, tmdb_id, method) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING", [key, tmdbId, m.method]);
   }
@@ -83,7 +85,7 @@ async function resolveFilm(key: string, sample: Screening, rows: Screening[], no
   return ins[0].id;
 }
 
-export async function storeScreenings(scraped: ScrapedCinema[], now: Date, runStart: Date) {
+export async function storeScreenings(scraped: ScrapedCinema[], now: Date, runStart: Date, city: City = cityById("milano")) {
   const all = scraped.flatMap((s) => s.rows);
   const groups = new Map<string, Screening[]>();
   for (const r of all) {
@@ -91,7 +93,7 @@ export async function storeScreenings(scraped: ScrapedCinema[], now: Date, runSt
     groups.set(k, [...(groups.get(k) ?? []), r]);
   }
   for (const [key, rows] of groups) {
-    const filmId = await resolveFilm(key, rows.find((r) => r.director || r.year) ?? rows[0], rows, now);
+    const filmId = await resolveFilm(key, rows.find((r) => r.director || r.year) ?? rows[0], rows, now, city);
     // one statement per film; duplicates within the batch would trip ON CONFLICT, so dedupe first
     const uniq = [...new Map(rows.map((r) => [`${r.cinemaId}|${r.startsAt}`, r])).values()];
     await q(
@@ -117,21 +119,22 @@ export async function storeScreenings(scraped: ScrapedCinema[], now: Date, runSt
   }
 }
 
-export async function runFomo(now: Date, send: (userId: string, hits: ReturnType<typeof evaluateUser>, films: FomoFilm[]) => Promise<void>) {
+export async function runFomo(now: Date, city: City, send: (userId: string, hits: ReturnType<typeof evaluateUser>, films: FomoFilm[]) => Promise<void>) {
   const users = await q<{ id: string; lat: number | null; lng: number | null; radius_km: number }>(
-    "SELECT id, lat, lng, radius_km FROM users WHERE lat IS NOT NULL AND lng IS NOT NULL",
+    "SELECT id, lat, lng, radius_km FROM users WHERE city = $1 AND lat IS NOT NULL AND lng IS NOT NULL",
+    [city.id],
   );
   if (!users.length) return { users: 0, mails: 0 };
   const films = (
     await q<{ id: number; tmdb_id: number | null; title: string; year: number | null; tags: string[] }>(
-      "SELECT f.id, f.tmdb_id, f.title, f.year, f.tags FROM films f WHERE EXISTS (SELECT 1 FROM screenings s WHERE s.film_id = f.id AND s.starts_at > $1)",
-      [now.toISOString()],
+      "SELECT f.id, f.tmdb_id, f.title, f.year, f.tags FROM films f WHERE EXISTS (SELECT 1 FROM screenings s JOIN cinemas c ON c.id = s.cinema_id WHERE s.film_id = f.id AND s.starts_at > $1 AND c.city = $2)",
+      [now.toISOString(), city.id],
     )
   ).map<FomoFilm>((f) => ({ filmId: f.id, tmdbId: f.tmdb_id, title: f.title, rerun: (f.year ?? now.getUTCFullYear()) < now.getUTCFullYear() - 1 || f.tags.includes("restauro") }));
   const screenings = (
     await q<{ film_id: number; cinema_id: string; starts_at: string; special: boolean }>(
-      "SELECT film_id, cinema_id, starts_at, special FROM screenings WHERE starts_at > $1",
-      [now.toISOString()],
+      "SELECT s.film_id, s.cinema_id, s.starts_at, s.special FROM screenings s JOIN cinemas c ON c.id = s.cinema_id WHERE s.starts_at > $1 AND c.city = $2",
+      [now.toISOString(), city.id],
     )
   ).map<FomoScreening>((s) => ({ filmId: s.film_id, tmdbId: null, cinemaId: s.cinema_id, startsAt: new Date(s.starts_at).toISOString(), special: s.special }));
 
@@ -151,7 +154,7 @@ export async function runFomo(now: Date, send: (userId: string, hits: ReturnType
       notified: new Set(sent.map((s) => `${s.film_id}|${s.rule}`)),
       lastMailAt: sent.map((s) => new Date(s.sent_at).toISOString()).sort().at(-1) ?? null,
     };
-    const hits = evaluateUser(fu, films, screenings, CINEMAS, now);
+    const hits = evaluateUser(fu, films, screenings, cinemasIn(city.id), now, city.tz);
     if (!hits.length) continue;
     try {
       await send(u.id, hits, films);
@@ -169,45 +172,47 @@ export async function runFomo(now: Date, send: (userId: string, hits: ReturnType
 }
 
 /** `alert` returns true only when the message actually went out. */
-export async function checkFreshness(now: Date, alert: (text: string) => Promise<boolean>) {
-  const last = await q<{ id: number; finished_at: string }>("SELECT id, finished_at FROM runs WHERE ok ORDER BY finished_at DESC LIMIT 1");
+export async function checkFreshness(now: Date, city: City, alert: (text: string) => Promise<boolean>) {
+  const last = await q<{ id: number; finished_at: string }>("SELECT id, finished_at FROM runs WHERE ok AND city = $1 ORDER BY finished_at DESC LIMIT 1", [city.id]);
   const lastOk = last[0] ? { id: Number(last[0].id), finishedAt: new Date(last[0].finished_at).toISOString() } : null;
   const alerted = lastOk
-    ? await q<{ since_run: number }>("SELECT since_run FROM alerts WHERE kind = 'stale' AND since_run = $1", [lastOk.id])
-    : await q<{ since_run: number }>("SELECT since_run FROM alerts WHERE kind = 'stale' AND since_run = 0");
-  const state = freshness(lastOk, now, alerted.length ? Number(alerted[0].since_run) : null);
+    ? await q<{ since_run: number }>("SELECT since_run FROM alerts WHERE kind = 'stale' AND city = $2 AND since_run = $1", [lastOk.id, city.id])
+    : await q<{ since_run: number }>("SELECT since_run FROM alerts WHERE kind = 'stale' AND city = $1 AND since_run = 0", [city.id]);
+  const state = freshness(lastOk, now, alerted.length ? Number(alerted[0].since_run) : null, city);
   if (state.alertAdmin) {
-    const sent = await alert(`Bijoux: ultimo aggiornamento riuscito ${state.label}. Il sito mostra il banner "${state.banner}".`);
-    if (sent) await q("INSERT INTO alerts (kind, since_run) VALUES ('stale', $1) ON CONFLICT DO NOTHING", [lastOk?.id ?? 0]);
+    const sent = await alert(`Bijoux ${city.name}: ultimo aggiornamento riuscito ${state.label}. Il sito mostra il banner "${state.banner}".`);
+    if (sent) await q("INSERT INTO alerts (kind, since_run, city) VALUES ('stale', $1, $2) ON CONFLICT DO NOTHING", [lastOk?.id ?? 0, city.id]);
   }
   return state;
 }
 
 export async function runDaily(opts: {
+  city?: CityId;
   now?: Date;
   scraped: ScrapedCinema[];
-  sendFomo?: Parameters<typeof runFomo>[1];
+  sendFomo?: Parameters<typeof runFomo>[2];
   alertAdmin?: (text: string) => Promise<boolean>;
   refreshLetterboxd?: (now: Date) => Promise<void>;
 }) {
   const now = opts.now ?? new Date();
+  const city = cityById(opts.city ?? "milano");
   // run start from the DB clock: seen_at is written with the DB's now(), so both sides agree
-  const [{ id: runId, started_at }] = await q<{ id: number; started_at: string }>("INSERT INTO runs DEFAULT VALUES RETURNING id, started_at");
+  const [{ id: runId, started_at }] = await q<{ id: number; started_at: string }>("INSERT INTO runs (city) VALUES ($1) RETURNING id, started_at", [city.id]);
   const runStart = new Date(started_at);
   const perCinema = Object.fromEntries(opts.scraped.map((s) => [s.cinemaId, s.error ? { n: 0, error: s.error } : { n: s.rows.length }]));
   const okCount = opts.scraped.filter((s) => !s.error && s.rows.length > 0).length;
   try {
-    await storeScreenings(opts.scraped, now, runStart);
+    await storeScreenings(opts.scraped, now, runStart, city);
     await fillAccents();
     if (opts.refreshLetterboxd) await opts.refreshLetterboxd(now);
-    const fomo = opts.sendFomo ? await runFomo(now, opts.sendFomo) : null;
-    const ok = okCount >= MIN_CINEMAS_OK;
+    const fomo = opts.sendFomo ? await runFomo(now, city, opts.sendFomo) : null;
+    const ok = okCount >= minCinemasOk(city.id);
     await q("UPDATE runs SET finished_at = now(), ok = $2, per_cinema = $3 WHERE id = $1", [runId, ok, JSON.stringify({ ...perCinema, _fomo: fomo })]);
   } catch (e) {
     await q("UPDATE runs SET finished_at = now(), ok = false, per_cinema = $2, error = $3 WHERE id = $1", [runId, JSON.stringify(perCinema), String((e as Error).stack ?? e)]);
     throw e;
   } finally {
-    if (opts.alertAdmin) await checkFreshness(new Date(), opts.alertAdmin);
+    if (opts.alertAdmin) await checkFreshness(new Date(), city, opts.alertAdmin);
   }
   return { runId, okCount };
 }

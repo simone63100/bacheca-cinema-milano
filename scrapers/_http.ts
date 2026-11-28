@@ -1,3 +1,5 @@
+import { fetch as undiciFetch } from "undici";
+import { dispatcherFor } from "./_tls";
 export const USER_AGENT =
   "BijouxBot/1.0 (listings delle sale d'essai di Milano; 1 richiesta al giorno per pagina)";
 
@@ -6,11 +8,15 @@ export const USER_AGENT =
  * Function stays warm across daily invocations and a cache would serve yesterday's page.
  */
 export async function politeFetch(url: string): Promise<Response> {
-  const res = await fetch(url, {
+  const dispatcher = dispatcherFor(url);
+  const init = {
     headers: { "user-agent": USER_AGENT, "accept-language": "it-IT,it;q=0.9" },
-    redirect: "follow",
+    redirect: "follow" as const,
     signal: AbortSignal.timeout(20_000),
-  });
+  };
+  const res = dispatcher
+    ? ((await undiciFetch(url, { ...init, dispatcher })) as unknown as Response)
+    : await fetch(url, init);
   if (!res.ok) throw new Error(`HTTP ${res.status} su ${url}`);
   return res;
 }

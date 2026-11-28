@@ -10,7 +10,7 @@ import { cleanTitle } from "@/scrapers/_text";
 const FIXTURE_NOW = new Date("2026-11-20T09:00:00Z");
 const dir = path.join(__dirname, "..", "scrapers", "__fixtures__");
 
-async function load(fixture: string, format: "text" | "pdf") {
+async function load(fixture: string, format: "text" | "pdf" | "cine-colombia") {
   const buf = readFileSync(path.join(dir, fixture));
   return format === "pdf" ? pdfToText(new Uint8Array(buf)) : buf.toString("utf8");
 }
@@ -77,6 +77,14 @@ describe("scraper delle 13 sale su fixture", () => {
     expect(pulse?.startsAt).toBe("2026-11-29T01:00:00.000Z");
     expect(rows.every((r) => r.startsAt >= "2026-11-20T05:00:00.000Z")).toBe(true);
     expect(rows.length).toBeGreaterThan(20);
+  });
+
+  it("cine colombia santafé: titoli in spagnolo, orari con il fuso della sede, v.o. dagli attributi", async () => {
+    const rows = sanitize(SCRAPERS["cinecolombia-santafe"].parse(await load("cine-colombia-santafe.json", "cine-colombia"), FIXTURE_NOW));
+    expect(rows.length).toBeGreaterThan(50);
+    expect(rows.some((r) => /Juegos del Hambre/.test(r.title))).toBe(true);
+    expect(rows.some((r) => r.vo)).toBe(true);
+    expect(rows.some((r) => !r.vo)).toBe(true);
   });
 
   it("beltrade: scarta i segnaposto alle 06:00", async () => {

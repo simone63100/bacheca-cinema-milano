@@ -12,7 +12,8 @@ export type CinemaId =
   | "ariosto"
   | "centrale"
   | "mexico"
-  | "cinemateca-bogota";
+  | "cinemateca-bogota"
+  | "cinecolombia-santafe";
 
 export interface Cinema {
   id: CinemaId;

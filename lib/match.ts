@@ -12,6 +12,9 @@ export interface MatchInput {
   director?: string;
   /** Used for "current release" bias when no year is printed. */
   now?: Date;
+  /** The city's language for printed titles (TMDB search), English is always tried too. */
+  lang?: "it-IT" | "es-CO";
+  region?: "IT" | "CO";
 }
 
 export interface MatchResult {
@@ -159,15 +162,16 @@ function fullVariants(raw: string): string[] {
 
 export async function matchTitle(input: MatchInput): Promise<MatchResult> {
   const seen = new Map<number, TmdbMovie>();
-  const add = (c: TmdbMovie, lang: "it-IT" | "en-US") => {
+  const local = input.lang ?? "it-IT";
+  const add = (c: TmdbMovie, lang: "it-IT" | "es-CO" | "en-US") => {
     const prev = seen.get(c.id);
     if (lang === "en-US") seen.set(c.id, { ...(prev ?? c), title_en: c.title });
     else seen.set(c.id, { ...c, title_en: prev?.title_en });
   };
   for (const v of titleVariants(input.title)) {
-    for (const lang of ["it-IT", "en-US"] as const) {
-      for (const c of await tmdb.search(v, input.year, lang)) add(c, lang);
-      if (input.year) for (const c of await tmdb.search(v, undefined, lang)) add(c, lang);
+    for (const lang of [local, "en-US"] as const) {
+      for (const c of await tmdb.search(v, input.year, lang, input.region)) add(c, lang);
+      if (input.year) for (const c of await tmdb.search(v, undefined, lang, input.region)) add(c, lang);
     }
   }
   if (seen.size === 0 && !input.director) return { tmdbId: null, method: "none", score: 0 };

@@ -4,7 +4,8 @@
  * DATABASE_URL is injected by Neon; TMDB_TOKEN, RESEND_API_KEY, MAIL_FROM, ADMIN_EMAIL,
  * SITE_URL, CRON_SECRET are function environment variables.
  */
-import { CINEMAS } from "../lib/cinemas";
+import { cinemasIn } from "../lib/cinemas";
+import { CITIES, cityById } from "../lib/cities";
 import { q } from "../lib/db";
 import { refreshLetterboxd } from "../lib/lbsync";
 import { renderFomoMail, sendMail } from "../lib/mail";
@@ -18,11 +19,15 @@ async function handle(request: Request): Promise<Response> {
   const manual = !!secret && request.headers.get("authorization") === `Bearer ${secret}`;
   if (request.method !== "POST" || !(fromTrigger || manual)) return new Response("not found", { status: 404 });
 
+  // one trigger per city: /milano (daily), /bogota (weekly, Thursdays). The path names the city.
+  const cityId = new URL(request.url).pathname.replace(/^\/+|\/+$/g, "") || "milano";
+  if (!CITIES.some((c) => c.id === cityId)) return new Response("unknown city", { status: 404 });
+  const city = cityById(cityId);
   const now = new Date();
   const site = (process.env.SITE_URL ?? "https://bijoux.ing-albertodimaria.workers.dev").replace(/\/$/, "");
   clearTmdbCache();
   const scraped = await Promise.all(
-    CINEMAS.map(async (c) => {
+    cinemasIn(city.id).map(async (c) => {
       try {
         return { cinemaId: c.id, rows: await scrape(c.id, now), error: null };
       } catch (e) {
@@ -32,13 +37,14 @@ async function handle(request: Request): Promise<Response> {
   );
 
   const result = await runDaily({
+    city: city.id,
     now,
     scraped,
     refreshLetterboxd,
     sendFomo: async (userId, hits, films) => {
       const [u] = await q<{ email: string }>("SELECT email FROM users WHERE id = $1", [userId]);
       if (!u) return;
-      const m = renderFomoMail(hits, films, site);
+      const m = renderFomoMail(hits, films, site, city.tz);
       await sendMail(u.email, m.subject, m.html, m.text);
     },
     alertAdmin: async (text) => {
@@ -49,7 +55,7 @@ async function handle(request: Request): Promise<Response> {
   });
 
   const summary = Object.fromEntries(scraped.map((s) => [s.cinemaId, s.error ? `errore: ${s.error}` : s.rows.length]));
-  console.log(`daily run ${result.runId}: ${result.okCount}/13 sale`, JSON.stringify(summary));
+  console.log(`run ${city.id} ${result.runId}: ${result.okCount}/${scraped.length} sale`, JSON.stringify(summary));
   return Response.json({ ok: true, ...result, summary });
 }
 

@@ -48,11 +48,11 @@ async function get<T>(path: string, params: Record<string, string | number | und
 }
 
 export const tmdb = {
-  async search(query: string, year?: number, language: "it-IT" | "en-US" = "it-IT"): Promise<TmdbMovie[]> {
+  async search(query: string, year?: number, language: "it-IT" | "es-CO" | "en-US" = "it-IT", region?: string): Promise<TmdbMovie[]> {
     const r = await get<{ results: TmdbMovie[] }>("/search/movie", {
       query,
       language,
-      region: language === "it-IT" ? "IT" : undefined,
+      region: language === "en-US" ? undefined : (region ?? (language === "it-IT" ? "IT" : undefined)),
       include_adult: "false",
       primary_release_year: year,
     });
