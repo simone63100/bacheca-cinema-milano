@@ -81,4 +81,4 @@ Per un cinefilo milanese che oggi controlla a mano 10+ siti di sale diverse: un 
 - [x] Orari giusti nel fuso della città: test su "stasera" e "ultime sere" a Bogotá contro Milano.
 - [x] Selezione città: con posizione simulata a Bogotá si vedono solo le sale di Bogotá, vicine; senza posizione si sceglie la città; nessuno scroll a 375 e 1280px. *(e2e `a Bogotá`, 20/20)*
 - [ ] Trigger di Bogotá: 2 run settimanali consecutivi riusciti. *(trigger `bogota-weekly`, giovedì 10:00 UTC; primo il 2026-12-03)*
-- [ ] Mail FOMO con il fuso e le sale della città dell'utente. *(codice pronto: `users.city`, `renderFomoMail(…, tz)`; manca la chiave Resend per la prova vera)*
+- [ ] Mail FOMO con il fuso e le sale della città dell'utente. *(2026-11-28: mail vera con film di Bogotá e orari di Bogotá consegnata via Resend; chiavi sulla function. Resend è in modalità prova: spedisce solo all'admin finché non si verifica un dominio)*
